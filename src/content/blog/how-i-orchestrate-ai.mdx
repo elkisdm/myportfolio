@@ -1,0 +1,113 @@
+---
+title: "I run the AI. The AI doesn't run me."
+description: "Six months orchestrating Claude Code, Cursor and Codex in a real production codebase. What worked, what burned hours, and the discipline that keeps the speed honest."
+date: 2026-05-27
+tags: ["AI orchestration", "Claude Code", "Cursor", "Engineering discipline", "Reflection"]
+featured: true
+draft: false
+lang: en
+---
+
+The first month I let Claude Code roam was a disaster. I gave it tickets the way I'd give them to a contractor — high-level, trust-based, "go figure it out." It produced PRs that worked, mostly. The tests passed. The features shipped. And then, in week five, I found three unrelated functions that had quietly drifted away from the rest of the codebase. Different naming conventions. Different error handling. One of them silently swallowed a Stripe webhook for two weeks before anyone noticed.
+
+I had three options. Roll back to writing everything by hand, accept the drift as the price of speed, or figure out how to keep an AI agent honest. **I picked option three.** Here's what I learned.
+
+## The first month was a disaster
+
+Not because the AI was bad. Because *I* was bad at delegating to it. I'd been operating it like a junior developer who already knew the codebase. Newsflash: it didn't. It knew *a* codebase — a statistical blend of every public TypeScript repo from before its training cutoff. That codebase looked enough like mine to be dangerous.
+
+By week four I had a pile of PRs that read as if four different people had written them. They had. Or rather, four different probabilistic distributions had. And I was the one signing off, half-reading them, watching the test suite go green and shipping.
+
+The fix wasn't about better prompts. **It was about constraints, conventional commits, and ADRs.**
+
+## Three rules that turned it around
+
+Six months later I have a system that produces around 40% of my codebase via agents and zero of the drift I had in month one. Three rules, all of them about cutting the agent's freedom down to something I can verify.
+
+### Rule 1 — Scoped tasks only
+
+No more "build the lead scoring endpoint." That's a research project for an agent. Every task I delegate fits this template:
+
+- **Input contract:** exact function signature, file path, names of helpers it can call.
+- **Output contract:** the exact shape the function returns plus a test fixture.
+- **Constraints:** "use the existing `checkFeasibility()` — do not write a new one."
+
+Sounds tedious. Takes me about three minutes per task. Saves me about an hour of review per task. The math works.
+
+### Rule 2 — Test gate. No exceptions
+
+Every PR from an agent has to pass a test I wrote *before* the agent saw the task. If the test passes, the implementation can be ugly. If the test fails, the implementation can be brilliant and I still won't merge it. The test is the contract; the code is the agent's problem.
+
+Writing the test first slows me down by ~15 minutes per task. But it also forces me to think through the edge cases before I delegate — which means the agent's first attempt is correct ~70% of the time, vs ~30% when I describe the problem in prose.
+
+### Rule 3 — Conventional commits and ADRs
+
+Every commit follows [conventional commits](https://www.conventionalcommits.org/). `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`. Not because it's fashionable — because it forces me to name the *kind* of change before I write it. If I can't name it, the task isn't scoped.
+
+For anything that affects architecture, data model, or external contracts, I write an ADR before the agent writes a line. `docs/adr/NNNN-titulo.md`. Status `proposed`. The ADR becomes the prompt context. The agent reads it. I read it. Future-me reads it when I forget why we chose Postgres JSON columns over a join table.
+
+## What this looks like in practice
+
+I run three agents in parallel, each with a narrow job:
+
+1. **Claude Code** — the heavy lifter. Multi-file refactors, new endpoints, anything that needs to read the whole repo. Excellent at holding architecture in head.
+2. **Cursor** — inline edits, type fixes, autocompletion. I never let it scaffold new files; it's a scalpel, not a saw.
+3. **Codex** — code review on PRs the other two produced. A fresh perspective catches what the writing agent's context window normalized.
+
+Each one has a different prompt template, a different scope, a different blast radius. They don't share state. They share the test suite, the ADRs, and the conventional commit log.
+
+Here's a real prompt from last week. I needed a function that batches feasibility lookups so we don't hit the rate limit on the upstream API:
+
+```markdown
+# Task: Batch feasibility lookups
+
+## Contract
+export function batchFeasibility(
+  addresses: NormalizedAddr[]
+): Promise<Map<string, FeasResult>>
+
+## Constraints
+- Use the existing checkFeasibility() from './feasibility.ts'
+- Max 5 parallel calls
+- Group by addr.building (cache key)
+- Return ordered by input position
+- No new types
+- No third-party deps
+
+## Test fixture
+See batchFeasibility.test.ts — must pass.
+```
+
+The agent shipped a 22-line function in two minutes. I read it in 30 seconds. Merged. That's the loop: tight contract, narrow window, fast review.
+
+## Five things agents will burn your hours on
+
+If I'd had this list six months ago I'd have skipped most of month one. In order of how badly they hurt:
+
+1. **Reinventing utilities you already wrote.** The agent doesn't know your `utils/` folder exists. Always paste the file tree into the prompt.
+2. **Inventing types it can't import.** If your types live in `@/types`, say so explicitly. Otherwise it'll define a new `User` interface inline. Three times.
+3. **Adding dependencies.** Always include "no third-party deps" unless you specifically want one. Otherwise it'll npm-install lodash for a function you could write in two lines.
+4. **"Improving" code outside the scope.** The agent sees adjacent code and wants to fix it. Tell it explicitly: do not modify any file outside the target path.
+5. **Silently catching errors.** Worst one. It'll wrap your DB call in a `try/catch` that returns `null` on failure. Then your function looks like it works. Then your data is gone.
+
+If you take one thing from this post: grep for new `try/catch` blocks in every agent PR. The default agent behavior is to swallow errors gracefully. The correct behavior is usually to surface them loudly.
+
+## The discipline tax
+
+Here's the part nobody talks about: running agents at production quality is more work than writing the code yourself. The savings come from *volume*, not from individual tasks.
+
+If I had to write each batch-feasibility function by hand, it'd take me 25 minutes. With the agent it takes me 18 (3 to scope, 1 to wait, 14 to review). I save 7 minutes per task. I do 12 tasks a day. That's 84 minutes I get back. Across a year, about three working weeks.
+
+Three working weeks is real. But it only shows up if you pay the discipline tax on every task. Skip the test gate once and the next bug eats a day. Skip the review once and the drift creeps in. Skip the ADR once and the next dev rewrites your decision because they couldn't see your reasoning. **Compounding works in both directions.**
+
+I never merge an agent PR within 30 minutes of writing the prompt. I switch contexts, come back, then review. The cold read catches things the warm read misses. It's the highest-leverage habit I've built around agents.
+
+## What I'd tell you if you're starting
+
+If you're three weeks into letting an agent into your codebase and feeling like it's chaos: that's normal. You're in month one. The way out isn't a better agent — it's tighter constraints around the one you have.
+
+Write the test first. Scope the task ruthlessly. Read every line. Watch for new `try/catches`. Write the ADR. Use conventional commits. Don't merge while warm.
+
+Do it for a month. Track your tasks-per-day and your post-merge bug rate. If both numbers move the right way, you're not "a dev with AI." **You're running a system.**
+
+— elkis daza · written in cursor · reviewed by claude · approved by me

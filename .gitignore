@@ -43,6 +43,9 @@ transcripciones-reuniones-*.txt
 content-view-source.md
 content-now-page.md
 plan-chatbot-rag.md
+auditoria-visual.md
+prompt-auditoria-visual.md
 
 # design handoff bundles (local only)
 .design/
+yopo.zip

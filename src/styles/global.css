@@ -112,14 +112,12 @@ a {
   }
 }
 
-/* Language toggle visibility (controlled by <html data-lang="..."> attr) */
-[data-en],
-[data-es] {
+/* Language toggle visibility.
+   Default: show EN, hide ES. JS toggles by setting data-lang on <html>.
+   Use attribute presence selectors that resist Lightning CSS fusion. */
+html:not([data-lang='es']) [data-es] {
   display: none;
 }
-html[data-lang='en'] [data-en] {
-  display: revert;
-}
-html[data-lang='es'] [data-es] {
-  display: revert;
+html[data-lang='es'] [data-en] {
+  display: none;
 }

@@ -52,16 +52,27 @@ if (fetchError || weeks.length === 0) {
 <div class="gh-activity" aria-label="GitHub contributions last 52 weeks">
   <div class="gh-head">
     <span class="gh-title" data-en
-      >GitHub contributions · last 52 weeks</span
+      >@elkisdm · public contributions · 52 weeks</span
     >
     <span class="gh-title" data-es
-      >Contribuciones GitHub · últimas 52 semanas</span
+      >@elkisdm · contribuciones públicas · 52 semanas</span
     >
     <span class="gh-total"
       ><b>{total.toLocaleString()}</b>
-      <span data-en>commits</span><span data-es>commits</span></span
+      <span data-en>public commits</span><span data-es>commits públicos</span></span
     >
   </div>
+  <p class="gh-note">
+    <span data-en
+      >Public account only. Add ~3,000 commits across private and work
+      repositories (edaza-create) for the 4,127 total in the timeline.</span
+    >
+    <span data-es
+      >Sólo cuenta pública. Suma ~3.000 commits adicionales entre repos privados
+      y de trabajo (edaza-create) para llegar al total de 4.127 de la línea de
+      tiempo.</span
+    >
+  </p>
   <div class="gh-grid" role="presentation">
     {weeks.map((week) => (
       <div class="gh-col">
@@ -162,6 +173,14 @@ if (fetchError || weeks.length === 0) {
     box-shadow: 0 0 6px var(--accent-glow);
   }
 
+  .gh-note {
+    margin: 14px 0 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    line-height: 1.5;
+    max-width: 60ch;
+  }
   .gh-legend {
     margin-top: 16px;
     display: inline-flex;

@@ -1,0 +1,79 @@
+---
+title: "Lead Scoring Engine"
+description: "A scoring layer that turns a noisy WhatsApp inbox into a tiered queue an agent can work in 30 seconds — cross-referencing feasibility, intent, and behavioral signals."
+date: 2026-02-15
+tags:
+  - Production
+  - AI
+  - CRM
+stack:
+  - Next.js
+  - Supabase
+  - GPT-4o-mini
+  - Edge Functions
+  - Postgres
+role: "Lead engineer · solo build"
+company: "Capital Inteligente"
+featured: true
+lang: "en"
+metrics:
+  users: "4 agents · 1,200 leads/week"
+  impact: "42% conversion lift · 3× agent throughput"
+  timeline: "Dec 2025 → Feb 2026 · 3 months"
+---
+
+## The problem
+
+Capital Inteligente's WhatsApp inbox was receiving **800–1,200 inbound leads per week**.
+Four agents had to read each one, ask for the address, manually check fibra coverage on three
+external portals, and decide whether to follow up. Most agents quit reading after lead #50
+of the day.
+
+Three things were broken:
+
+1. **~4 hours/day of triage per agent.** Manual address parsing, three external portal lookups,
+   judgment calls on incomplete info. Scoring was vibes.
+2. **~38% of inbound leads were unreachable.** No fibra coverage at their address. Agents only
+   found out after a 4-minute back-and-forth.
+3. **Hot leads cooled in the queue.** A teletrabajo lead in Las Condes would sit behind 30
+   unqualified messages. By the time an agent got there, the lead had already bought elsewhere.
+
+## How I approached it
+
+Speed-to-tier was the only metric that mattered. Everything else — model choice, cache strategy,
+schema design — was downstream of *"how do we get an agent looking at a HOT lead in under 30 seconds?"*
+
+### Feasibility before intent. Always.
+
+If we can't deliver fibra to their door, nothing else matters. Feasibility check runs first —
+costs 30 ms when cached, ~3 s on miss. Anything else (intent classification, behavioral lookup)
+is skipped entirely on unfeasible leads. Saves ~38% of GPT calls outright.
+
+### 60-day building-level cache.
+
+Fibra coverage doesn't change daily — it changes when an operator turns on a new building. So
+we cache by *normalized building address* (not full address), TTL 60 days. One dpto 803 lookup
+serves dptos 101–1204. **87% hit rate within two weeks.**
+
+### GPT-4o-mini, not 4o. With strict prompts.
+
+For intent classification, mini hits **94% agreement with human agents at 1/15th the cost.**
+The full 4o didn't move the needle on agreement; it just got more verbose. We trade flexibility
+for latency and cost — and let prompts do the heavy lifting.
+
+### Tier = signal, not a number.
+
+No "lead score 87/100" — that invites debate and false precision. Three tiers (HOT / WARM /
+COLD), each tied to a concrete agent action. HOT = call within 15 minutes. WARM = WhatsApp
+follow-up today. COLD = automated nurture.
+
+## What I'd do differently
+
+Three honest ones:
+
+1. **The intent prompt is a string literal.** It works. But every tweak needs a deploy. Should
+   have versioned prompts as their own table from day one. Fixing in v2.
+2. **Cache invalidation by TTL only.** When an operator turns on a new building, we wait up to
+   60 days. A scraper for operator coverage feeds would solve it. Half-built already.
+3. **No human-in-the-loop on misclassifications.** Agents flag bad tiers manually, but the
+   corrections don't feed back into the model. A feedback loop could halve the 6% miss rate.

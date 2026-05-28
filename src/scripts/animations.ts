@@ -1,6 +1,9 @@
 /**
  * Wow factors — GSAP-powered animations.
  * All animations are gated by prefers-reduced-motion via gsap.matchMedia().
+ *
+ * IMPORTANT: the hero reveal is allowed to run even on reduced-motion (just instantly).
+ * Inside-viewport scroll animations are skipped entirely when reduced-motion is on.
  */
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -8,31 +11,36 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 export function initAnimations() {
-  const mm = gsap.matchMedia();
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  mm.add('(prefers-reduced-motion: no-preference)', () => {
-    initHeroReveal();
+  // Hero reveal runs always — instant on reduced-motion, animated otherwise.
+  initHeroReveal(reducedMotion);
+
+  if (!reducedMotion) {
     initBatchReveals();
     initMagneticButtons();
     initHorizontalProjects();
-  });
+  }
 }
 
 /**
  * Wow #1 — SplitText-like reveal: split hero title into spans, stagger fade+slide.
- * (Manual split to avoid SplitText plugin dependency.)
+ * Only splits the CURRENTLY VISIBLE language (the hidden one stays untouched so
+ * the lang toggle keeps working without re-running the split).
  */
-function initHeroReveal() {
+function initHeroReveal(reducedMotion: boolean) {
   const heroTitle = document.querySelector<HTMLElement>('.hero-title');
   if (!heroTitle) return;
 
-  // Split each direct text container into word spans.
-  const visible = heroTitle.querySelectorAll<HTMLElement>(
-    'span[data-en], span[data-es], .l2 > span[data-en], .l2 > span[data-es]'
-  );
+  // Only split spans that are actually rendered (not display:none from i18n toggle).
+  const candidates = heroTitle.querySelectorAll<HTMLElement>('span[data-en], span[data-es]');
+  const visible: HTMLElement[] = [];
+  candidates.forEach((el) => {
+    const style = window.getComputedStyle(el);
+    if (style.display !== 'none' && el.dataset.split !== 'done') visible.push(el);
+  });
 
   visible.forEach((el) => {
-    if (el.dataset.split === 'done') return;
     const text = el.textContent || '';
     const words = text.trim().split(/(\s+)/);
     el.textContent = '';
@@ -54,24 +62,49 @@ function initHeroReveal() {
   });
 
   const inners = heroTitle.querySelectorAll<HTMLElement>('.split-word > span');
-  gsap.from(inners, {
-    yPercent: 110,
-    opacity: 0,
-    duration: 1.0,
-    ease: 'expo.out',
-    stagger: 0.04,
-    delay: 0.15,
+
+  if (reducedMotion) {
+    gsap.set(inners, { yPercent: 0, opacity: 1 });
+    gsap.set(['.hero-sub', '.hero-ctas', '.hero-strip', '.hero-terminal'], {
+      opacity: 1,
+      y: 0,
+    });
+    return;
+  }
+
+  // Fail-safe: if animation hasn't completed in 3s, force the final state.
+  // This protects against weird timing (font loading, route changes, etc.).
+  const tl = gsap.timeline({
+    onComplete: () => {
+      gsap.set(inners, { clearProps: 'all' });
+    },
   });
 
-  // Subtle entrance for hero sub, ctas, strip, terminal.
-  gsap.from(['.hero-sub', '.hero-ctas', '.hero-strip', '.hero-terminal'], {
+  tl.from(inners, {
+    yPercent: 110,
     opacity: 0,
-    y: 12,
-    duration: 0.8,
-    ease: 'power2.out',
-    stagger: 0.08,
-    delay: 0.5,
-  });
+    duration: 0.9,
+    ease: 'expo.out',
+    stagger: 0.035,
+  }).from(
+    ['.hero-sub', '.hero-ctas', '.hero-strip', '.hero-terminal'],
+    {
+      opacity: 0,
+      y: 12,
+      duration: 0.7,
+      ease: 'power2.out',
+      stagger: 0.08,
+    },
+    '-=0.6'
+  );
+
+  // Safety net: after 3.5s force visibility no matter what.
+  setTimeout(() => {
+    if (tl.progress() < 1) {
+      tl.progress(1);
+    }
+    gsap.set(inners, { yPercent: 0, opacity: 1, clearProps: 'transform,opacity' });
+  }, 3500);
 }
 
 /**
@@ -82,19 +115,35 @@ function initBatchReveals() {
     'section.scope .section-head, .commit-graph, .tl-item, .project-row, .meth-col, .cta-form, .cta-alt'
   );
 
+  if (!candidates.length) return;
+
+  // Set initial state explicitly to avoid relying on .from() timing.
+  gsap.set(candidates, { opacity: 0, y: 24 });
+
   ScrollTrigger.batch(candidates, {
-    start: 'top 88%',
+    start: 'top 92%',
     onEnter: (batch) =>
-      gsap.from(batch, {
-        opacity: 0,
-        y: 24,
-        duration: 0.7,
+      gsap.to(batch, {
+        opacity: 1,
+        y: 0,
+        duration: 0.65,
         ease: 'power2.out',
-        stagger: 0.08,
+        stagger: 0.06,
         overwrite: 'auto',
       }),
+    onEnterBack: (batch) => gsap.to(batch, { opacity: 1, y: 0, duration: 0.4, overwrite: 'auto' }),
     once: true,
   });
+
+  // Safety net: anything still hidden after 5s gets revealed.
+  setTimeout(() => {
+    candidates.forEach((el) => {
+      const style = window.getComputedStyle(el);
+      if (parseFloat(style.opacity) < 0.9) {
+        gsap.to(el, { opacity: 1, y: 0, duration: 0.4 });
+      }
+    });
+  }, 5000);
 }
 
 /**

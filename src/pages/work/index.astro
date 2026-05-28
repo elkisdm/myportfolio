@@ -1,51 +1,822 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getCollection } from "astro:content";
+import { getCollection, type CollectionEntry } from "astro:content";
 
-const projects = (await getCollection("projects"))
-  .filter((p) => p.data.lang === "en")
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+type ProjectEntry = CollectionEntry<"projects">;
+
+const allProjects: ProjectEntry[] = (await getCollection("projects")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+function formatYear(date: Date): string {
+  return String(date.getFullYear());
+}
+
+function isProduction(p: ProjectEntry): boolean {
+  return p.data.tags.includes("Production");
+}
+
+function isSide(p: ProjectEntry): boolean {
+  return p.data.tags.includes("Side");
+}
+
+function isArchived(p: ProjectEntry): boolean {
+  return p.data.tags.includes("Archived");
+}
+
+const productionProjects = allProjects.filter(isProduction);
+const sideProjects = allProjects.filter(isSide);
+const archivedProjects = allProjects.filter(isArchived);
+
+const totalProjects = allProjects.length;
+const totalProduction = productionProjects.length;
+const totalArchived = archivedProjects.length;
+
+const hasAny = totalProjects > 0;
 ---
 
-<BaseLayout title="Work" description="Case studies of real products built from zero.">
-  <section class="mx-auto max-w-5xl px-6 pb-24 pt-32">
-    <h1 class="mb-4 font-heading text-4xl font-bold md:text-5xl">Work</h1>
-    <p class="mb-12 text-lg text-text-secondary">
-      Real products. Real problems solved. Each one built from zero.
-    </p>
-
-    {projects.length === 0 ? (
-      <div class="rounded-xl border border-border bg-surface p-8 text-center">
-        <p class="font-mono text-sm text-text-muted">Case studies coming soon.</p>
+<BaseLayout
+  title="Work — elkis.dev"
+  description="The full archive — what shipped, what didn't, and what I learned from the ones that died."
+>
+  <div class="pg-head">
+    <div class="container pg-head-inner">
+      <div class="eyebrow">
+        <span class="ebar"></span>
+        <span data-en>/ Work archive</span><span data-es>/ Archivo de trabajo</span>
+        <span class="sep"></span>
+        <b>2025 — 2026</b>
       </div>
-    ) : (
-      <div class="grid gap-6">
-        {projects.map((project) => (
-          <a
-            href={`/work/${project.id}`}
-            class="group rounded-xl border border-border bg-surface p-6 transition-all hover:border-accent/30 hover:bg-surface-hover"
-          >
-            <div class="flex items-start justify-between">
-              <div>
-                <h2 class="mb-2 font-heading text-xl font-semibold group-hover:text-accent">
-                  {project.data.title}
-                </h2>
-                <p class="mb-4 text-sm text-text-secondary">{project.data.description}</p>
-                <div class="flex flex-wrap gap-2">
-                  {project.data.stack.map((tech: string) => (
-                    <span class="rounded-md bg-bg px-2 py-0.5 font-mono text-xs text-text-muted">
-                      {tech}
-                    </span>
-                  ))}
+      <h1 class="pg-title">
+        <span data-en>All projects<span class="ac">.</span></span>
+        <span data-es>Todo el trabajo<span class="ac">.</span></span>
+        <br />
+        <span class="muted">
+          <span data-en>Production. Side. Archived. Killed.</span>
+          <span data-es>Producción. Side. Archivado. Killed.</span>
+        </span>
+      </h1>
+      <p class="pg-lede">
+        <span data-en
+          >The full archive — what shipped, what didn't, and what I learned from the ones that
+          died. <b
+            >Including the killed projects, because honesty is the only metric that compounds.</b
+          ></span
+        >
+        <span data-es
+          >El archivo completo — lo que shipeó, lo que no, y lo que aprendí de los que murieron.
+          <b
+            >Incluyendo los killed projects, porque la honestidad es la única métrica que
+            compone.</b
+          ></span
+        >
+      </p>
+
+      <div class="stats-strip">
+        <div class="item">
+          <div class="num">{totalProjects}<span class="plus">+</span></div>
+          <div class="lbl" data-en>Projects shipped</div>
+          <div class="lbl" data-es>Proyectos shippeados</div>
+        </div>
+        <div class="item">
+          <div class="num">{totalProduction}</div>
+          <div class="lbl" data-en>In production</div>
+          <div class="lbl" data-es>En producción</div>
+        </div>
+        <div class="item">
+          <div class="num">{totalArchived}</div>
+          <div class="lbl" data-en>Archived / killed</div>
+          <div class="lbl" data-es>Archivados / killed</div>
+        </div>
+        <div class="item">
+          <div class="num">4,127<span class="plus">+</span></div>
+          <div class="lbl" data-en>Total commits</div>
+          <div class="lbl" data-es>Commits totales</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    {
+      hasAny ? (
+        <>
+          {productionProjects.length > 0 && (
+            <>
+              <div class="group-head">
+                <div class="h">
+                  <span class="ct">/ 01</span>
+                  <span class="sep" />
+                  <span data-en>Production</span>
+                  <span data-es>Producción</span>
+                  <span class="sep" />
+                  <b>
+                    {productionProjects.length}{" "}
+                    <span data-en>shipped</span>
+                    <span data-es>shippeado</span>
+                  </b>
+                </div>
+                <div class="meta" data-en>
+                  Live in front of paying users
+                </div>
+                <div class="meta" data-es>
+                  En vivo frente a usuarios pagos
                 </div>
               </div>
-              <span class="font-mono text-xs text-text-muted">
-                {project.data.date.toLocaleDateString("en-US", { year: "numeric", month: "short" })}
-              </span>
+
+              <div class="project-list">
+                {productionProjects.map((project, i) => (
+                  <a class="project-row" href={`/work/${project.id}`}>
+                    <div class="pr-num">/ {String(i + 1).padStart(2, "0")}</div>
+                    <div class="pr-main">
+                      <h3 class="pr-title">{project.data.title}</h3>
+                      <p class="pr-desc">{project.data.description}</p>
+                      <div class="pr-tags">
+                        {project.data.stack.slice(0, 4).map((tech: string) => (
+                          <span class="badge">{tech}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <div class="pr-meta">
+                      {project.data.company && <b>{project.data.company}</b>}
+                      {project.data.metrics?.impact && (
+                        <span class="stat">{project.data.metrics.impact}</span>
+                      )}
+                      <br />
+                      <span data-en>In production · {project.data.date.toLocaleDateString("en-US", { year: "numeric", month: "short" })}</span>
+                      <span data-es>En producción · {project.data.date.toLocaleDateString("es-CL", { year: "numeric", month: "short" })}</span>
+                    </div>
+                    <div class="pr-year">{formatYear(project.data.date)}</div>
+                    <div class="pr-arrow">→</div>
+                  </a>
+                ))}
+              </div>
+            </>
+          )}
+
+          {sideProjects.length > 0 && (
+            <>
+              <div class="group-head">
+                <div class="h">
+                  <span class="ct">/ 02</span>
+                  <span class="sep" />
+                  <span data-en>Side projects</span>
+                  <span data-es>Side projects</span>
+                  <span class="sep" />
+                  <b>
+                    {sideProjects.length}{" "}
+                    <span data-en>experiments</span>
+                    <span data-es>experimentos</span>
+                  </b>
+                </div>
+                <div class="meta" data-en>
+                  Built nights & weekends · learning vehicles
+                </div>
+                <div class="meta" data-es>
+                  Construidos noches y fines de semana · vehículos de aprendizaje
+                </div>
+              </div>
+
+              <div class="project-list">
+                {sideProjects.map((project, i) => (
+                  <a class="project-row" href={`/work/${project.id}`}>
+                    <div class="pr-num">/ {String(productionProjects.length + i + 1).padStart(2, "0")}</div>
+                    <div class="pr-main">
+                      <h3 class="pr-title">{project.data.title}</h3>
+                      <p class="pr-desc">{project.data.description}</p>
+                      <div class="pr-tags">
+                        {project.data.stack.slice(0, 4).map((tech: string) => (
+                          <span class="badge">{tech}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <div class="pr-meta">
+                      {project.data.company && <b>{project.data.company}</b>}
+                      {project.data.metrics?.impact && (
+                        <span class="stat">{project.data.metrics.impact}</span>
+                      )}
+                    </div>
+                    <div class="pr-year">{formatYear(project.data.date)}</div>
+                    <div class="pr-arrow">→</div>
+                  </a>
+                ))}
+              </div>
+            </>
+          )}
+
+          {archivedProjects.length > 0 && (
+            <>
+              <div class="group-head">
+                <div class="h">
+                  <span class="ct">/ 03</span>
+                  <span class="sep" />
+                  <span data-en>Archived</span>
+                  <span data-es>Archivados</span>
+                  <span class="sep" />
+                  <b>
+                    {archivedProjects.length}{" "}
+                    <span data-en>shipped, then sunset</span>
+                    <span data-es>shippearon, después sunset</span>
+                  </b>
+                </div>
+                <div class="meta" data-en>
+                  Worked. Got replaced. Useful while alive.
+                </div>
+                <div class="meta" data-es>
+                  Funcionaron. Los reemplazaron. Útiles mientras vivieron.
+                </div>
+              </div>
+
+              <div class="project-list">
+                {archivedProjects.map((project, i) => (
+                  <a class="project-row archived" href={`/work/${project.id}`}>
+                    <div class="pr-num">/ {String(productionProjects.length + sideProjects.length + i + 1).padStart(2, "0")}</div>
+                    <div class="pr-main">
+                      <h3 class="pr-title">{project.data.title}</h3>
+                      <p class="pr-desc">{project.data.description}</p>
+                      <div class="pr-tags">
+                        {project.data.stack.slice(0, 4).map((tech: string) => (
+                          <span class="badge">{tech}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <div class="pr-meta">
+                      {project.data.company && <b>{project.data.company}</b>}
+                    </div>
+                    <div class="pr-year">{formatYear(project.data.date)}</div>
+                    <div class="pr-arrow">→</div>
+                  </a>
+                ))}
+              </div>
+            </>
+          )}
+        </>
+      ) : (
+        <div class="empty-state">
+          <div class="empty-eyebrow">
+            <span class="ebar" />
+            <span data-en>/ The archive · loading</span>
+            <span data-es>/ El archivo · cargando</span>
+          </div>
+          <h2 class="empty-title">
+            <span data-en>
+              Case studies are being written<span class="ac">.</span>
+            </span>
+            <span data-es>
+              Los case studies se están escribiendo<span class="ac">.</span>
+            </span>
+          </h2>
+          <p class="empty-lede">
+            <span data-en>
+              Three production CRMs, four killed experiments, and a half-finished Postgres
+              extension are queued for write-up. I write case studies the way I build — slowly,
+              honestly, with the trade-offs visible.
+            </span>
+            <span data-es>
+              Tres CRMs en producción, cuatro experimentos killed, y una extensión de Postgres a
+              medio terminar están en cola para case study. Los escribo igual que construyo —
+              lento, honesto, con los trade-offs a la vista.
+            </span>
+          </p>
+
+          <div class="empty-queue">
+            <div class="queue-head">
+              <span data-en>/ In the queue</span>
+              <span data-es>/ En la cola</span>
             </div>
-          </a>
-        ))}
-      </div>
-    )}
-  </section>
+            <ul class="queue-list">
+              <li>
+                <span class="qn">/ 01</span>
+                <div>
+                  <b>Lead Scoring Engine</b>
+                  <span class="qd" data-en>
+                    Capital Inteligente · 42% conv lift · GPT-4o-mini + Edge Functions
+                  </span>
+                  <span class="qd" data-es>
+                    Capital Inteligente · 42% lift · GPT-4o-mini + Edge Functions
+                  </span>
+                </div>
+                <span class="qs">
+                  <span data-en>Drafting</span>
+                  <span data-es>En borrador</span>
+                </span>
+              </li>
+              <li>
+                <span class="qn">/ 02</span>
+                <div>
+                  <b>WhatsApp Inbox AI</b>
+                  <span class="qd" data-en>
+                    Whisper + Vision OCR · 3× agent throughput
+                  </span>
+                  <span class="qd" data-es>
+                    Whisper + Vision OCR · 3× throughput por agente
+                  </span>
+                </div>
+                <span class="qs">
+                  <span data-en>Outlined</span>
+                  <span data-es>Esbozado</span>
+                </span>
+              </li>
+              <li>
+                <span class="qn">/ 03</span>
+                <div>
+                  <b>Killed projects</b>
+                  <span class="qd" data-en>
+                    Five experiments I stopped — and why
+                  </span>
+                  <span class="qd" data-es>
+                    Cinco experimentos que paré — y por qué
+                  </span>
+                </div>
+                <span class="qs">
+                  <span data-en>Researching</span>
+                  <span data-es>Investigando</span>
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="empty-ctas">
+            <a class="btn btn-primary" href="/now">
+              <span data-en>What I'm building now</span>
+              <span data-es>Qué estoy construyendo ahora</span>
+              <span class="arrow">→</span>
+            </a>
+            <a class="btn btn-secondary" href="mailto:hello@elkis.dev">
+              <span data-en>Ask for an early draft</span>
+              <span data-es>Pedir un draft anticipado</span>
+              <span class="arrow">↗</span>
+            </a>
+          </div>
+        </div>
+      )
+    }
+  </div>
 </BaseLayout>
+
+<style>
+  .pg-head {
+    padding: 160px 0 32px;
+    position: relative;
+  }
+  .pg-head::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, #1c1c1f 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.4;
+    mask-image: linear-gradient(180deg, transparent, #000 30%, transparent 100%);
+    pointer-events: none;
+  }
+  .pg-head-inner {
+    position: relative;
+    z-index: 2;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .eyebrow .ebar {
+    display: inline-block;
+    width: 3px;
+    height: 11px;
+    background: var(--color-accent);
+    animation: blink 1.2s steps(2, start) infinite;
+  }
+  .eyebrow .sep {
+    width: 16px;
+    height: 1px;
+    background: var(--color-hair-strong);
+  }
+  .eyebrow b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+
+  .pg-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(44px, 6vw, 80px);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    margin: 28px 0 0;
+    color: var(--color-text-1);
+  }
+  .pg-title .muted {
+    color: var(--color-text-3);
+  }
+  .pg-title .ac {
+    color: var(--color-accent);
+  }
+  .pg-lede {
+    margin: 24px 0 0;
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--color-text-2);
+    max-width: 60ch;
+  }
+  .pg-lede b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+
+  .stats-strip {
+    margin-top: 56px;
+    padding: 24px 0;
+    border-top: 1px solid var(--color-hair);
+    border-bottom: 1px solid var(--color-hair);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    position: relative;
+    z-index: 2;
+  }
+  .stats-strip .item .num {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--color-text-1);
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+  .stats-strip .item .num .plus {
+    color: var(--color-accent);
+    font-size: 22px;
+  }
+  .stats-strip .item .lbl {
+    margin-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .group-head {
+    margin-top: 72px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--color-hair);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .group-head .h {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text-3);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .group-head .h b {
+    color: var(--color-text-1);
+    font-weight: 500;
+    font-size: 13px;
+  }
+  .group-head .h .ct {
+    color: var(--color-accent);
+  }
+  .group-head .h .sep {
+    width: 16px;
+    height: 1px;
+    background: var(--color-hair-strong);
+  }
+  .group-head .meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    letter-spacing: 0.06em;
+  }
+
+  .project-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .project-row {
+    display: grid;
+    grid-template-columns: 60px 1.4fr 1fr 90px 32px;
+    gap: 28px;
+    padding: 32px 0;
+    border-bottom: 1px solid var(--color-hair);
+    align-items: center;
+    transition:
+      background 180ms,
+      padding 180ms;
+    cursor: pointer;
+    position: relative;
+  }
+  .project-row::before {
+    content: "";
+    position: absolute;
+    left: -28px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 60%;
+    background: var(--color-accent);
+    transition: width 220ms cubic-bezier(0.34, 1.2, 0.64, 1);
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+  .project-row:hover {
+    padding-left: 22px;
+    background: linear-gradient(90deg, var(--color-surface-1), transparent 80%);
+  }
+  .project-row:hover::before {
+    width: 3px;
+  }
+  .project-row:hover .pr-arrow {
+    color: var(--color-accent);
+    transform: translateX(4px);
+  }
+  .project-row:hover .pr-title {
+    color: var(--color-accent-strong);
+  }
+
+  .pr-num {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text-3);
+    letter-spacing: 0.06em;
+  }
+  .pr-main {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .pr-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: var(--color-text-1);
+    margin: 0;
+    transition: color 180ms;
+  }
+  .pr-desc {
+    font-size: 14px;
+    color: var(--color-text-2);
+    line-height: 1.5;
+    margin: 0;
+    max-width: 56ch;
+  }
+  .pr-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 4px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    padding: 3px 9px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-hair-strong);
+    background: var(--color-surface-2);
+    color: var(--color-text-2);
+    letter-spacing: 0.04em;
+  }
+  .pr-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+  }
+  .pr-meta b {
+    color: var(--color-text-1);
+    display: block;
+    font-weight: 500;
+  }
+  .pr-meta .stat {
+    color: var(--color-accent);
+  }
+  .pr-year {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    color: var(--color-text-2);
+    text-align: right;
+  }
+  .pr-arrow {
+    font-family: var(--font-mono);
+    font-size: 20px;
+    color: var(--color-text-3);
+    transition:
+      color 180ms,
+      transform 180ms;
+  }
+
+  .project-row.archived {
+    opacity: 0.62;
+  }
+  .project-row.archived .pr-title {
+    color: var(--color-text-2);
+  }
+  .project-row.archived:hover {
+    opacity: 0.85;
+  }
+
+  /* === EMPTY STATE === */
+  .empty-state {
+    padding: 24px 0 48px;
+  }
+  .empty-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .empty-eyebrow .ebar {
+    display: inline-block;
+    width: 3px;
+    height: 11px;
+    background: var(--color-accent);
+    animation: blink 1.2s steps(2, start) infinite;
+  }
+  .empty-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(32px, 4.5vw, 52px);
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+    margin: 24px 0 0;
+    color: var(--color-text-1);
+    max-width: 18ch;
+  }
+  .empty-title .ac {
+    color: var(--color-accent);
+  }
+  .empty-lede {
+    margin: 24px 0 0;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--color-text-2);
+    max-width: 60ch;
+  }
+  .empty-queue {
+    margin-top: 48px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+  }
+  .queue-head {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+    margin-bottom: 20px;
+  }
+  .queue-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .queue-list li {
+    display: grid;
+    grid-template-columns: 60px 1fr 110px;
+    gap: 20px;
+    padding: 18px 0;
+    border-bottom: 1px dashed var(--color-hair);
+    align-items: start;
+  }
+  .queue-list li:last-child {
+    border-bottom: none;
+  }
+  .queue-list .qn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text-4);
+    letter-spacing: 0.06em;
+  }
+  .queue-list b {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--color-text-1);
+    display: block;
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+  .queue-list .qd {
+    font-size: 13.5px;
+    color: var(--color-text-2);
+    line-height: 1.5;
+  }
+  .queue-list .qs {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    text-align: right;
+    padding-top: 2px;
+  }
+  .empty-ctas {
+    margin-top: 36px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 14.5px;
+    padding: 14px 22px;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--color-text-1);
+    cursor: pointer;
+    transition:
+      background 180ms,
+      border-color 180ms,
+      color 180ms,
+      box-shadow 180ms;
+  }
+  .btn .arrow {
+    font-family: var(--font-mono);
+    transition: transform 180ms;
+  }
+  .btn:hover .arrow {
+    transform: translateX(3px);
+  }
+  .btn-primary {
+    background: var(--color-accent);
+    color: #0a0a0b;
+    border-color: var(--color-accent);
+  }
+  .btn-primary:hover {
+    background: var(--color-accent-strong);
+    box-shadow: 0 0 32px var(--accent-glow);
+  }
+  .btn-secondary {
+    background: var(--color-surface-2);
+    color: var(--color-text-1);
+    border-color: var(--color-hair-strong);
+  }
+  .btn-secondary:hover {
+    background: var(--color-surface-3);
+    border-color: var(--color-text-3);
+  }
+
+  @media (max-width: 1024px) {
+    .stats-strip {
+      grid-template-columns: 1fr 1fr;
+    }
+    .project-row {
+      grid-template-columns: 50px 1fr 24px;
+      gap: 18px;
+    }
+    .project-row .pr-meta,
+    .project-row .pr-year {
+      display: none;
+    }
+    .queue-list li {
+      grid-template-columns: 50px 1fr;
+    }
+    .queue-list .qs {
+      grid-column: 2;
+      text-align: left;
+      padding-top: 6px;
+    }
+  }
+  @media (max-width: 720px) {
+    .pg-head {
+      padding-top: 120px;
+    }
+    .empty-queue {
+      padding: 20px 18px;
+    }
+  }
+</style>

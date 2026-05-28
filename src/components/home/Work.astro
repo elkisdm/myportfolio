@@ -2,6 +2,7 @@
 const projects = [
   {
     num: "/ 01",
+    slug: "lead-scoring-engine",
     title: "Lead Scoring Engine",
     en: "Cross-references feasibility, budget signals, and behavioral history. WhatsApp inbound → tiered score in <30 s. Built for Capital Inteligente.",
     es: "Cruza factibilidad, señales de presupuesto e historial. WhatsApp inbound → score tiered en <30 s. Para Capital Inteligente.",
@@ -14,6 +15,7 @@ const projects = [
   },
   {
     num: "/ 02",
+    slug: "whatsapp-inbox-ai",
     title: "WhatsApp Inbox AI",
     en: "AI-augmented agent console. Whisper transcription, Vision OCR, GPT-4o-mini draft replies. Automated address normalization + 60-day feasibility cache.",
     es: "Consola de agentes con IA. Transcripción Whisper, OCR Vision, drafts GPT-4o-mini. Normalización de direcciones + cache de factibilidad 60 días.",
@@ -26,6 +28,7 @@ const projects = [
   },
   {
     num: "/ 03",
+    slug: "internal-admin-platform",
     title: "Internal Admin Platform",
     en: "Dashboard for ops + sales: lead pipeline, agent performance, factibilidad coverage, CSV import, role-based access. Built solo over a quarter.",
     es: "Dashboard para ops + ventas: pipeline de leads, performance de agentes, cobertura de factibilidad, import CSV, RBAC. Construido solo en un trimestre.",
@@ -61,7 +64,7 @@ const projects = [
 
     <div class="project-list">
       {projects.map((p) => (
-        <a class="project-row" href="#">
+        <a class="project-row" href={`/work/${p.slug}`}>
           <div class="pr-num">{p.num}</div>
           <div class="pr-main">
             <h3 class="pr-title">{p.title}</h3>
