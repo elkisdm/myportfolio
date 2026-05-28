@@ -1,0 +1,213 @@
+---
+// 3-column methodology grid: Architect (ME) / Executor (AI) / Platform (STACK)
+---
+
+<section class="scope" id="methodology">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">
+        <span class="ebar"></span>
+        <span data-en>/ How I build</span>
+        <span data-es>/ Cómo construyo</span>
+      </div>
+      <h2 class="section-title">
+        <span data-en>Architect. Orchestrator. <span class="muted">Operator.</span></span>
+        <span data-es>Arquitecto. Orquestador. <span class="muted">Operador.</span></span>
+      </h2>
+      <p class="section-lede">
+        <span data-en>I'm not just a dev with AI. I run the system. Decisions, system design, and code review stay with me. Execution is delegated — under engineering discipline.</span>
+        <span data-es>No soy "un dev con IA". Yo corro el sistema. Decisiones, diseño y code review se quedan conmigo. La ejecución se delega — con disciplina de ingeniería.</span>
+      </p>
+    </div>
+
+    <div class="meth-grid">
+      <div class="meth-col">
+        <div class="meth-role" data-en>01 · Architect · ME</div>
+        <div class="meth-role" data-es>01 · Arquitecto · YO</div>
+        <div class="meth-mark"><span class="ac">E</span>D<span class="ac">.</span></div>
+        <h3 class="meth-title" data-en>I frame the problem. I design the system.</h3>
+        <h3 class="meth-title" data-es>Encuadro el problema. Diseño el sistema.</h3>
+        <p class="meth-desc" data-en>Where the business hurts. Where the data lives. What ships first. The decisions a tool can't make.</p>
+        <p class="meth-desc" data-es>Dónde duele el negocio. Dónde vive el dato. Qué se ship primero. Las decisiones que una herramienta no puede tomar.</p>
+        <ul class="meth-list">
+          <li data-en>Business framing → product spec</li>
+          <li data-es>Framing de negocio → spec de producto</li>
+          <li data-en>Schema + boundary design</li>
+          <li data-es>Diseño de schema + boundaries</li>
+          <li data-en>PR review, every commit</li>
+          <li data-es>PR review, todo commit</li>
+        </ul>
+      </div>
+
+      <div class="meth-col">
+        <div class="meth-role" data-en>02 · Executor · AI</div>
+        <div class="meth-role" data-es>02 · Ejecutor · IA</div>
+        <div class="meth-mark">A<span class="ac">I</span></div>
+        <h3 class="meth-title" data-en>AI agents execute. Under discipline.</h3>
+        <h3 class="meth-title" data-es>Los agentes de IA ejecutan. Con disciplina.</h3>
+        <p class="meth-desc" data-en>Claude Code, Cursor, Codex. Each gets a scoped task, a test target, and a review gate. Speed compounds; quality holds.</p>
+        <p class="meth-desc" data-es>Claude Code, Cursor, Codex. Cada uno con tarea acotada, target de tests y gate de review. La velocidad compone; la calidad se mantiene.</p>
+        <ul class="meth-list">
+          <li>Claude Code · Cursor · Codex</li>
+          <li data-en>Scoped prompts, no vibe-coding</li>
+          <li data-es>Prompts acotados, sin vibe-coding</li>
+          <li data-en>Test-gated PRs</li>
+          <li data-es>PRs con test-gate</li>
+        </ul>
+      </div>
+
+      <div class="meth-col">
+        <div class="meth-role" data-en>03 · Platform · STACK</div>
+        <div class="meth-role" data-es>03 · Plataforma · STACK</div>
+        <div class="meth-mark">TS<span class="ac">/</span></div>
+        <h3 class="meth-title" data-en>A boring, durable stack.</h3>
+        <h3 class="meth-title" data-es>Un stack aburrido y durable.</h3>
+        <p class="meth-desc" data-en>TypeScript everywhere. Supabase as the data + auth layer. Astro/Next for delivery. GSAP when motion earns its place.</p>
+        <p class="meth-desc" data-es>TypeScript en todo. Supabase como capa de datos + auth. Astro/Next para delivery. GSAP cuando la animación lo merece.</p>
+        <ul class="meth-list">
+          <li>TypeScript · React · Astro 5</li>
+          <li>Supabase · Postgres · RLS</li>
+          <li>WhatsApp Cloud API · GSAP</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  section.scope {
+    position: relative;
+    padding: 140px 0 32px;
+  }
+  .section-head {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 72px;
+    max-width: 880px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(36px, 5.4vw, 64px);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    margin: 0;
+    color: var(--color-text-1);
+  }
+  .section-title :global(.muted) {
+    color: var(--color-text-3);
+  }
+  .section-lede {
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--color-text-2);
+    margin: 0;
+    max-width: 60ch;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .eyebrow .ebar {
+    display: inline-block;
+    width: 3px;
+    height: 11px;
+    background: var(--color-accent);
+    animation: blink 1.2s steps(2, start) infinite;
+  }
+
+  .meth-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--color-hair);
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .meth-col {
+    background: var(--color-surface-1);
+    padding: 40px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: relative;
+    transition: background 200ms;
+  }
+  .meth-col:hover {
+    background: var(--color-surface-2);
+  }
+  .meth-role {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .meth-mark {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 88px;
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    color: var(--color-text-1);
+    display: inline-flex;
+    align-items: baseline;
+  }
+  .meth-mark .ac {
+    color: var(--color-accent);
+  }
+  .meth-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: var(--color-text-1);
+    margin: 0;
+  }
+  .meth-desc {
+    font-size: 14.5px;
+    color: var(--color-text-2);
+    line-height: 1.55;
+    margin: 0;
+  }
+  .meth-list {
+    list-style: none;
+    padding: 0;
+    margin: auto 0 0;
+    border-top: 1px dashed var(--color-hair-strong);
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .meth-list li {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text-2);
+    letter-spacing: 0.02em;
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    gap: 8px;
+    line-height: 1.5;
+  }
+  .meth-list li::before {
+    content: "→";
+    color: var(--color-accent);
+    font-weight: 500;
+  }
+
+  @media (max-width: 1024px) {
+    .meth-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

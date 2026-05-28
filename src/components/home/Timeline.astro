@@ -1,0 +1,410 @@
+---
+const timelineItems = [
+  {
+    date: { month: "May 29", year: "2025" },
+    cls: "day0",
+    en: {
+      headline: "Day 0. First line of real code.",
+      desc: "Eight years of WordPress + Divi behind me. Decided that wasn't engineering. Cleared the laptop, opened a JavaScript tutorial.",
+    },
+    es: {
+      headline: "Día 0. Primera línea de código real.",
+      desc: "Ocho años de WordPress + Divi atrás. Decidí que eso no era ingeniería. Borré todo, abrí un tutorial de JavaScript.",
+    },
+    tags: ["JavaScript", "From zero"],
+    commits: "3",
+  },
+  {
+    date: { month: "Jul", year: "2025" },
+    cls: "",
+    en: {
+      headline: "First Next.js app shipped.",
+      desc: "A small CMS replacement built in 6 weeks. Vercel, Supabase, server components. The \"I can actually do this\" moment.",
+    },
+    es: {
+      headline: "Primera app Next.js en producción.",
+      desc: "Un reemplazo pequeño de CMS construido en 6 semanas. Vercel, Supabase, server components. El momento \"puedo hacer esto de verdad\".",
+    },
+    tags: ["Next.js", "Supabase", "RSC"],
+    commits: "214",
+  },
+  {
+    date: { month: "Sep", year: "2025" },
+    cls: "",
+    en: {
+      headline: "Joined Capital Inteligente.",
+      desc: "Real estate / investment. Three months in, owning the internal CRM. Architecture decisions, schema design, deploys.",
+    },
+    es: {
+      headline: "Entré a Capital Inteligente.",
+      desc: "Inmobiliaria / inversión. A los tres meses, dueño del CRM interno. Decisiones de arquitectura, schema, deploys.",
+    },
+    tags: ["CRM", "Real estate", "Architecture"],
+    commits: "892",
+  },
+  {
+    date: { month: "Dec", year: "2025" },
+    cls: "",
+    en: {
+      headline: "First production CRM live.",
+      desc: "Kanban + factibilidad fibra + WhatsApp ingest. 60-day TTL cache. Real users. Real bugs. Real ownership.",
+    },
+    es: {
+      headline: "Primer CRM en producción.",
+      desc: "Kanban + factibilidad fibra + ingesta WhatsApp. Cache TTL 60 días. Usuarios reales. Bugs reales. Ownership real.",
+    },
+    tags: ["Production", "WhatsApp API", "Kanban"],
+    commits: "2,140",
+  },
+  {
+    date: { month: "Feb", year: "2026" },
+    cls: "",
+    en: {
+      headline: "Lead scoring engine.",
+      desc: "Factibilidad + intent + behavioral signals → tiered score in <30 s per inbound. GPT-4o-mini orchestration.",
+    },
+    es: {
+      headline: "Motor de lead scoring.",
+      desc: "Factibilidad + intent + señales de comportamiento → score tiered en <30 s por inbound. Orquestación GPT-4o-mini.",
+    },
+    tags: ["AI Orchestration", "Edge Functions"],
+    commits: "3,202",
+  },
+  {
+    date: { month: "May", year: "2026" },
+    cls: "cur",
+    en: {
+      headline: "Tech lead de facto. <span style=\"color:var(--color-accent)\">Now.</span>",
+      desc: "Owning architecture, mentoring, hiring input. The portfolio you're reading. Next chapter: yours, maybe.",
+    },
+    es: {
+      headline: "Tech lead de facto. <span style=\"color:var(--color-accent)\">Ahora.</span>",
+      desc: "A cargo de arquitectura, mentoría, input en contrataciones. El portafolio que estás leyendo. Próximo capítulo: el tuyo, quizá.",
+    },
+    tags: ["Tech lead", "Architecture", "Available"],
+    commits: "4,127",
+  },
+];
+---
+
+<section class="scope" id="transformation">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">
+        <span class="ebar"></span>
+        <span data-en>/ The transformation</span>
+        <span data-es>/ La transformación</span>
+        <span class="sep"></span>
+        <b>May 2025 → May 2026</b>
+      </div>
+      <h2 class="section-title">
+        <span data-en>Twelve months. <span class="muted">From WordPress to tech lead.</span></span>
+        <span data-es>Doce meses. <span class="muted">De WordPress a tech lead.</span></span>
+      </h2>
+      <p class="section-lede">
+        <span data-en>I started programming on <b>May 29, 2025</b> — from zero. No CS background, no bootcamp. Just one decision and a daily commit habit. Here's what compounded.</span>
+        <span data-es>Empecé a programar el <b>29 de mayo de 2025</b> — desde cero. Sin background técnico, sin bootcamp. Una decisión y un hábito de commit diario. Esto es lo que se acumuló.</span>
+      </p>
+    </div>
+
+    <div class="commit-graph">
+      <div class="cg-head">
+        <span class="cg-title">commits · cumulative</span>
+        <span class="cg-total">4,127<span class="ac">.</span></span>
+      </div>
+      <svg class="cg-svg" viewBox="0 0 1200 200" preserveAspectRatio="none">
+        <line x1="0" y1="200" x2="1200" y2="200" stroke="#25252A" stroke-width="1"></line>
+        <line x1="0" y1="100" x2="1200" y2="100" stroke="#25252A" stroke-width="1" stroke-dasharray="2,4" opacity="0.5"></line>
+        <line x1="0" y1="50" x2="1200" y2="50" stroke="#25252A" stroke-width="1" stroke-dasharray="2,4" opacity="0.5"></line>
+        <defs>
+          <linearGradient id="gFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#5EEAD4" stop-opacity="0.35"></stop>
+            <stop offset="100%" stop-color="#5EEAD4" stop-opacity="0"></stop>
+          </linearGradient>
+        </defs>
+        <path d="M 0,200 L 0,200 L 100,196 L 200,180 L 300,160 L 400,134 L 500,108 L 600,82 L 700,62 L 800,44 L 900,30 L 1000,20 L 1100,12 L 1200,8 L 1200,200 Z" fill="url(#gFill)"></path>
+        <path d="M 0,200 L 100,196 L 200,180 L 300,160 L 400,134 L 500,108 L 600,82 L 700,62 L 800,44 L 900,30 L 1000,20 L 1100,12 L 1200,8" fill="none" stroke="#5EEAD4" stroke-width="2"></path>
+        <g>
+          <circle cx="0" cy="200" r="4" fill="#5EEAD4"></circle>
+          <circle cx="200" cy="180" r="3" fill="#5EEAD4"></circle>
+          <circle cx="400" cy="134" r="3" fill="#5EEAD4"></circle>
+          <circle cx="700" cy="62" r="4" fill="#5EEAD4"></circle>
+          <circle cx="900" cy="30" r="3" fill="#5EEAD4"></circle>
+          <circle cx="1200" cy="8" r="6" fill="#5EEAD4"></circle>
+          <circle cx="1200" cy="8" r="12" fill="#5EEAD4" opacity="0.18"></circle>
+        </g>
+        <g font-family="JetBrains Mono" font-size="10" fill="#6B6B72">
+          <text x="6" y="218">day 0</text>
+          <text x="206" y="174">first NextJS</text>
+          <text x="406" y="128">joined CI</text>
+          <text x="706" y="56">first CRM</text>
+          <text x="906" y="24">scoring engine</text>
+          <text x="1108" y="2" text-anchor="end" fill="#E0E0E0">tech lead</text>
+        </g>
+      </svg>
+      <div class="cg-axis">
+        <span>MAY 25</span><span>JUN</span><span>JUL</span><span>AUG</span><span>SEP</span><span>OCT</span>
+        <span>NOV</span><span>DEC</span><span>JAN 26</span><span>FEB</span><span>MAR</span><span>APR</span>
+      </div>
+    </div>
+
+    <div class="timeline-list">
+      {timelineItems.map((item) => (
+        <div class={`tl-item ${item.cls}`}>
+          <div class="tl-date">{item.date.month} <b>{item.date.year}</b></div>
+          <div class="tl-node"></div>
+          <div class="tl-body">
+            <h3 class="tl-headline" data-en set:html={item.en.headline}></h3>
+            <h3 class="tl-headline" data-es set:html={item.es.headline}></h3>
+            <p class="tl-desc" data-en>{item.en.desc}</p>
+            <p class="tl-desc" data-es>{item.es.desc}</p>
+            <div class="tl-tags">
+              {item.tags.map((tag) => <span class="badge">{tag}</span>)}
+            </div>
+          </div>
+          <div class="tl-meta">
+            <b>{item.commits}</b>
+            <span data-en>commits</span><span data-es>commits</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  section.scope {
+    position: relative;
+    padding: 140px 0 32px;
+  }
+  .section-head {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 72px;
+    max-width: 880px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(36px, 5.4vw, 64px);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    margin: 0;
+    color: var(--color-text-1);
+  }
+  .section-title :global(.muted) {
+    color: var(--color-text-3);
+  }
+  .section-lede {
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--color-text-2);
+    margin: 0;
+    max-width: 60ch;
+  }
+  .section-lede b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .eyebrow .ebar {
+    display: inline-block;
+    width: 3px;
+    height: 11px;
+    background: var(--color-accent);
+    animation: blink 1.2s steps(2, start) infinite;
+  }
+  .eyebrow .sep {
+    width: 16px;
+    height: 1px;
+    background: var(--color-hair-strong);
+  }
+  .eyebrow b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+
+  .commit-graph {
+    margin: 0 0 80px;
+    padding: 32px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-lg);
+    position: relative;
+  }
+  .cg-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 24px;
+  }
+  .cg-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .cg-total {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 32px;
+    letter-spacing: -0.03em;
+    color: var(--color-text-1);
+  }
+  .cg-total .ac {
+    color: var(--color-accent);
+  }
+  .cg-svg {
+    width: 100%;
+    height: 200px;
+  }
+  .cg-axis {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    margin-top: 12px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-text-3);
+    letter-spacing: 0.06em;
+  }
+
+  .timeline-list {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .timeline-list::before {
+    content: "";
+    position: absolute;
+    left: 144px;
+    top: 16px;
+    bottom: 16px;
+    width: 1px;
+    background: var(--color-hair);
+  }
+  .tl-item {
+    display: grid;
+    grid-template-columns: 144px 32px 1fr auto;
+    align-items: start;
+    gap: 0;
+    padding: 28px 0;
+    position: relative;
+    border-bottom: 1px solid var(--color-hair);
+  }
+  .tl-item:last-child {
+    border-bottom: none;
+  }
+  .tl-date {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.06em;
+    line-height: 1.5;
+    padding-top: 6px;
+  }
+  .tl-date b {
+    color: var(--color-text-1);
+    display: block;
+    font-weight: 500;
+  }
+  .tl-node {
+    width: 12px;
+    height: 12px;
+    margin: 12px auto 0;
+    position: relative;
+    z-index: 2;
+    background: var(--color-bg);
+    border: 2px solid var(--color-text-4);
+    border-radius: 50%;
+  }
+  .tl-item.cur .tl-node,
+  .tl-item.day0 .tl-node {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    box-shadow: 0 0 0 4px var(--accent-soft), 0 0 18px var(--accent-glow);
+  }
+  .tl-body {
+    padding: 0 0 0 24px;
+  }
+  .tl-headline {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--color-text-1);
+    margin: 0;
+  }
+  .tl-desc {
+    margin: 8px 0 0;
+    font-size: 14.5px;
+    color: var(--color-text-2);
+    line-height: 1.55;
+    max-width: 60ch;
+  }
+  .tl-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    letter-spacing: 0.04em;
+    padding-top: 6px;
+    text-align: right;
+    line-height: 1.7;
+  }
+  .tl-meta b {
+    color: var(--color-accent);
+    font-weight: 500;
+  }
+  .tl-tags {
+    margin-top: 14px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  :global(.badge) {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    padding: 3px 9px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-hair-strong);
+    background: var(--color-surface-2);
+    color: var(--color-text-2);
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 720px) {
+    section.scope {
+      padding: 80px 0 16px;
+    }
+    .timeline-list::before {
+      left: 80px;
+    }
+    .tl-item {
+      grid-template-columns: 80px 24px 1fr;
+      gap: 0;
+    }
+    .tl-meta {
+      grid-column: 3;
+      padding-top: 12px;
+      text-align: left;
+    }
+    .tl-headline {
+      font-size: 19px;
+    }
+  }
+</style>

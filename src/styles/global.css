@@ -1,29 +1,125 @@
 @import 'tailwindcss';
 
+/* ============================================================
+   elkis.dev — Design System v1
+   ============================================================ */
 @theme {
   --color-bg: #0a0a0b;
-  --color-surface: #141414;
-  --color-surface-hover: #1a1a1a;
-  --color-border: #262626;
-  --color-text: #e0e0e0;
-  --color-text-secondary: #888888;
-  --color-text-muted: #555555;
-  --color-accent: #3b82f6;
-  --color-accent-hover: #2563eb;
+  --color-surface-1: #111114;
+  --color-surface-2: #16161a;
+  --color-surface-3: #1c1c20;
+  --color-hair: #25252a;
+  --color-hair-strong: #34343a;
 
-  --font-heading: 'Space Grotesk', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --color-text-1: #e0e0e0;
+  --color-text-2: #a0a0a6;
+  --color-text-3: #6b6b72;
+  --color-text-4: #43434a;
+
+  --color-accent: #5eead4;
+  --color-accent-strong: #7df3dd;
+  --color-accent-deep: #1abfa8;
+
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+}
+
+:root {
+  --accent-soft: rgba(94, 234, 212, 0.12);
+  --accent-glow: rgba(94, 234, 212, 0.4);
+  --max-w: 1280px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
 }
 
 html {
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  font-family: var(--font-body);
   scroll-behavior: smooth;
 }
 
+body {
+  background: var(--color-bg);
+  color: var(--color-text-1);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
 ::selection {
-  background-color: var(--color-accent);
+  background: var(--color-accent);
   color: var(--color-bg);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes pulse-glow {
+  50% {
+    box-shadow: 0 0 16px var(--accent-glow);
+  }
+}
+
+@keyframes ride-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.container {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+@media (max-width: 720px) {
+  .container {
+    padding: 0 20px;
+  }
+}
+
+/* Language toggle visibility (controlled by <html data-lang="..."> attr) */
+[data-en],
+[data-es] {
+  display: none;
+}
+html[data-lang='en'] [data-en] {
+  display: revert;
+}
+html[data-lang='es'] [data-es] {
+  display: revert;
 }

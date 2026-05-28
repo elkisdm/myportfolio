@@ -34,7 +34,12 @@ perfil-comunicacional-*.md
 perfil-completo-*.md
 sintesis-perfil-*.md
 investigacion-portafolios.md
+investigacion-wow-factors.md
 analisis-mercado-ingresos.md
 copy-portafolio.md
 prompt-claude-design.md
+prompts-claude-design-next.md
 transcripciones-reuniones-*.txt
+
+# design handoff bundles (local only)
+.design/

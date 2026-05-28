@@ -2,19 +2,16 @@
 import "../styles/global.css";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
-import type { Lang } from "../i18n/translations";
 
 interface Props {
-  title: string;
+  title?: string;
   description?: string;
-  lang?: Lang;
   ogImage?: string;
 }
 
 const {
-  title,
+  title = "elkis.dev — Product engineer",
   description = "Elkis Daza Mota — Product Engineer. I spot the business problem. I build the full solution.",
-  lang = "en",
   ogImage = "/og-default.png",
 } = Astro.props;
 
@@ -22,7 +19,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
-<html lang={lang} class="dark">
+<html lang="en" data-lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -30,33 +27,116 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     <link rel="icon" href="/favicon.ico" />
     <link rel="canonical" href={canonicalUrl} />
 
-    <title>{title} | Elkis Daza Mota</title>
+    <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:title" content={`${title} | Elkis Daza Mota`} />
+    <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={new URL(ogImage, Astro.site)} />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={`${title} | Elkis Daza Mota`} />
+    <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL(ogImage, Astro.site)} />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
   </head>
-  <body class="min-h-screen bg-bg text-text antialiased">
-    <Nav lang={lang} />
+  <body>
+    <Nav />
     <main>
       <slot />
     </main>
-    <Footer lang={lang} />
+    <Footer />
+
+    <script>
+      // Sticky nav border on scroll + active section detection
+      const nav = document.getElementById("nav");
+      const sections = ["hero", "transformation", "work", "methodology", "contact"];
+      const navMap: Record<string, string> = {
+        hero: "hero",
+        transformation: "hero",
+        work: "work",
+        methodology: "methodology",
+        contact: "contact",
+      };
+
+      const onScroll = () => {
+        if (!nav) return;
+        nav.classList.toggle("scrolled", window.scrollY > 16);
+        let cur = "hero";
+        for (const id of sections) {
+          const el = document.getElementById(id);
+          if (!el) continue;
+          const r = el.getBoundingClientRect();
+          if (r.top <= 140) cur = id;
+        }
+        const target = navMap[cur] ?? "hero";
+        document.querySelectorAll<HTMLElement>(".nav-link").forEach((a) => {
+          a.classList.toggle("active", a.dataset.target === target);
+        });
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+
+      // Smooth scroll for in-page links
+      document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
+        a.addEventListener("click", (e) => {
+          const id = a.getAttribute("href")?.slice(1);
+          if (!id) return;
+          const el = document.getElementById(id);
+          if (el) {
+            e.preventDefault();
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        });
+      });
+
+      // Nav-link clicks
+      document
+        .querySelectorAll<HTMLElement>(".nav-link[data-target]")
+        .forEach((a) => {
+          a.addEventListener("click", () => {
+            const id = a.dataset.target;
+            if (!id) return;
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+          });
+        });
+
+      // Language toggle (persisted)
+      const lt = document.getElementById("langToggle");
+      const LANG_KEY = "elkis.lang";
+      function setLang(l: string) {
+        document.documentElement.setAttribute("data-lang", l);
+        document.documentElement.setAttribute("lang", l);
+        lt?.querySelectorAll<HTMLButtonElement>("button").forEach((b) => {
+          b.classList.toggle("on", b.dataset.lang === l);
+        });
+        try {
+          localStorage.setItem(LANG_KEY, l);
+        } catch (_) {
+          /* noop */
+        }
+      }
+      lt?.querySelectorAll<HTMLButtonElement>("button").forEach((b) => {
+        b.addEventListener("click", () => {
+          if (b.dataset.lang) setLang(b.dataset.lang);
+        });
+      });
+      try {
+        const s = localStorage.getItem(LANG_KEY);
+        if (s) setLang(s);
+      } catch (_) {
+        /* noop */
+      }
+    </script>
   </body>
 </html>

@@ -1,0 +1,199 @@
+---
+// Contact section: email capture + alt channels
+---
+
+<section class="cta scope" id="contact">
+  <div class="container cta-inner">
+    <div class="eyebrow">
+      <span class="ebar"></span>
+      <span data-en>/ Work with me</span>
+      <span data-es>/ Trabaja conmigo</span>
+    </div>
+
+    <h2 class="cta-title">
+      <span data-en>Tell me what<br />you're <span class="ac">building.</span></span>
+      <span data-es>Cuéntame qué<br />estás <span class="ac">construyendo.</span></span>
+    </h2>
+    <p class="cta-sub">
+      <span data-en>I read every message. If there's a fit, I come back within 24 hours with a take — not a calendar link.</span>
+      <span data-es>Leo cada mensaje. Si hay encaje, vuelvo en 24 horas con una opinión — no un link a calendario.</span>
+    </p>
+
+    <form class="cta-form" id="ctaForm">
+      <input
+        class="cta-input"
+        type="text"
+        placeholder="hello@yourco.com · what you're building"
+        required
+      />
+      <button class="btn btn-primary" type="submit">
+        <span data-en>Send</span><span data-es>Enviar</span>
+        <span class="arrow">→</span>
+      </button>
+    </form>
+
+    <div class="cta-alt">
+      <span>
+        <span data-en>Or </span><span data-es>O </span>
+        <a href="mailto:hello@elkis.dev">hello@elkis.dev</a>
+      </span>
+      <span>
+        <a href="https://github.com/elkisdm">GitHub</a> /
+        <a href="https://linkedin.com/in/elkisdm">LinkedIn</a> /
+        <a href="#">X</a>
+      </span>
+      <span data-en>Based in Santiago · Working <b>remote</b> US / EU</span>
+      <span data-es>En Santiago · Trabajando <b>remoto</b> US / EU</span>
+    </div>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById("ctaForm");
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    alert("Prototype only — wire this up in production.");
+  });
+</script>
+
+<style>
+  .cta {
+    padding: 160px 0 120px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta::before {
+    content: "";
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+    opacity: 0.15;
+    pointer-events: none;
+  }
+  .cta-inner {
+    position: relative;
+    z-index: 2;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .eyebrow .ebar {
+    display: inline-block;
+    width: 3px;
+    height: 11px;
+    background: var(--color-accent);
+    animation: blink 1.2s steps(2, start) infinite;
+  }
+
+  .cta-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(48px, 7vw, 96px);
+    line-height: 1;
+    letter-spacing: -0.045em;
+    margin: 28px 0 0;
+    max-width: 18ch;
+  }
+  .cta-title :global(.ac) {
+    color: var(--color-accent);
+    text-shadow: 0 0 32px var(--accent-glow);
+  }
+  .cta-sub {
+    margin: 32px 0 0;
+    font-size: 18px;
+    color: var(--color-text-2);
+    line-height: 1.5;
+    max-width: 52ch;
+  }
+  .cta-form {
+    margin: 48px 0 0;
+    display: flex;
+    gap: 12px;
+    max-width: 540px;
+    flex-wrap: wrap;
+  }
+  .cta-input {
+    flex: 1;
+    min-width: 240px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-hair-strong);
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--color-text-1);
+    outline: none;
+    transition: border-color 180ms, background 180ms, box-shadow 180ms;
+  }
+  .cta-input::placeholder {
+    color: var(--color-text-3);
+  }
+  .cta-input:focus {
+    border-color: var(--color-accent);
+    background: var(--color-surface-2);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 14.5px;
+    padding: 14px 22px;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 180ms, box-shadow 180ms;
+  }
+  .btn-primary {
+    background: var(--color-accent);
+    color: #0a0a0b;
+    border-color: var(--color-accent);
+  }
+  .btn-primary:hover {
+    background: var(--color-accent-strong);
+    box-shadow: 0 0 32px var(--accent-glow);
+  }
+  .btn .arrow {
+    font-family: var(--font-mono);
+    transition: transform 180ms;
+  }
+  .btn:hover .arrow {
+    transform: translateX(3px);
+  }
+
+  .cta-alt {
+    margin-top: 36px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.04em;
+  }
+  .cta-alt a {
+    color: var(--color-text-1);
+    border-bottom: 1px solid var(--color-hair-strong);
+    padding-bottom: 2px;
+    transition: color 180ms, border-color 180ms;
+  }
+  .cta-alt a:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+  .cta-alt b {
+    color: var(--color-text-1);
+  }
+</style>
