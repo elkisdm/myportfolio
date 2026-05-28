@@ -66,6 +66,12 @@ const authorName = "Elkis Daza Mota";
 const initials = authorInitials(authorName);
 const langLabel = post.data.lang.toUpperCase();
 const dateLabel = formatLongDate(post.data.date);
+
+const postUrl = new URL(`/blog/${post.id}/`, Astro.site).toString();
+const shareText = `${post.data.title} — ${authorName}`;
+const shareX = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(postUrl)}`;
+const shareLinkedIn = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(postUrl)}`;
+const shareEmail = `mailto:?subject=${encodeURIComponent(post.data.title)}&body=${encodeURIComponent(`${shareText}\n\n${postUrl}`)}`;
 ---
 
 <BaseLayout
@@ -121,13 +127,13 @@ const dateLabel = formatLongDate(post.data.date);
           </div>
         </div>
         <div class="share">
-          <a class="share-btn" data-share="copy" href="#">
+          <button class="share-btn" data-share="copy" type="button">
             <span data-en>Copy URL</span>
             <span data-es>Copiar URL</span>
-          </a>
-          <a class="share-btn" data-share="x" href="#">X</a>
-          <a class="share-btn" data-share="linkedin" href="#">LinkedIn</a>
-          <a class="share-btn" data-share="email" href="#">
+          </button>
+          <a class="share-btn" data-share="x" href={shareX} target="_blank" rel="noopener noreferrer">X</a>
+          <a class="share-btn" data-share="linkedin" href={shareLinkedIn} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a class="share-btn" data-share="email" href={shareEmail}>
             <span data-en>Email</span>
             <span data-es>Email</span>
           </a>
@@ -351,50 +357,12 @@ const dateLabel = formatLongDate(post.data.date);
       b.addEventListener("click", () => b.classList.toggle("on"));
     });
 
-    // Share buttons
-    const copyBtn = document.querySelector<HTMLAnchorElement>(
+    // Share — only "copy" needs JS; X/LinkedIn/Email use real href in SSR.
+    const copyBtn = document.querySelector<HTMLButtonElement>(
       '.share-btn[data-share="copy"]',
     );
-    copyBtn?.addEventListener("click", (e) => {
-      e.preventDefault();
+    copyBtn?.addEventListener("click", () => {
       void navigator.clipboard?.writeText(window.location.href);
-    });
-
-    const xBtn = document.querySelector<HTMLAnchorElement>(
-      '.share-btn[data-share="x"]',
-    );
-    xBtn?.addEventListener("click", (e) => {
-      e.preventDefault();
-      const url = encodeURIComponent(window.location.href);
-      const text = encodeURIComponent(document.title);
-      window.open(
-        `https://twitter.com/intent/tweet?url=${url}&text=${text}`,
-        "_blank",
-        "noopener",
-      );
-    });
-
-    const liBtn = document.querySelector<HTMLAnchorElement>(
-      '.share-btn[data-share="linkedin"]',
-    );
-    liBtn?.addEventListener("click", (e) => {
-      e.preventDefault();
-      const url = encodeURIComponent(window.location.href);
-      window.open(
-        `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
-        "_blank",
-        "noopener",
-      );
-    });
-
-    const emailBtn = document.querySelector<HTMLAnchorElement>(
-      '.share-btn[data-share="email"]',
-    );
-    emailBtn?.addEventListener("click", (e) => {
-      e.preventDefault();
-      const subject = encodeURIComponent(document.title);
-      const body = encodeURIComponent(window.location.href);
-      window.location.href = `mailto:?subject=${subject}&body=${body}`;
     });
 
     const form = document.getElementById(
