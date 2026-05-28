@@ -122,9 +122,18 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
             if (b.dataset.lang) setLang(b.dataset.lang);
           });
         });
+        // SSR is the source of truth when the URL is explicitly localized.
+        // Otherwise restore the user's last toggle choice from localStorage.
+        const ssrLang = document.documentElement.getAttribute("data-lang");
+        const urlIsLocalized =
+          location.pathname === "/es" || location.pathname.startsWith("/es/");
         try {
-          const s = localStorage.getItem(LANG_KEY);
-          if (s) setLang(s);
+          if (urlIsLocalized && ssrLang) {
+            localStorage.setItem(LANG_KEY, ssrLang);
+          } else {
+            const s = localStorage.getItem(LANG_KEY);
+            if (s) setLang(s);
+          }
         } catch (_) {
           /* noop */
         }
