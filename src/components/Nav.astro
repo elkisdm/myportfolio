@@ -1,0 +1,52 @@
+---
+import type { Lang } from "../i18n/translations";
+import { useTranslations, getLocalizedPath } from "../i18n/utils";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const otherLang = lang === "en" ? "es" : "en";
+
+const links = [
+  { href: "/", label: t("nav.home") },
+  { href: "/work", label: t("nav.work") },
+  { href: "/blog", label: t("nav.blog") },
+  { href: "/about", label: t("nav.about") },
+] as const;
+---
+
+<header class="fixed top-0 z-50 w-full border-b border-border/50 bg-bg/80 backdrop-blur-md">
+  <nav class="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+    <a
+      href={getLocalizedPath("/", lang)}
+      class="font-heading text-lg font-bold tracking-tight text-text transition-colors hover:text-accent"
+    >
+      elkis.dev
+    </a>
+
+    <div class="flex items-center gap-8">
+      <ul class="hidden items-center gap-6 md:flex">
+        {links.map(({ href, label }) => (
+          <li>
+            <a
+              href={getLocalizedPath(href, lang)}
+              class="text-sm text-text-secondary transition-colors hover:text-text"
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <a
+        href={getLocalizedPath("/", otherLang)}
+        class="rounded-md border border-border px-2.5 py-1 text-xs font-medium text-text-secondary transition-colors hover:border-accent hover:text-accent"
+      >
+        {otherLang.toUpperCase()}
+      </a>
+    </div>
+  </nav>
+</header>

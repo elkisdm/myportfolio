@@ -25,3 +25,16 @@ pnpm-debug.log*
 
 # snapshots
 .snapshots/
+
+# research & documentation (local only)
+*.txt
+Analisis-Trayectoria-*.md
+trajectory-update-*.md
+perfil-comunicacional-*.md
+perfil-completo-*.md
+sintesis-perfil-*.md
+investigacion-portafolios.md
+analisis-mercado-ingresos.md
+copy-portafolio.md
+prompt-claude-design.md
+transcripciones-reuniones-*.txt

@@ -1,14 +1,14 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import { useTranslations } from "../i18n/utils";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { useTranslations } from "../../i18n/utils";
 
-const t = useTranslations("en");
+const t = useTranslations("es");
 ---
 
-<BaseLayout title="Home" lang="en">
+<BaseLayout title="Inicio" lang="es" description="Elkis Daza Mota — Product Engineer. Identifico problemas de negocio. Construyo la solución completa.">
   <section class="flex min-h-screen items-center pt-20">
     <div class="mx-auto max-w-5xl px-6">
-      <p class="mb-4 font-mono text-sm text-accent">Hi, I'm Elkis Daza Mota</p>
+      <p class="mb-4 font-mono text-sm text-accent">Hola, soy Elkis Daza Mota</p>
       <h1 class="mb-6 font-heading text-5xl font-bold leading-tight tracking-tight md:text-7xl">
         {t("hero.tagline")}
       </h1>
@@ -17,16 +17,16 @@ const t = useTranslations("en");
       </p>
       <div class="flex gap-4">
         <a
-          href="/work"
+          href="/es/work"
           class="rounded-lg bg-accent px-6 py-3 text-sm font-medium text-bg transition-colors hover:bg-accent-hover"
         >
           {t("hero.cta")}
         </a>
         <a
-          href="/about"
+          href="/es/about"
           class="rounded-lg border border-border px-6 py-3 text-sm font-medium text-text-secondary transition-colors hover:border-text hover:text-text"
         >
-          About me
+          Sobre mí
         </a>
       </div>
     </div>
@@ -37,10 +37,10 @@ const t = useTranslations("en");
       <h2 class="mb-12 font-heading text-3xl font-bold">{t("section.featured")}</h2>
       <div class="grid gap-6 md:grid-cols-2">
         <div class="rounded-xl border border-border bg-surface p-6 transition-colors hover:border-accent/30">
-          <p class="mb-2 font-mono text-xs text-accent">Coming soon</p>
-          <h3 class="mb-2 font-heading text-xl font-semibold">Project Case Studies</h3>
+          <p class="mb-2 font-mono text-xs text-accent">Próximamente</p>
+          <h3 class="mb-2 font-heading text-xl font-semibold">Case Studies de Proyectos</h3>
           <p class="text-sm text-text-secondary">
-            Detailed breakdowns of real products built from zero.
+            Desglose detallado de productos reales construidos desde cero.
           </p>
         </div>
       </div>
@@ -53,23 +53,23 @@ const t = useTranslations("en");
       <div class="grid gap-8 md:grid-cols-3">
         <div>
           <p class="mb-2 font-mono text-sm text-accent">01</p>
-          <h3 class="mb-2 font-heading text-lg font-semibold">Identify</h3>
+          <h3 class="mb-2 font-heading text-lg font-semibold">Identificar</h3>
           <p class="text-sm text-text-secondary">
-            Find the real problem — not the symptom, not the feature request.
+            Encontrar el problema real — no el síntoma, no el feature request.
           </p>
         </div>
         <div>
           <p class="mb-2 font-mono text-sm text-accent">02</p>
-          <h3 class="mb-2 font-heading text-lg font-semibold">Architect</h3>
+          <h3 class="mb-2 font-heading text-lg font-semibold">Arquitectar</h3>
           <p class="text-sm text-text-secondary">
-            Design the system. TypeScript, Supabase, AI agents as execution layer.
+            Diseñar el sistema. TypeScript, Supabase, agentes de IA como capa de ejecución.
           </p>
         </div>
         <div>
           <p class="mb-2 font-mono text-sm text-accent">03</p>
-          <h3 class="mb-2 font-heading text-lg font-semibold">Ship</h3>
+          <h3 class="mb-2 font-heading text-lg font-semibold">Entregar</h3>
           <p class="text-sm text-text-secondary">
-            Deploy with CI/CD, conventional commits, tests. Not code-and-pray.
+            Deploy con CI/CD, conventional commits, tests. No code-and-pray.
           </p>
         </div>
       </div>

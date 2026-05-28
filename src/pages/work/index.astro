@@ -1,0 +1,51 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const projects = (await getCollection("projects"))
+  .filter((p) => p.data.lang === "en")
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<BaseLayout title="Work" description="Case studies of real products built from zero.">
+  <section class="mx-auto max-w-5xl px-6 pb-24 pt-32">
+    <h1 class="mb-4 font-heading text-4xl font-bold md:text-5xl">Work</h1>
+    <p class="mb-12 text-lg text-text-secondary">
+      Real products. Real problems solved. Each one built from zero.
+    </p>
+
+    {projects.length === 0 ? (
+      <div class="rounded-xl border border-border bg-surface p-8 text-center">
+        <p class="font-mono text-sm text-text-muted">Case studies coming soon.</p>
+      </div>
+    ) : (
+      <div class="grid gap-6">
+        {projects.map((project) => (
+          <a
+            href={`/work/${project.id}`}
+            class="group rounded-xl border border-border bg-surface p-6 transition-all hover:border-accent/30 hover:bg-surface-hover"
+          >
+            <div class="flex items-start justify-between">
+              <div>
+                <h2 class="mb-2 font-heading text-xl font-semibold group-hover:text-accent">
+                  {project.data.title}
+                </h2>
+                <p class="mb-4 text-sm text-text-secondary">{project.data.description}</p>
+                <div class="flex flex-wrap gap-2">
+                  {project.data.stack.map((tech: string) => (
+                    <span class="rounded-md bg-bg px-2 py-0.5 font-mono text-xs text-text-muted">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <span class="font-mono text-xs text-text-muted">
+                {project.data.date.toLocaleDateString("en-US", { year: "numeric", month: "short" })}
+              </span>
+            </div>
+          </a>
+        ))}
+      </div>
+    )}
+  </section>
+</BaseLayout>
