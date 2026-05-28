@@ -1,8 +1,14 @@
 ---
 // Sticky nav with brand bar, language toggle, status indicator.
-// Behavior wired in BaseLayout's <script> tag.
-const pathname = Astro.url.pathname;
-const isHome = pathname === "/" || pathname === "/es" || pathname === "/es/";
+// Active state determined by pathname (SSR), NOT by scroll position.
+const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
+const startsWith = (p: string) => pathname === p || pathname.startsWith(p + "/");
+const active = {
+  home: pathname === "/" || pathname === "/es",
+  work: startsWith("/work"),
+  blog: startsWith("/blog"),
+  about: startsWith("/about"),
+};
 ---
 
 <nav class="nav" id="nav">
@@ -11,15 +17,15 @@ const isHome = pathname === "/" || pathname === "/es" || pathname === "/es/";
       <span class="bar"></span>elkis <span class="last">daza</span>
     </a>
 
-    <div class="nav-links" data-on-home={isHome ? "true" : "false"}>
-      <a class="nav-link" href="/" data-target="hero" data-en>Home</a>
-      <a class="nav-link" href="/" data-target="hero" data-es>Inicio</a>
-      <a class="nav-link" href="/work" data-target="work" data-en>Work</a>
-      <a class="nav-link" href="/work" data-target="work" data-es>Trabajo</a>
-      <a class="nav-link" href="/blog" data-target="blog" data-en>Blog</a>
-      <a class="nav-link" href="/blog" data-target="blog" data-es>Blog</a>
-      <a class="nav-link" href="/about" data-target="about" data-en>About</a>
-      <a class="nav-link" href="/about" data-target="about" data-es>Sobre mí</a>
+    <div class="nav-links">
+      <a class={`nav-link${active.home ? " active" : ""}`} href="/" data-en>Home</a>
+      <a class={`nav-link${active.home ? " active" : ""}`} href="/" data-es>Inicio</a>
+      <a class={`nav-link${active.work ? " active" : ""}`} href="/work" data-en>Work</a>
+      <a class={`nav-link${active.work ? " active" : ""}`} href="/work" data-es>Trabajo</a>
+      <a class={`nav-link${active.blog ? " active" : ""}`} href="/blog" data-en>Blog</a>
+      <a class={`nav-link${active.blog ? " active" : ""}`} href="/blog" data-es>Blog</a>
+      <a class={`nav-link${active.about ? " active" : ""}`} href="/about" data-en>About</a>
+      <a class={`nav-link${active.about ? " active" : ""}`} href="/about" data-es>Sobre mí</a>
     </div>
 
     <div class="nav-right">
@@ -61,10 +67,15 @@ const isHome = pathname === "/" || pathname === "/es" || pathname === "/es/";
 </nav>
 
 <script>
+  // Idempotent init — safe to call multiple times across View Transitions.
   function initBurger() {
-    const burger = document.getElementById("navBurger");
+    const burger = document.getElementById("navBurger") as
+      | HTMLButtonElement
+      | null;
     const drawer = document.getElementById("navDrawer");
     if (!burger || !drawer) return;
+    if (burger.dataset.bound === "true") return;
+    burger.dataset.bound = "true";
 
     const toggle = (open?: boolean) => {
       const willOpen =
@@ -161,17 +172,27 @@ const isHome = pathname === "/" || pathname === "/es" || pathname === "/es/";
   .nav-link.active {
     background: var(--color-bg);
     color: var(--color-text-1);
-    display: inline-flex;
     align-items: center;
     gap: 6px;
   }
   .nav-link.active::before {
     content: "";
+    display: inline-block;
     width: 4px;
     height: 4px;
     border-radius: 50%;
     background: var(--color-accent);
     box-shadow: 0 0 8px var(--accent-glow);
+  }
+  /* i18n hide must win over .active — use !important to defeat the active rule.
+     Without this, an .active link with data-es would still show when EN is on. */
+  html:not([data-lang='es']) .nav-link[data-es],
+  html:not([data-lang='es']) .drawer-link[data-es] {
+    display: none !important;
+  }
+  html[data-lang='es'] .nav-link[data-en],
+  html[data-lang='es'] .drawer-link[data-en] {
+    display: none !important;
   }
   .nav-right {
     justify-self: end;

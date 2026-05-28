@@ -9,19 +9,27 @@ interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  lang?: "en" | "es";
 }
 
 const {
   title = "elkis.dev — Product engineer",
   description = "Elkis Daza Mota — Product Engineer. I spot the business problem. I build the full solution.",
   ogImage = "/og-default.png",
+  lang: langProp,
 } = Astro.props;
+
+// Auto-detect language from URL: /es/* routes default to ES, everything else EN.
+// Can be overridden via the lang prop.
+const pathname = Astro.url.pathname;
+const lang: "en" | "es" =
+  langProp ?? (pathname === "/es" || pathname.startsWith("/es/") ? "es" : "en");
 
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <!doctype html>
-<html lang="en" data-lang="en">
+<html lang={lang} data-lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -82,40 +90,17 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 
       function setup() {
         const nav = document.getElementById("nav");
-        const sections = [
-          "hero",
-          "transformation",
-          "work",
-          "methodology",
-          "contact",
-        ];
-        const navMap: Record<string, string> = {
-          hero: "hero",
-          transformation: "hero",
-          work: "work",
-          methodology: "methodology",
-          contact: "contact",
-        };
 
+        // Sticky border on scroll only (no scroll-spy — active state is
+        // set in SSR by pathname in Nav.astro).
         const onScroll = () => {
           if (!nav) return;
           nav.classList.toggle("scrolled", window.scrollY > 16);
-          let cur = "hero";
-          for (const id of sections) {
-            const el = document.getElementById(id);
-            if (!el) continue;
-            const r = el.getBoundingClientRect();
-            if (r.top <= 140) cur = id;
-          }
-          const target = navMap[cur] ?? "hero";
-          document.querySelectorAll<HTMLElement>(".nav-link").forEach((a) => {
-            a.classList.toggle("active", a.dataset.target === target);
-          });
         };
         window.addEventListener("scroll", onScroll, { passive: true });
         onScroll();
 
-        // Smooth scroll for in-page links
+        // Smooth scroll for hash links within the current page
         document
           .querySelectorAll<HTMLAnchorElement>('a[href^="#"]')
           .forEach((a) => {
@@ -127,18 +112,6 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
                 e.preventDefault();
                 el.scrollIntoView({ behavior: "smooth", block: "start" });
               }
-            });
-          });
-
-        // Nav-link clicks
-        document
-          .querySelectorAll<HTMLElement>(".nav-link[data-target]")
-          .forEach((a) => {
-            a.addEventListener("click", () => {
-              const id = a.dataset.target;
-              if (!id) return;
-              const el = document.getElementById(id);
-              if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
             });
           });
 
