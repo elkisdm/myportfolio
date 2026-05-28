@@ -21,11 +21,20 @@
 
     <form class="cta-form" id="ctaForm">
       <input
+        class="cta-input cta-input-email"
+        id="ctaEmail"
+        name="email"
+        type="email"
+        placeholder="hello@yourco.com"
+        autocomplete="email"
+        required
+      />
+      <input
         class="cta-input"
-        id="ctaInput"
+        id="ctaBrief"
         name="brief"
         type="text"
-        placeholder="hello@yourco.com · what you're building"
+        placeholder="what you're building"
         required
       />
       <button class="btn btn-primary" type="submit">
@@ -55,16 +64,18 @@
   // Swap for a Resend/Formspree POST when server capture is wired up.
   function bindCtaForm() {
     const form = document.getElementById("ctaForm") as HTMLFormElement | null;
-    const input = document.getElementById("ctaInput") as HTMLInputElement | null;
+    const email = document.getElementById("ctaEmail") as HTMLInputElement | null;
+    const brief = document.getElementById("ctaBrief") as HTMLInputElement | null;
     if (!form || form.dataset.bound === "true") return;
     form.dataset.bound = "true";
 
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      const brief = input?.value.trim();
-      if (!brief) return;
+      const from = email?.value.trim();
+      const what = brief?.value.trim();
+      if (!from || !what) return;
       const subject = encodeURIComponent("Project brief — elkis.dev");
-      const body = encodeURIComponent(brief);
+      const body = encodeURIComponent(`${what}\n\n— Reply to: ${from}`);
       window.location.href = `mailto:hello@elkis.dev?subject=${subject}&body=${body}`;
     });
   }
@@ -151,6 +162,10 @@
     color: var(--color-text-1);
     outline: none;
     transition: border-color 180ms, background 180ms, box-shadow 180ms;
+  }
+  .cta-input-email {
+    flex: 0 1 200px;
+    min-width: 180px;
   }
   .cta-input::placeholder {
     color: var(--color-text-3);
