@@ -1,0 +1,43 @@
+---
+title: "WhatsApp Inbox AI"
+description: "AI-augmented agent console with Whisper transcription, Vision OCR, GPT-4o-mini draft replies, and 60-day feasibility cache."
+date: 2025-11-20
+tags: ["Production", "AI", "CRM"]
+stack: ["WhatsApp Cloud API", "Whisper", "GPT-4o-mini", "Vision OCR", "Supabase", "Next.js"]
+role: "Solo product engineer"
+company: "Capital Inteligente"
+featured: true
+lang: "en"
+metrics:
+  users: "12 agents daily"
+  impact: "3× agent throughput"
+  timeline: "10 weeks · v1"
+---
+
+## The problem
+
+Sales agents at Capital Inteligente were drowning in WhatsApp messages. Voice notes, photos of utility bills, screenshots of properties — all needed manual processing before an agent could even reply. The average response time was creeping toward 4 hours. We were losing leads to faster competitors.
+
+The team didn't need more agents. They needed each agent to do 3× the work without burning out.
+
+## How I approached it
+
+Three layers:
+
+**Ingestion.** Every WhatsApp message hits a Cloud API webhook. Voice notes go to Whisper for transcription. Images go to Vision OCR. Both write structured data back to the conversation thread before any human sees it.
+
+**Augmentation.** GPT-4o-mini drafts a reply suggestion based on the conversation history, the customer's profile, and Capital Inteligente's tone guidelines. The draft appears as a chip — one click sends, one click edits.
+
+**Caching.** Address normalization and fiber feasibility lookups have a 60-day TTL cache. Most addresses we see this month, we'll see again next month. Cache hit rate: 73%.
+
+## Trade-offs
+
+- **No autonomous replies.** Every send is human-in-the-loop. We considered fully automated replies for "obvious" cases but ruled it out — the cost of a wrong send to a real customer exceeded the value of speed.
+- **GPT-4o-mini over Sonnet.** 95% of suggestions are templated enough that mini is sufficient. Reserved Sonnet for an "improve this draft" button that agents press maybe twice a day.
+- **Whisper local vs API.** Started with Whisper API for simplicity, will migrate to whisper.cpp on a dedicated box once volume justifies it.
+
+## What I'd do differently
+
+Build the metrics dashboard first. We had to retrofit observability two months in, and a lot of the early "wins" we couldn't prove with data. Now: SLO dashboards before feature work.
+
+Also: the cache invalidation logic is too aggressive in some edge cases (people moving). A versioned cache with confidence scoring would be cleaner.

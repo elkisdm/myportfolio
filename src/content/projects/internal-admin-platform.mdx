@@ -1,0 +1,39 @@
+---
+title: "Internal Admin Platform"
+description: "Dashboard for ops + sales: lead pipeline, agent performance, factibilidad coverage, CSV import, role-based access."
+date: 2025-10-05
+tags: ["Production", "CRM", "Astro"]
+stack: ["Astro 5", "TypeScript", "Supabase", "RLS", "Tailwind"]
+role: "Solo product engineer"
+company: "Capital Inteligente"
+featured: true
+lang: "en"
+metrics:
+  users: "12 agents onboarded"
+  impact: "Replaced 3 spreadsheets + 2 Notion dbs"
+  timeline: "Q4 2025"
+---
+
+## The problem
+
+Capital Inteligente was running operations across Google Sheets, two Notion databases, a Trello board, and screenshots in WhatsApp. Every monthly close took a week of reconciliation. Agent performance was tracked manually by the ops lead. Onboarding a new agent meant a 2-hour walkthrough of "where things live."
+
+We needed one platform. Solo build, one quarter.
+
+## How I approached it
+
+**Boring stack on purpose.** Astro for delivery, Supabase for data + auth + RLS, TypeScript everywhere, Tailwind for styling, Vercel for deploy. Nothing exotic. No Redux, no GraphQL, no microservices. The point was reliability, not novelty.
+
+**Schema first.** Spent the first week not writing UI. Just modeling: leads, agents, properties, conversations, factibilidad checks. Drew the RLS policies before writing a single component. The schema barely moved after that — additions, never reshapes.
+
+**RBAC from day 1.** Three roles: admin, agent, viewer. RLS enforces it at the database level — not in the application layer. An agent literally cannot SELECT another agent's leads. Auditable, testable, hard to mess up.
+
+**CSV import as a feature, not a hack.** Ops still receives some leads as CSVs from partners. Instead of asking them to stop, I built a CSV importer with column mapping, dedup, and a preview before commit.
+
+## Outcome
+
+Onboarded 12 agents in two weeks. Three spreadsheets, two Notion databases, and one Trello board retired. Monthly close went from a week to a day.
+
+## What I'd do differently
+
+The "performance" dashboard was overbuilt for what ops actually used. They cared about 4 numbers; I built 14. Strip-back is easier than build-up — next time I'll launch with the minimum and add by request.

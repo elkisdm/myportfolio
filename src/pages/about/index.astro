@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import GithubActivity from "../../components/GithubActivity.astro";
 ---
 
 <BaseLayout
@@ -320,6 +321,24 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           </li>
         </ul>
       </div>
+    </div>
+  </section>
+
+  <!-- ============ COMMIT RHYTHM ============ -->
+  <section class="ab-scope">
+    <div class="container">
+      <div class="section-head" style="max-width: 760px; margin-bottom: 32px;">
+        <div class="eyebrow">
+          <span class="ebar"></span>
+          <span data-en>/ The commit rhythm</span>
+          <span data-es>/ El ritmo de commits</span>
+        </div>
+        <h2 class="section-title" style="font-size: clamp(28px, 4vw, 44px);">
+          <span data-en>Daily commits. Compounding.</span>
+          <span data-es>Commits diarios. Componiendo.</span>
+        </h2>
+      </div>
+      <GithubActivity />
     </div>
   </section>
 

@@ -1,22 +1,27 @@
 ---
 // Sticky nav with brand bar, language toggle, status indicator.
 // Behavior wired in BaseLayout's <script> tag.
+const pathname = Astro.url.pathname;
+const isHome = pathname === "/" || pathname === "/es" || pathname === "/es/";
 ---
 
 <nav class="nav" id="nav">
   <div class="nav-inner">
-    <a class="nav-brand" href="#hero">
+    <a class="nav-brand" href="/">
       <span class="bar"></span>elkis <span class="last">daza</span>
     </a>
-    <div class="nav-links">
-      <a class="nav-link active" data-target="hero">Home</a>
-      <a class="nav-link" data-target="work" data-en>Work</a>
-      <a class="nav-link" data-target="work" data-es>Trabajo</a>
-      <a class="nav-link" data-target="methodology" data-en>Method</a>
-      <a class="nav-link" data-target="methodology" data-es>Método</a>
-      <a class="nav-link" data-target="contact" data-en>Contact</a>
-      <a class="nav-link" data-target="contact" data-es>Contacto</a>
+
+    <div class="nav-links" data-on-home={isHome ? "true" : "false"}>
+      <a class="nav-link" href="/" data-target="hero" data-en>Home</a>
+      <a class="nav-link" href="/" data-target="hero" data-es>Inicio</a>
+      <a class="nav-link" href="/work" data-target="work" data-en>Work</a>
+      <a class="nav-link" href="/work" data-target="work" data-es>Trabajo</a>
+      <a class="nav-link" href="/blog" data-target="blog" data-en>Blog</a>
+      <a class="nav-link" href="/blog" data-target="blog" data-es>Blog</a>
+      <a class="nav-link" href="/about" data-target="about" data-en>About</a>
+      <a class="nav-link" href="/about" data-target="about" data-es>Sobre mí</a>
     </div>
+
     <div class="nav-right">
       <span class="nav-status" data-en>Available · Q3 2026</span>
       <span class="nav-status" data-es>Disponible · Q3 2026</span>
@@ -24,9 +29,66 @@
         <button data-lang="en" class="on">EN</button>
         <button data-lang="es">ES</button>
       </div>
+      <button
+        class="nav-burger"
+        id="navBurger"
+        aria-label="Toggle menu"
+        aria-expanded="false"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile drawer -->
+  <div class="nav-drawer" id="navDrawer" aria-hidden="true">
+    <div class="drawer-inner">
+      <a class="drawer-link" href="/" data-en>Home</a>
+      <a class="drawer-link" href="/" data-es>Inicio</a>
+      <a class="drawer-link" href="/work" data-en>Work</a>
+      <a class="drawer-link" href="/work" data-es>Trabajo</a>
+      <a class="drawer-link" href="/blog" data-en>Blog</a>
+      <a class="drawer-link" href="/blog" data-es>Blog</a>
+      <a class="drawer-link" href="/about" data-en>About</a>
+      <a class="drawer-link" href="/about" data-es>Sobre mí</a>
+      <a class="drawer-link" href="/now">/now</a>
+      <a class="drawer-link" href="/uses">/uses</a>
+      <a class="drawer-link" href="/view-source">/view-source</a>
     </div>
   </div>
 </nav>
+
+<script>
+  function initBurger() {
+    const burger = document.getElementById("navBurger");
+    const drawer = document.getElementById("navDrawer");
+    if (!burger || !drawer) return;
+
+    const toggle = (open?: boolean) => {
+      const willOpen =
+        typeof open === "boolean" ? open : !drawer.classList.contains("open");
+      drawer.classList.toggle("open", willOpen);
+      burger.classList.toggle("open", willOpen);
+      burger.setAttribute("aria-expanded", String(willOpen));
+      drawer.setAttribute("aria-hidden", String(!willOpen));
+      document.body.style.overflow = willOpen ? "hidden" : "";
+    };
+
+    burger.addEventListener("click", () => toggle());
+    drawer
+      .querySelectorAll<HTMLAnchorElement>("a.drawer-link")
+      .forEach((a) => a.addEventListener("click", () => toggle(false)));
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") toggle(false);
+    });
+  }
+
+  initBurger();
+  document.addEventListener("astro:page-load", initBurger);
+</script>
 
 <style>
   .nav {
@@ -74,6 +136,7 @@
     color: var(--color-text-3);
     font-weight: 400;
   }
+
   .nav-links {
     display: inline-flex;
     gap: 4px;
@@ -117,7 +180,6 @@
     gap: 14px;
   }
   .nav-status {
-    display: inline-flex;
     align-items: center;
     gap: 8px;
     font-family: var(--font-mono);
@@ -125,14 +187,21 @@
     color: var(--color-text-2);
     letter-spacing: 0.06em;
   }
+  .nav-status[data-en],
+  .nav-status[data-es] {
+    /* Display managed by global i18n rules */
+  }
   .nav-status::before {
     content: "";
+    display: inline-block;
     width: 7px;
     height: 7px;
     border-radius: 50%;
     background: var(--color-accent);
     box-shadow: 0 0 10px var(--accent-glow);
     animation: pulse-glow 2s ease-in-out infinite;
+    margin-right: 6px;
+    vertical-align: middle;
   }
   .lang-toggle {
     display: inline-flex;
@@ -159,13 +228,111 @@
     color: var(--color-text-1);
   }
 
+  /* Hamburger button — hidden on desktop */
+  .nav-burger {
+    display: none;
+    width: 36px;
+    height: 36px;
+    background: transparent;
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-md);
+    padding: 0;
+    cursor: pointer;
+    position: relative;
+  }
+  .nav-burger span {
+    position: absolute;
+    left: 9px;
+    width: 18px;
+    height: 1.5px;
+    background: var(--color-text-1);
+    transition: transform 200ms ease, opacity 200ms ease, top 200ms ease;
+  }
+  .nav-burger span:nth-child(1) {
+    top: 12px;
+  }
+  .nav-burger span:nth-child(2) {
+    top: 17px;
+  }
+  .nav-burger span:nth-child(3) {
+    top: 22px;
+  }
+  .nav-burger.open span:nth-child(1) {
+    top: 17px;
+    transform: rotate(45deg);
+  }
+  .nav-burger.open span:nth-child(2) {
+    opacity: 0;
+  }
+  .nav-burger.open span:nth-child(3) {
+    top: 17px;
+    transform: rotate(-45deg);
+  }
+
+  /* Mobile drawer */
+  .nav-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 10, 11, 0.97);
+    backdrop-filter: blur(20px);
+    z-index: 49;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease;
+    display: none;
+  }
+  .nav-drawer.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .drawer-inner {
+    padding: 100px 32px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .drawer-link {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 28px;
+    letter-spacing: -0.025em;
+    color: var(--color-text-1);
+    padding: 14px 0;
+    border-bottom: 1px solid var(--color-hair);
+    transition: color 150ms;
+  }
+  .drawer-link:hover,
+  .drawer-link:active {
+    color: var(--color-accent);
+  }
+  .drawer-link[href^="/"][href*="/"]:not([href="/"]) {
+    /* placeholder for sub-route styling */
+  }
+
+  @media (max-width: 900px) {
+    .nav-status {
+      display: none !important;
+    }
+  }
+
   @media (max-width: 720px) {
     .nav-inner {
       padding: 14px 20px;
       grid-template-columns: 1fr auto;
     }
     .nav-links {
-      display: none;
+      display: none !important;
+    }
+    .nav-burger {
+      display: inline-block;
+    }
+    .nav-drawer {
+      display: block;
     }
   }
 </style>
