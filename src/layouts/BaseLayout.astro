@@ -26,6 +26,18 @@ const lang: "en" | "es" =
   langProp ?? (pathname === "/es" || pathname.startsWith("/es/") ? "es" : "en");
 
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+
+// hreflang alternates for the home pair (/ ⇄ /es). Other routes are
+// single-language, so we only emit alternates on the localized home.
+const normalizedPath = pathname.replace(/\/$/, "") || "/";
+const isHome = normalizedPath === "/" || normalizedPath === "/es";
+const homeAlternates = isHome
+  ? [
+      { hreflang: "en", href: new URL("/", Astro.site).href },
+      { hreflang: "es", href: new URL("/es", Astro.site).href },
+      { hreflang: "x-default", href: new URL("/", Astro.site).href },
+    ]
+  : [];
 ---
 
 <!doctype html>
@@ -36,6 +48,11 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <link rel="canonical" href={canonicalUrl} />
+    {
+      homeAlternates.map((alt) => (
+        <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+      ))
+    }
 
     <title>{title}</title>
     <meta name="description" content={description} />
