@@ -1,7 +1,9 @@
 ---
+import { ClientRouter } from "astro:transitions";
 import "../styles/global.css";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
+import NoiseOverlay from "../components/NoiseOverlay.astro";
 
 interface Props {
   title?: string;
@@ -48,8 +50,10 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
+    <ClientRouter />
   </head>
   <body>
+    <NoiseOverlay />
     <Nav />
     <main>
       <slot />
@@ -57,66 +61,15 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     <Footer />
 
     <script>
-      // Sticky nav border on scroll + active section detection
-      const nav = document.getElementById("nav");
-      const sections = ["hero", "transformation", "work", "methodology", "contact"];
-      const navMap: Record<string, string> = {
-        hero: "hero",
-        transformation: "hero",
-        work: "work",
-        methodology: "methodology",
-        contact: "contact",
-      };
+      import { initAnimations } from "../scripts/animations";
+      import { logConsoleArt } from "../scripts/console-art";
 
-      const onScroll = () => {
-        if (!nav) return;
-        nav.classList.toggle("scrolled", window.scrollY > 16);
-        let cur = "hero";
-        for (const id of sections) {
-          const el = document.getElementById(id);
-          if (!el) continue;
-          const r = el.getBoundingClientRect();
-          if (r.top <= 140) cur = id;
-        }
-        const target = navMap[cur] ?? "hero";
-        document.querySelectorAll<HTMLElement>(".nav-link").forEach((a) => {
-          a.classList.toggle("active", a.dataset.target === target);
-        });
-      };
-      window.addEventListener("scroll", onScroll, { passive: true });
-      onScroll();
-
-      // Smooth scroll for in-page links
-      document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
-        a.addEventListener("click", (e) => {
-          const id = a.getAttribute("href")?.slice(1);
-          if (!id) return;
-          const el = document.getElementById(id);
-          if (el) {
-            e.preventDefault();
-            el.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        });
-      });
-
-      // Nav-link clicks
-      document
-        .querySelectorAll<HTMLElement>(".nav-link[data-target]")
-        .forEach((a) => {
-          a.addEventListener("click", () => {
-            const id = a.dataset.target;
-            if (!id) return;
-            const el = document.getElementById(id);
-            if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-          });
-        });
-
-      // Language toggle (persisted)
-      const lt = document.getElementById("langToggle");
       const LANG_KEY = "elkis.lang";
+
       function setLang(l: string) {
         document.documentElement.setAttribute("data-lang", l);
         document.documentElement.setAttribute("lang", l);
+        const lt = document.getElementById("langToggle");
         lt?.querySelectorAll<HTMLButtonElement>("button").forEach((b) => {
           b.classList.toggle("on", b.dataset.lang === l);
         });
@@ -126,17 +79,93 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
           /* noop */
         }
       }
-      lt?.querySelectorAll<HTMLButtonElement>("button").forEach((b) => {
-        b.addEventListener("click", () => {
-          if (b.dataset.lang) setLang(b.dataset.lang);
+
+      function setup() {
+        const nav = document.getElementById("nav");
+        const sections = [
+          "hero",
+          "transformation",
+          "work",
+          "methodology",
+          "contact",
+        ];
+        const navMap: Record<string, string> = {
+          hero: "hero",
+          transformation: "hero",
+          work: "work",
+          methodology: "methodology",
+          contact: "contact",
+        };
+
+        const onScroll = () => {
+          if (!nav) return;
+          nav.classList.toggle("scrolled", window.scrollY > 16);
+          let cur = "hero";
+          for (const id of sections) {
+            const el = document.getElementById(id);
+            if (!el) continue;
+            const r = el.getBoundingClientRect();
+            if (r.top <= 140) cur = id;
+          }
+          const target = navMap[cur] ?? "hero";
+          document.querySelectorAll<HTMLElement>(".nav-link").forEach((a) => {
+            a.classList.toggle("active", a.dataset.target === target);
+          });
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        onScroll();
+
+        // Smooth scroll for in-page links
+        document
+          .querySelectorAll<HTMLAnchorElement>('a[href^="#"]')
+          .forEach((a) => {
+            a.addEventListener("click", (e) => {
+              const id = a.getAttribute("href")?.slice(1);
+              if (!id) return;
+              const el = document.getElementById(id);
+              if (el) {
+                e.preventDefault();
+                el.scrollIntoView({ behavior: "smooth", block: "start" });
+              }
+            });
+          });
+
+        // Nav-link clicks
+        document
+          .querySelectorAll<HTMLElement>(".nav-link[data-target]")
+          .forEach((a) => {
+            a.addEventListener("click", () => {
+              const id = a.dataset.target;
+              if (!id) return;
+              const el = document.getElementById(id);
+              if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+            });
+          });
+
+        // Language toggle (persisted)
+        const lt = document.getElementById("langToggle");
+        lt?.querySelectorAll<HTMLButtonElement>("button").forEach((b) => {
+          b.addEventListener("click", () => {
+            if (b.dataset.lang) setLang(b.dataset.lang);
+          });
         });
-      });
-      try {
-        const s = localStorage.getItem(LANG_KEY);
-        if (s) setLang(s);
-      } catch (_) {
-        /* noop */
+        try {
+          const s = localStorage.getItem(LANG_KEY);
+          if (s) setLang(s);
+        } catch (_) {
+          /* noop */
+        }
+
+        // Wow factors: animations + console art
+        initAnimations();
       }
+
+      // Initial load
+      setup();
+      logConsoleArt();
+
+      // Re-init after Astro View Transitions navigations
+      document.addEventListener("astro:page-load", setup);
     </script>
   </body>
 </html>

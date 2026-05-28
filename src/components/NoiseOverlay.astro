@@ -1,0 +1,45 @@
+---
+// Wow #5 — Fixed noise/grain overlay using SVG feTurbulence.
+// Sits behind all content but above bg, ultra-subtle.
+---
+
+<div class="noise" aria-hidden="true">
+  <svg xmlns="http://www.w3.org/2000/svg">
+    <filter id="noiseFilter">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency="0.85"
+        numOctaves="3"
+        stitchTiles="stitch"
+      ></feTurbulence>
+      <feColorMatrix
+        type="matrix"
+        values="0 0 0 0 1
+                0 0 0 0 1
+                0 0 0 0 1
+                0 0 0 0.08 0"
+      ></feColorMatrix>
+    </filter>
+    <rect width="100%" height="100%" filter="url(#noiseFilter)"></rect>
+  </svg>
+</div>
+
+<style>
+  .noise {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.6;
+    mix-blend-mode: overlay;
+  }
+  .noise svg {
+    width: 100%;
+    height: 100%;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .noise {
+      opacity: 0.3;
+    }
+  }
+</style>

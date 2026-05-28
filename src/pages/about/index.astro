@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import GithubActivity from "../../components/GithubActivity.astro";
 ---
 
 <BaseLayout title="About" description="From zero code to 4,100 commits in 12 months. The full story.">
@@ -38,6 +39,17 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         real estate platforms, and the internal tools that make teams faster.
       </p>
 
+      <h2 class="font-heading text-2xl text-text">The commit rhythm</h2>
+      <p>
+        Daily commits, compounding. The receipts:
+      </p>
+    </div>
+
+    <div style="margin: 32px 0 48px;">
+      <GithubActivity />
+    </div>
+
+    <div class="prose prose-invert max-w-3xl text-text-secondary">
       <h2 class="font-heading text-2xl text-text">Get in touch</h2>
       <p>
         <a href="mailto:elkis@elkis.dev" class="text-accent hover:underline">elkis@elkis.dev</a>

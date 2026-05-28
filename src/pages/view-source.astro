@@ -1,0 +1,497 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const stack = [
+  {
+    decision: "Framework",
+    choice: "Astro 5",
+    whyEn: "Static-first, island architecture, content-driven. Zero JS by default.",
+    whyEs: "Static-first, arquitectura de islas, content-driven. Cero JS por defecto.",
+    altEn: "Next.js — overkill for a portfolio. SvelteKit — smaller community.",
+    altEs: "Next.js — overkill para un portafolio. SvelteKit — comunidad más chica.",
+  },
+  {
+    decision: "Language",
+    choice: "TypeScript strict",
+    whyEn: "Catch errors at compile time. Refactor without fear.",
+    whyEs: "Capturar errores en tiempo de compilación. Refactor sin miedo.",
+    altEn: "JS — no thanks.",
+    altEs: "JS — paso.",
+  },
+  {
+    decision: "Styling",
+    choice: "Tailwind CSS 4",
+    whyEn: "Design tokens via @theme. Atomic, predictable, small bundle.",
+    whyEs: "Design tokens vía @theme. Atómico, predecible, bundle pequeño.",
+    altEn: "Vanilla CSS — too much boilerplate. CSS-in-JS — wrong era.",
+    altEs: "CSS vanilla — mucho boilerplate. CSS-in-JS — era equivocada.",
+  },
+  {
+    decision: "Animations",
+    choice: "GSAP + ScrollTrigger",
+    whyEn: "Industry standard for choreography. matchMedia for a11y. Free since 2024.",
+    whyEs: "Estándar de industria. matchMedia para a11y. Gratis desde 2024.",
+    altEn: "Framer Motion — React-only. Motion One — less mature.",
+    altEs: "Framer Motion — solo React. Motion One — menos maduro.",
+  },
+  {
+    decision: "Content",
+    choice: "Astro Content Collections + MDX",
+    whyEn: "Type-safe schemas with Zod. Frontmatter validated at build time.",
+    whyEs: "Schemas type-safe con Zod. Frontmatter validado en build time.",
+    altEn: "Headless CMS — overkill, vendor lock-in.",
+    altEs: "CMS headless — overkill, lock-in con vendor.",
+  },
+  {
+    decision: "i18n",
+    choice: "Manual routing (en/es)",
+    whyEn: "Single source of truth. No i18n library tax. data-en / data-es spans.",
+    whyEs: "Una sola fuente de verdad. Sin impuesto de librería i18n. Spans data-en / data-es.",
+    altEn: "astro-i18next — too much abstraction for 2 languages.",
+    altEs: "astro-i18next — demasiada abstracción para 2 idiomas.",
+  },
+  {
+    decision: "Deploy",
+    choice: "Cloudflare Pages",
+    whyEn: "Free, fast edge, unlimited bandwidth. Static-first matches my stack.",
+    whyEs: "Gratis, edge rápido, ancho de banda ilimitado. Static-first calza con mi stack.",
+    altEn: "Vercel — great DX, but my use case is static.",
+    altEs: "Vercel — gran DX, pero mi caso es estático.",
+  },
+  {
+    decision: "Fonts",
+    choice: "Space Grotesk / Inter / JetBrains Mono",
+    whyEn: "Display + body + mono. All variable, all open-source.",
+    whyEs: "Display + body + mono. Todas variable, todas open-source.",
+    altEn: "System fonts — boring. Custom — slow.",
+    altEs: "Fuentes del sistema — aburrido. Custom — lento.",
+  },
+  {
+    decision: "Analytics",
+    choice: "Plausible (planned)",
+    whyEn: "Privacy-first, no cookie banner needed, lightweight.",
+    whyEs: "Privacy-first, no requiere banner de cookies, ligero.",
+    altEn: "GA4 — invasive. Vercel Analytics — vendor lock.",
+    altEs: "GA4 — invasivo. Vercel Analytics — lock-in.",
+  },
+  {
+    decision: "Source control",
+    choice: "Git + GitHub + Husky + Conventional Commits",
+    whyEn: "Engineering discipline visible from the first commit.",
+    whyEs: "Disciplina de ingeniería visible desde el primer commit.",
+    altEn: "—",
+    altEs: "—",
+  },
+];
+
+const numbers = [
+  { value: "9", labelEn: "days zero to v1", labelEs: "días de cero a v1" },
+  { value: "~$38", labelEn: "in token costs", labelEs: "en tokens (USD)" },
+  { value: "100", labelEn: "Lighthouse perf", labelEs: "Lighthouse perf" },
+  { value: "<18KB", labelEn: "JS shipped", labelEs: "JS enviado" },
+];
+
+const excluded = [
+  { en: "No WebGL hero — I'm a product engineer, not a creative dev.", es: "Sin WebGL en hero — soy product engineer, no creative dev." },
+  { en: "No artificial preloader — people hate waiting for nothing.", es: "Sin preloader artificial — la gente odia esperar por nada." },
+  { en: "No custom cursor on mobile — touch doesn't have a cursor.", es: "Sin cursor custom en mobile — el touch no tiene cursor." },
+  { en: "No testimonial carousel — show the work, not the praise.", es: "Sin carrusel de testimonios — muestra el trabajo, no el elogio." },
+  { en: "No cookie banner — no third-party trackers, nothing to consent to.", es: "Sin banner de cookies — sin trackers, nada que consentir." },
+];
+
+const lessons = [
+  { en: "Content first. The copy framework I made saved 3 days of back-and-forth.", es: "Contenido primero. El framework de copy ahorró 3 días de iteración." },
+  { en: "Lock i18n strategy early. Adding it later is 3x harder.", es: "Decide i18n temprano. Agregarlo después cuesta 3x más." },
+  { en: "Plan the meta-page from day one. This /view-source is half the differentiator.", es: "Planifica la meta-página desde día 1. Este /view-source es la mitad del diferenciador." },
+];
+---
+
+<BaseLayout
+  title="/view-source — How this site was built"
+  description="The portfolio is the case study. Stack, prompts, costs, lessons."
+>
+  <section class="vs-page">
+    <div class="container">
+      <div class="vs-head">
+        <div class="eyebrow">
+          <span class="ebar"></span>
+          <span>/ view-source</span>
+        </div>
+        <h1 class="vs-title">
+          <span data-en>The portfolio is the case study.</span>
+          <span data-es>El portafolio es el case study.</span>
+        </h1>
+        <p class="vs-lede">
+          <span data-en>
+            How this site was built — the stack, the prompts, the trade-offs.
+            If you want to know how I orchestrate AI with engineering discipline,
+            this is the receipt.
+          </span>
+          <span data-es>
+            Cómo se construyó este sitio — el stack, los prompts, los trade-offs.
+            Si quieres saber cómo orquesto IA con disciplina de ingeniería,
+            este es el recibo.
+          </span>
+        </p>
+      </div>
+
+      <section class="vs-block">
+        <div class="eyebrow eb-sub">
+          <span class="ebar"></span>
+          <span data-en>/ The brief I gave myself</span>
+          <span data-es>/ El brief que me di</span>
+        </div>
+        <p class="vs-p">
+          <span data-en>
+            Build a portfolio that demonstrates what I sell: product engineering
+            with AI orchestration as a force multiplier. Audience: remote
+            employers (US/EU) and freelance clients (LATAM). Hybrid story-driven
+            archetype, bilingual EN/ES, dark premium aesthetic.
+          </span>
+          <span data-es>
+            Construir un portafolio que demuestre lo que vendo: product
+            engineering con orquestación de IA como multiplicador. Audiencia:
+            empleadores remoto (US/EU) y clientes freelance (LATAM). Arquetipo
+            story-driven híbrido, bilingüe EN/ES, estética dark premium.
+          </span>
+        </p>
+        <p class="vs-p">
+          <span data-en>
+            Two tests: <b>8-second test</b> (does the first paint communicate
+            what I do?) and <b>2-minute test</b> (does a deeper read change
+            their mind from "interesting" to "let's talk"?).
+          </span>
+          <span data-es>
+            Dos tests: <b>test de 8 segundos</b> (¿el primer paint comunica
+            qué hago?) y <b>test de 2 minutos</b> (¿una lectura más profunda
+            los mueve de "interesante" a "hablemos"?).
+          </span>
+        </p>
+      </section>
+
+      <section class="vs-block">
+        <div class="eyebrow eb-sub">
+          <span class="ebar"></span>
+          <span data-en>/ Stack decisions</span>
+          <span data-es>/ Decisiones de stack</span>
+        </div>
+        <div class="vs-table">
+          <div class="vs-tr vs-th">
+            <span data-en>Decision</span><span data-es>Decisión</span>
+            <span data-en>Choice</span><span data-es>Elección</span>
+            <span data-en>Why</span><span data-es>Por qué</span>
+            <span data-en>Alt considered</span><span data-es>Alt. considerada</span>
+          </div>
+          {stack.map((s) => (
+            <div class="vs-tr">
+              <span class="td-label">{s.decision}</span>
+              <span class="td-choice ac">{s.choice}</span>
+              <span class="td-why" data-en>{s.whyEn}</span>
+              <span class="td-why" data-es>{s.whyEs}</span>
+              <span class="td-alt" data-en>{s.altEn}</span>
+              <span class="td-alt" data-es>{s.altEs}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section class="vs-block">
+        <div class="eyebrow eb-sub">
+          <span class="ebar"></span>
+          <span data-en>/ The AI orchestration</span>
+          <span data-es>/ La orquestación de IA</span>
+        </div>
+        <p class="vs-p">
+          <span data-en>
+            <b>Phase 1 — Claude Design.</b> Iterated visual direction in HTML
+            prototypes. Outputs: Home, Design System, Logo Concepts. Each
+            handoff exported as a bundle, then re-implemented in Astro.
+          </span>
+          <span data-es>
+            <b>Fase 1 — Claude Design.</b> Iteré dirección visual en prototipos
+            HTML. Salidas: Home, Design System, Logo Concepts. Cada handoff
+            exportado como bundle, luego re-implementado en Astro.
+          </span>
+        </p>
+        <p class="vs-p">
+          <span data-en>
+            <b>Phase 2 — Claude Code.</b> Implementation in pairs. I write the
+            spec, Claude writes the diff, I review, we iterate. Every PR is
+            test-gated. Every commit is conventional. No vibe-coding.
+          </span>
+          <span data-es>
+            <b>Fase 2 — Claude Code.</b> Implementación en pareja. Yo escribo
+            el spec, Claude escribe el diff, reviso, iteramos. Cada PR tiene
+            test-gate. Cada commit es conventional. Sin vibe-coding.
+          </span>
+        </p>
+        <p class="vs-p">
+          <span data-en>
+            <b>Phase 3 — research agents.</b> Background sub-agents for
+            documentation: GitHub trajectory analysis, communication profile
+            extraction, portfolio benchmarking, market rate research. Parallel,
+            not sequential.
+          </span>
+          <span data-es>
+            <b>Fase 3 — agentes de research.</b> Sub-agentes en background para
+            documentación: análisis de trayectoria GitHub, extracción de perfil
+            comunicacional, benchmarking de portafolios, investigación de
+            mercado. Paralelo, no secuencial.
+          </span>
+        </p>
+      </section>
+
+      <section class="vs-block">
+        <div class="eyebrow eb-sub">
+          <span class="ebar"></span>
+          <span data-en>/ The numbers</span>
+          <span data-es>/ Los números</span>
+        </div>
+        <div class="vs-stats">
+          {numbers.map((n) => (
+            <div class="vs-stat">
+              <div class="vs-stat-v">{n.value}</div>
+              <div class="vs-stat-l">
+                <span data-en>{n.labelEn}</span>
+                <span data-es>{n.labelEs}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section class="vs-block">
+        <div class="eyebrow eb-sub">
+          <span class="ebar"></span>
+          <span data-en>/ What's intentionally NOT here</span>
+          <span data-es>/ Lo que NO está aquí por decisión</span>
+        </div>
+        <ul class="vs-list">
+          {excluded.map((e) => (
+            <li>
+              <span class="ac">×</span>
+              <span data-en>{e.en}</span>
+              <span data-es>{e.es}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="vs-block">
+        <div class="eyebrow eb-sub">
+          <span class="ebar"></span>
+          <span data-en>/ What I'd do differently</span>
+          <span data-es>/ Qué haría diferente</span>
+        </div>
+        <ul class="vs-list">
+          {lessons.map((l) => (
+            <li>
+              <span class="ac">→</span>
+              <span data-en>{l.en}</span>
+              <span data-es>{l.es}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="vs-block">
+        <div class="eyebrow eb-sub">
+          <span class="ebar"></span>
+          <span data-en>/ Source on GitHub</span>
+          <span data-es>/ Fuente en GitHub</span>
+        </div>
+        <p class="vs-p">
+          <span data-en>The source is the source. </span>
+          <span data-es>La fuente es la fuente. </span>
+          <a href="https://github.com/elkisdm/myportfolio" target="_blank" rel="noopener">
+            github.com/elkisdm/myportfolio
+          </a>
+        </p>
+      </section>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .vs-page {
+    padding: 160px 0 120px;
+  }
+  .vs-head {
+    max-width: 800px;
+    margin-bottom: 64px;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .eyebrow .ebar {
+    display: inline-block;
+    width: 3px;
+    height: 11px;
+    background: var(--color-accent);
+    animation: blink 1.2s steps(2, start) infinite;
+  }
+  .eb-sub {
+    margin-bottom: 24px;
+  }
+  .vs-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(40px, 6vw, 80px);
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+    margin: 0 0 32px;
+    color: var(--color-text-1);
+    max-width: 18ch;
+  }
+  .vs-lede {
+    font-size: 18px;
+    color: var(--color-text-2);
+    line-height: 1.55;
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  .vs-block {
+    margin: 64px 0;
+    padding-top: 40px;
+    border-top: 1px solid var(--color-hair);
+    max-width: 1000px;
+  }
+  .vs-p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--color-text-2);
+    margin: 0 0 16px;
+    max-width: 65ch;
+  }
+  .vs-p b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+  .vs-p a {
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    border-bottom: 1px solid var(--color-accent);
+    padding-bottom: 1px;
+  }
+
+  .vs-table {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .vs-tr {
+    display: grid;
+    grid-template-columns: 140px 200px 1.5fr 1.2fr;
+    gap: 20px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--color-hair);
+    align-items: start;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+  .vs-tr:last-child {
+    border-bottom: none;
+  }
+  .vs-th {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: var(--color-surface-2);
+  }
+  .td-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding-top: 2px;
+  }
+  .td-choice {
+    font-family: var(--font-display);
+    font-weight: 500;
+    color: var(--color-text-1);
+  }
+  .td-choice.ac {
+    color: var(--color-accent);
+  }
+  .td-why {
+    color: var(--color-text-2);
+  }
+  .td-alt {
+    color: var(--color-text-3);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+
+  .vs-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    padding: 32px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-lg);
+  }
+  .vs-stat-v {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 36px;
+    letter-spacing: -0.03em;
+    color: var(--color-accent);
+  }
+  .vs-stat-l {
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .vs-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .vs-list li {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    font-size: 15px;
+    color: var(--color-text-2);
+    line-height: 1.55;
+  }
+  .vs-list .ac {
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    font-weight: 500;
+  }
+
+  @media (max-width: 1024px) {
+    .vs-tr {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .vs-th {
+      display: none;
+    }
+    .vs-stats {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

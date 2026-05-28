@@ -1,0 +1,464 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const updatedAt = "2026-05-27";
+const nextRefresh = "2026-06-27";
+
+const building = [
+  {
+    name: "elkisdaza.dev (portfolio v1)",
+    phaseEn: "polish + GSAP scroll choreography",
+    phaseEs: "pulido + coreografía de scroll con GSAP",
+    target: "2026-05-31",
+    blockerEn: "—",
+    blockerEs: "—",
+  },
+  {
+    name: "Atlas Engine — Lead Scoring v2",
+    phaseEn: "scaling pilot from 3k → 12k leads/month",
+    phaseEs: "escalando piloto de 3k → 12k leads/mes",
+    target: "2026-06-15",
+    blockerEn: "latency on edge inference at p99",
+    blockerEs: "latencia en inferencia edge en p99",
+  },
+  {
+    name: "Capital Inteligente — CRM revamp",
+    phaseEn: "Kanban → real-time event sourcing",
+    phaseEs: "Kanban → event sourcing en tiempo real",
+    target: "2026-07-10",
+    blockerEn: "sales / ops alignment on state machine",
+    blockerEs: "alineación ventas / ops en la máquina de estados",
+  },
+  {
+    name: "devground (npm package)",
+    phaseEn: "extracting reusable AI orchestration utilities",
+    phaseEs: "extrayendo utilidades reutilizables de orquestación IA",
+    target: "2026-Q3",
+    blockerEn: "API design tension — too many opinions",
+    blockerEs: "tensión de diseño de API — demasiadas opiniones",
+  },
+];
+
+const learning = [
+  {
+    en: "Astro 5 Content Collections — type-safe schemas at scale",
+    es: "Content Collections de Astro 5 — schemas type-safe a escala",
+  },
+  {
+    en: "GSAP ScrollTrigger advanced patterns (batch, matchMedia, Flip)",
+    es: "Patrones avanzados de GSAP ScrollTrigger (batch, matchMedia, Flip)",
+  },
+  {
+    en: "Supabase Edge Functions — cold start optimization < 200ms",
+    es: "Supabase Edge Functions — optimización de cold start < 200ms",
+  },
+];
+
+const reading = [
+  {
+    title: "Designing Data-Intensive Applications",
+    author: "Martin Kleppmann",
+    whyEn: "Re-reading. The systems book I needed before joining CI.",
+    whyEs: "Releyendo. El libro de sistemas que necesitaba antes de entrar a CI.",
+  },
+  {
+    title: "The Pragmatic Programmer (20th)",
+    author: "Hunt & Thomas",
+    whyEn: "Calibration. Most chapters age well.",
+    whyEs: "Calibración. La mayoría de los capítulos envejecen bien.",
+  },
+  {
+    title: "AI Engineering",
+    author: "Chip Huyen",
+    whyEn: "How to build AI products that don't break in prod.",
+    whyEs: "Cómo construir productos de IA que no se rompan en producción.",
+  },
+];
+
+const listening = [
+  { title: "Lenny's Podcast", whyEn: "PM patterns from people who shipped", whyEs: "Patrones de PM de gente que ha lanzado" },
+  { title: "Latent Space", whyEn: "AI engineering, no hype", whyEs: "AI engineering, sin hype" },
+  { title: "Acquired", whyEn: "Long-form on company strategy", whyEs: "Long-form sobre estrategia de empresas" },
+];
+
+const notDoing = [
+  { en: "Not chasing client work this month (capacity locked)", es: "No persiguiendo trabajo de cliente este mes (capacidad bloqueada)" },
+  { en: "Not learning Rust this quarter — TypeScript holds up", es: "No aprendiendo Rust este trimestre — TypeScript aguanta" },
+  { en: "Not starting new repos — finishing what's open", es: "No iniciando repos nuevos — terminando los abiertos" },
+];
+
+const available = [
+  { en: "Remote tech-lead role (US / EU) — earliest start 2026-08", es: "Rol tech lead remoto (US / EU) — inicio más temprano 2026-08" },
+  { en: "1 freelance client max in Q3 2026 — CRM / real estate focus", es: "1 cliente freelance máximo en Q3 2026 — foco CRM / inmobiliario" },
+  { en: "2 paid architecture review slots per month", es: "2 cupos de architecture review pagada al mes" },
+];
+
+const last30 = [
+  { en: "Shipped Lead Scoring v1 — 42% conv lift", es: "Lancé Lead Scoring v1 — 42% de conv. lift" },
+  { en: "Open-sourced devground npm package — first 3 stars", es: "Liberé devground como paquete npm — primeras 3 estrellas" },
+  { en: "Migrated CRM Kanban to real-time event sourcing", es: "Migré el Kanban del CRM a event sourcing en tiempo real" },
+  { en: "Recorded the May AI conversatorio internal session", es: "Grabé el conversatorio interno de IA de mayo" },
+];
+---
+
+<BaseLayout
+  title="/now — Elkis Daza Mota"
+  description="What I'm focused on right now. Updated monthly."
+>
+  <section class="now-page">
+    <div class="container">
+      <div class="now-head">
+        <div class="eyebrow">
+          <span class="ebar"></span>
+          <span>/ now</span>
+        </div>
+        <h1 class="now-title">
+          <span data-en>What I'm doing now</span>
+          <span data-es>En qué estoy ahora</span>
+        </h1>
+        <p class="now-stamp">
+          <span data-en>Last updated · </span>
+          <span data-es>Última actualización · </span>
+          <b>{updatedAt}</b>
+        </p>
+        <p class="now-lede">
+          <span data-en>
+            Inspired by Derek Sivers' <a href="https://nownownow.com/" target="_blank" rel="noopener">/now movement</a> — one page, one question:
+            what is my priority this month?
+          </span>
+          <span data-es>
+            Inspirado por el <a href="https://nownownow.com/" target="_blank" rel="noopener">movimiento /now</a> de Derek Sivers — una página, una pregunta:
+            ¿cuál es mi prioridad este mes?
+          </span>
+        </p>
+      </div>
+
+      <section class="now-block">
+        <h2 class="now-h" data-en>The big focus</h2>
+        <h2 class="now-h" data-es>El foco principal</h2>
+        <p class="now-p" data-en>
+          Two things this month, and only two. First: shipping v1 of this portfolio — Astro 5, Tailwind 4, GSAP, deployed on my own domain by <b>2026-05-31</b>. Second: scaling the <b class="ac">Atlas Engine lead-scoring</b> model at Capital Inteligente from the pilot (one vertical, ~3k leads/month) to all four real estate verticals. The pilot lifted conversion <b>42%</b> — now I have to prove it holds at 12k leads/month without the latency blowing up. Everything else this month is secondary.
+        </p>
+        <p class="now-p" data-es>
+          Dos cosas este mes, y sólo dos. Primero: lanzar v1 de este portafolio — Astro 5, Tailwind 4, GSAP, desplegado en mi propio dominio antes del <b>2026-05-31</b>. Segundo: escalar el modelo de <b class="ac">lead scoring de Atlas Engine</b> en Capital Inteligente desde el piloto (una vertical, ~3k leads/mes) a las cuatro verticales inmobiliarias. El piloto subió la conversión <b>42%</b> — ahora tengo que probar que aguanta a 12k leads/mes sin que la latencia explote. Todo lo demás este mes es secundario.
+        </p>
+      </section>
+
+      <section class="now-block">
+        <h2 class="now-h" data-en>What I'm building</h2>
+        <h2 class="now-h" data-es>Qué estoy construyendo</h2>
+        <ul class="now-list">
+          {building.map((b) => (
+            <li>
+              <div class="bld-name ac">{b.name}</div>
+              <div class="bld-meta">
+                <span data-en>phase:</span><span data-es>fase:</span>
+                <span data-en>{b.phaseEn}</span>
+                <span data-es>{b.phaseEs}</span>
+                <span class="sep">·</span>
+                <span data-en>target:</span><span data-es>objetivo:</span>
+                <b>{b.target}</b>
+                <span class="sep">·</span>
+                <span data-en>blocker:</span><span data-es>bloqueo:</span>
+                <span data-en>{b.blockerEn}</span>
+                <span data-es>{b.blockerEs}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="now-block">
+        <h2 class="now-h" data-en>What I'm learning</h2>
+        <h2 class="now-h" data-es>Qué estoy aprendiendo</h2>
+        <ul class="now-simple">
+          {learning.map((l) => (
+            <li>
+              <span data-en>{l.en}</span>
+              <span data-es>{l.es}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="now-block">
+        <h2 class="now-h" data-en>What I'm reading</h2>
+        <h2 class="now-h" data-es>Qué estoy leyendo</h2>
+        <ul class="now-list">
+          {reading.map((r) => (
+            <li>
+              <div class="bld-name">{r.title}<span class="muted"> · {r.author}</span></div>
+              <div class="bld-meta">
+                <span data-en>{r.whyEn}</span>
+                <span data-es>{r.whyEs}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="now-block">
+        <h2 class="now-h" data-en>What I'm listening to</h2>
+        <h2 class="now-h" data-es>Qué estoy escuchando</h2>
+        <ul class="now-list">
+          {listening.map((l) => (
+            <li>
+              <div class="bld-name">{l.title}</div>
+              <div class="bld-meta">
+                <span data-en>{l.whyEn}</span>
+                <span data-es>{l.whyEs}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="now-block">
+        <h2 class="now-h" data-en>What I'm NOT doing</h2>
+        <h2 class="now-h" data-es>Qué NO estoy haciendo</h2>
+        <ul class="now-simple muted-list">
+          {notDoing.map((n) => (
+            <li>
+              <span data-en>{n.en}</span>
+              <span data-es>{n.es}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="now-block">
+        <h2 class="now-h" data-en>Available for…</h2>
+        <h2 class="now-h" data-es>Disponible para…</h2>
+        <ul class="now-simple">
+          {available.map((a) => (
+            <li>
+              <span class="ac">→</span>
+              <span data-en>{a.en}</span>
+              <span data-es>{a.es}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="now-block">
+        <h2 class="now-h" data-en>Last 30 days · shipped</h2>
+        <h2 class="now-h" data-es>Últimos 30 días · entregado</h2>
+        <ul class="now-simple">
+          {last30.map((s) => (
+            <li>
+              <span class="check">✓</span>
+              <span data-en>{s.en}</span>
+              <span data-es>{s.es}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <div class="now-foot">
+        <span class="badge"><span data-en>Next refresh · </span><span data-es>Próxima actualización · </span>{nextRefresh}</span>
+        <a class="now-link" href="/rss.xml">RSS</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .now-page {
+    padding: 160px 0 120px;
+  }
+  .now-head {
+    max-width: 800px;
+    margin-bottom: 64px;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .eyebrow .ebar {
+    display: inline-block;
+    width: 3px;
+    height: 11px;
+    background: var(--color-accent);
+    animation: blink 1.2s steps(2, start) infinite;
+  }
+  .now-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+    margin: 0 0 24px;
+    color: var(--color-text-1);
+  }
+  .now-stamp {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--color-text-3);
+    letter-spacing: 0.04em;
+    margin: 0 0 24px;
+  }
+  .now-stamp b {
+    color: var(--color-accent);
+    font-weight: 500;
+  }
+  .now-lede {
+    font-size: 17px;
+    color: var(--color-text-2);
+    line-height: 1.55;
+    margin: 0;
+    max-width: 60ch;
+  }
+  .now-lede a {
+    color: var(--color-text-1);
+    border-bottom: 1px solid var(--color-hair-strong);
+    padding-bottom: 1px;
+  }
+  .now-lede a:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  .now-block {
+    margin: 56px 0;
+    padding-top: 40px;
+    border-top: 1px solid var(--color-hair);
+    max-width: 880px;
+  }
+  .now-h {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 24px;
+    letter-spacing: -0.02em;
+    color: var(--color-text-1);
+    margin: 0 0 24px;
+  }
+  .now-p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--color-text-2);
+    margin: 0;
+    max-width: 65ch;
+  }
+  .now-p b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+  .now-p b.ac {
+    color: var(--color-accent);
+  }
+  .now-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .now-list li {
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--color-hair);
+  }
+  .now-list li:last-child {
+    border-bottom: none;
+  }
+  .bld-name {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+    color: var(--color-text-1);
+    margin-bottom: 4px;
+  }
+  .bld-name.ac {
+    color: var(--color-accent);
+  }
+  .bld-name .muted {
+    color: var(--color-text-3);
+    font-weight: 400;
+  }
+  .bld-meta {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text-3);
+    line-height: 1.6;
+  }
+  .bld-meta b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+  .bld-meta .sep {
+    color: var(--color-text-4);
+    margin: 0 4px;
+  }
+
+  .now-simple {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .now-simple li {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    font-size: 15px;
+    color: var(--color-text-2);
+    line-height: 1.55;
+  }
+  .now-simple .ac {
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+  }
+  .now-simple .check {
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+  .muted-list li {
+    color: var(--color-text-3);
+  }
+
+  .now-foot {
+    margin-top: 80px;
+    padding-top: 32px;
+    border-top: 1px solid var(--color-hair);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-hair-strong);
+    background: var(--color-surface-2);
+    color: var(--color-text-2);
+    letter-spacing: 0.04em;
+  }
+  .now-link {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text-3);
+    border-bottom: 1px solid var(--color-hair-strong);
+    padding-bottom: 1px;
+  }
+  .now-link:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+</style>

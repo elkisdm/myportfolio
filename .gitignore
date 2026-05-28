@@ -40,6 +40,9 @@ copy-portafolio.md
 prompt-claude-design.md
 prompts-claude-design-next.md
 transcripciones-reuniones-*.txt
+content-view-source.md
+content-now-page.md
+plan-chatbot-rag.md
 
 # design handoff bundles (local only)
 .design/
