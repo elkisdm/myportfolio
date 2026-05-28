@@ -3,6 +3,7 @@
 // Active state determined by pathname (SSR), NOT by scroll position.
 const pathname = Astro.url.pathname.replace(/\/$/, "") || "/";
 const startsWith = (p: string) => pathname === p || pathname.startsWith(p + "/");
+const isEs = pathname === "/es" || pathname.startsWith("/es/");
 const active = {
   home: pathname === "/" || pathname === "/es",
   work: startsWith("/work"),
@@ -32,8 +33,8 @@ const active = {
       <span class="nav-status" data-en>Available · Q3 2026</span>
       <span class="nav-status" data-es>Disponible · Q3 2026</span>
       <div class="lang-toggle" id="langToggle">
-        <button data-lang="en" class="on">EN</button>
-        <button data-lang="es">ES</button>
+        <button data-lang="en" class={isEs ? "" : "on"}>EN</button>
+        <button data-lang="es" class={isEs ? "on" : ""}>ES</button>
       </div>
       <button
         class="nav-burger"
