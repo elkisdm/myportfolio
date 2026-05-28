@@ -22,6 +22,8 @@
     <form class="cta-form" id="ctaForm">
       <input
         class="cta-input"
+        id="ctaInput"
+        name="brief"
         type="text"
         placeholder="hello@yourco.com · what you're building"
         required
@@ -49,11 +51,26 @@
 </section>
 
 <script>
-  const form = document.getElementById("ctaForm");
-  form?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    alert("Prototype only — wire this up in production.");
-  });
+  // No backend (static build): hand the brief off to the visitor's mail client.
+  // Swap for a Resend/Formspree POST when server capture is wired up.
+  function bindCtaForm() {
+    const form = document.getElementById("ctaForm") as HTMLFormElement | null;
+    const input = document.getElementById("ctaInput") as HTMLInputElement | null;
+    if (!form || form.dataset.bound === "true") return;
+    form.dataset.bound = "true";
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const brief = input?.value.trim();
+      if (!brief) return;
+      const subject = encodeURIComponent("Project brief — elkis.dev");
+      const body = encodeURIComponent(brief);
+      window.location.href = `mailto:hello@elkis.dev?subject=${subject}&body=${body}`;
+    });
+  }
+
+  bindCtaForm();
+  document.addEventListener("astro:page-load", bindCtaForm);
 </script>
 
 <style>
