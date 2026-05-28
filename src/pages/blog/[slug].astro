@@ -1,0 +1,1108 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: CollectionEntry<"blog">;
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const MONTHS_EN = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+function formatLongDate(d: Date): string {
+  const m = MONTHS_EN[d.getMonth()] ?? "";
+  return `${m} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
+function readMinutes(entry: CollectionEntry<"blog">): number {
+  const body = entry.body ?? "";
+  const words = body.split(/\s+/).filter(Boolean).length;
+  return Math.max(2, Math.round(words / 220));
+}
+
+function authorInitials(name: string): string {
+  return name
+    .split(/\s+/)
+    .map((part) => part[0] ?? "")
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+const allPosts = (
+  await getCollection("blog", ({ data }) => !data.draft)
+).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const related: CollectionEntry<"blog">[] = allPosts
+  .filter((p) => p.id !== post.id)
+  .slice(0, 3);
+
+const tagsTop = post.data.tags.slice(0, 2).join(" · ");
+const minutes = readMinutes(post);
+const authorName = "Elkis Daza Mota";
+const initials = authorInitials(authorName);
+const langLabel = post.data.lang.toUpperCase();
+const dateLabel = formatLongDate(post.data.date);
+---
+
+<BaseLayout
+  title={`${post.data.title} — Elkis Daza Mota`}
+  description={post.data.description}
+>
+  <div class="container crumb-bar">
+    <a class="crumb" href="/blog">
+      <span class="arr">←</span>
+      <span data-en>Writing</span>
+      <span data-es>Writing</span>
+      <span>/</span>
+      <span data-en>Lessons</span>
+      <span data-es>Lecciones</span>
+    </a>
+  </div>
+
+  <header class="post-head">
+    <div class="container post-head-inner">
+      <div class="eyebrow">
+        <span class="ebar"></span>
+        <span>{dateLabel}</span>
+        {tagsTop && (
+          <>
+            <span class="sep"></span>
+            <span class="accent">{tagsTop}</span>
+          </>
+        )}
+        <span class="sep"></span>
+        <span data-en>
+          <b>{minutes} min</b> read
+        </span>
+        <span data-es>
+          <b>{minutes} min</b> de lectura
+        </span>
+        <span class="sep"></span>
+        <span>{langLabel}</span>
+      </div>
+
+      <h1 class="post-title">{post.data.title}</h1>
+
+      <p class="post-dek">{post.data.description}</p>
+
+      <div class="author-strip">
+        <div class="author">
+          <div class="avatar">{initials}</div>
+          <div class="meta">
+            <div class="name">{authorName}</div>
+            <div class="role">
+              <span data-en>Product engineer · Santiago, CL</span>
+              <span data-es>Product engineer · Santiago, CL</span>
+            </div>
+          </div>
+        </div>
+        <div class="share">
+          <a class="share-btn" data-share="copy" href="#">
+            <span data-en>Copy URL</span>
+            <span data-es>Copiar URL</span>
+          </a>
+          <a class="share-btn" data-share="x" href="#">X</a>
+          <a class="share-btn" data-share="linkedin" href="#">LinkedIn</a>
+          <a class="share-btn" data-share="email" href="#">
+            <span data-en>Email</span>
+            <span data-es>Email</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="post-layout">
+    <article class="prose">
+      <Content />
+    </article>
+
+    <aside class="toc">
+      <div class="h">
+        <span data-en>/ Contents</span>
+        <span data-es>/ Contenidos</span>
+      </div>
+      <ul id="tocList"></ul>
+      <div class="progress">
+        <span data-en>READING PROGRESS</span>
+        <span data-es>PROGRESO</span>
+        <div class="bar"><i id="readBar"></i></div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="post-foot">
+    {post.data.tags.length > 0 && (
+      <div class="tags-row">
+        <span class="l" data-en>TAGS</span>
+        <span class="l" data-es>TAGS</span>
+        {post.data.tags.map((tag) => (
+          <span class="badge">{tag}</span>
+        ))}
+      </div>
+    )}
+
+    <div class="feedback">
+      <div class="q" data-en>Was this useful?</div>
+      <div class="q" data-es>¿Te sirvió?</div>
+      <div class="btns">
+        <button class="fbtn" data-fb type="button">
+          <span data-en>Yes, helpful</span>
+          <span data-es>Sí, útil</span>
+        </button>
+        <button class="fbtn" data-fb type="button">
+          <span data-en>Made me think</span>
+          <span data-es>Me hizo pensar</span>
+        </button>
+        <button class="fbtn" data-fb type="button">
+          <span data-en>Not for me</span>
+          <span data-es>No es para mí</span>
+        </button>
+        <button class="fbtn" data-fb type="button">
+          <span data-en>Reply via email</span>
+          <span data-es>Respondo por email</span>
+        </button>
+      </div>
+    </div>
+
+    {related.length > 0 && (
+      <div class="related">
+        <div class="h">
+          <span data-en>/ Related</span>
+          <span data-es>/ Relacionados</span>
+          <span class="rel-sep"></span>
+          <b>
+            {related.length} <span data-en>posts</span>
+            <span data-es>posts</span>
+          </b>
+        </div>
+        <div class="related-grid">
+          {related.map((rp) => (
+            <a class="related-card" href={`/blog/${rp.id}`}>
+              <div class="tag">{rp.data.tags.slice(0, 2).join(" · ")}</div>
+              <div class="t">{rp.data.title}</div>
+              <div class="m">
+                <span>{formatLongDate(rp.data.date)}</span>
+                <span>
+                  <b>{readMinutes(rp)} min</b>
+                </span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <div class="sub-inline">
+      <div>
+        <h3>
+          <span data-en>
+            More like this?<br />One post. <span class="ac">Weekly.</span>
+          </span>
+          <span data-es>
+            ¿Más como esto?<br />Un post. <span class="ac">Semanal.</span>
+          </span>
+        </h3>
+        <p>
+          <span data-en>
+            No threads. No tutorials. Just specific learnings from production
+            work.
+          </span>
+          <span data-es>
+            Sin threads. Sin tutoriales. Solo aprendizajes específicos de
+            producción.
+          </span>
+        </p>
+      </div>
+      <div>
+        <form id="postSubscribeForm">
+          <input
+            type="email"
+            placeholder="you@email.com"
+            required
+            name="email"
+          />
+          <button type="submit">
+            <span data-en>Subscribe</span>
+            <span data-es>Suscribirme</span>
+            <span class="ar">→</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  function setupBlogPost(): void {
+    const article = document.querySelector<HTMLElement>(".prose");
+    const tocList = document.getElementById("tocList");
+    const readBar = document.getElementById("readBar");
+
+    interface TocEntry {
+      id: string;
+      text: string;
+      level: number;
+    }
+
+    function slugify(s: string): string {
+      return s
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")
+        .replace(/[^a-z0-9\s-]/g, "")
+        .trim()
+        .replace(/\s+/g, "-");
+    }
+
+    const headings: TocEntry[] = [];
+
+    if (article) {
+      article.querySelectorAll<HTMLHeadingElement>("h2, h3").forEach((h) => {
+        const text = h.textContent?.trim() ?? "";
+        if (!text) return;
+        if (!h.id) h.id = slugify(text);
+        h.classList.add("post-heading");
+        if (h.tagName === "H2") h.classList.add("h2-styled");
+        else h.classList.add("h3-styled");
+        headings.push({
+          id: h.id,
+          text,
+          level: h.tagName === "H2" ? 2 : 3,
+        });
+      });
+    }
+
+    if (tocList) {
+      tocList.innerHTML = headings
+        .filter((h) => h.level === 2)
+        .map(
+          (h, i) =>
+            `<li><a href="#${h.id}"${i === 0 ? ' class="active"' : ""}>${String(
+              i + 1,
+            ).padStart(2, "0")} — ${h.text}</a></li>`,
+        )
+        .join("");
+    }
+
+    const tocLinks = document.querySelectorAll<HTMLAnchorElement>(".toc a");
+    tocLinks.forEach((a) => {
+      a.addEventListener("click", (e) => {
+        const href = a.getAttribute("href");
+        if (!href) return;
+        const id = href.slice(1);
+        const el = document.getElementById(id);
+        if (el) {
+          e.preventDefault();
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    });
+
+    const onScroll = (): void => {
+      const h = document.documentElement;
+      const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
+      if (readBar) {
+        readBar.style.width =
+          Math.max(0, Math.min(100, scrolled * 100)) + "%";
+      }
+
+      const ids = headings.filter((x) => x.level === 2).map((x) => x.id);
+      let cur = ids[0] ?? "";
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        const r = el.getBoundingClientRect();
+        if (r.top <= 140) cur = id;
+      }
+      tocLinks.forEach((a) => {
+        a.classList.toggle("active", a.getAttribute("href") === "#" + cur);
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+
+    // Feedback buttons
+    document.querySelectorAll<HTMLButtonElement>(".fbtn").forEach((b) => {
+      b.addEventListener("click", () => b.classList.toggle("on"));
+    });
+
+    // Share buttons
+    const copyBtn = document.querySelector<HTMLAnchorElement>(
+      '.share-btn[data-share="copy"]',
+    );
+    copyBtn?.addEventListener("click", (e) => {
+      e.preventDefault();
+      void navigator.clipboard?.writeText(window.location.href);
+    });
+
+    const xBtn = document.querySelector<HTMLAnchorElement>(
+      '.share-btn[data-share="x"]',
+    );
+    xBtn?.addEventListener("click", (e) => {
+      e.preventDefault();
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open(
+        `https://twitter.com/intent/tweet?url=${url}&text=${text}`,
+        "_blank",
+        "noopener",
+      );
+    });
+
+    const liBtn = document.querySelector<HTMLAnchorElement>(
+      '.share-btn[data-share="linkedin"]',
+    );
+    liBtn?.addEventListener("click", (e) => {
+      e.preventDefault();
+      const url = encodeURIComponent(window.location.href);
+      window.open(
+        `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
+        "_blank",
+        "noopener",
+      );
+    });
+
+    const emailBtn = document.querySelector<HTMLAnchorElement>(
+      '.share-btn[data-share="email"]',
+    );
+    emailBtn?.addEventListener("click", (e) => {
+      e.preventDefault();
+      const subject = encodeURIComponent(document.title);
+      const body = encodeURIComponent(window.location.href);
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    });
+
+    const form = document.getElementById(
+      "postSubscribeForm",
+    ) as HTMLFormElement | null;
+    form?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      window.alert("Prototype — wire this up in production.");
+    });
+  }
+
+  setupBlogPost();
+  document.addEventListener("astro:page-load", setupBlogPost);
+</script>
+
+<style>
+  .crumb-bar {
+    padding: 96px 0 0;
+  }
+  .crumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color 180ms;
+  }
+  .crumb:hover {
+    color: var(--color-accent);
+  }
+  .crumb .arr {
+    transition: transform 180ms;
+  }
+  .crumb:hover .arr {
+    transform: translateX(-3px);
+  }
+
+  .post-head {
+    padding: 32px 0 64px;
+    position: relative;
+  }
+  .post-head::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, #1c1c1f 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.3;
+    mask-image: linear-gradient(180deg, transparent, #000 30%, transparent 100%);
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      transparent,
+      #000 30%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+  .post-head-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 880px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .eyebrow .ebar {
+    display: inline-block;
+    width: 3px;
+    height: 11px;
+    background: var(--color-accent);
+    animation: blink 1.2s steps(2, start) infinite;
+  }
+  .eyebrow .sep {
+    width: 14px;
+    height: 1px;
+    background: var(--color-hair-strong);
+  }
+  .eyebrow .accent {
+    color: var(--color-accent);
+  }
+  .eyebrow b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+
+  .post-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(40px, 5.6vw, 68px);
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+    margin: 28px 0 0;
+    color: var(--color-text-1);
+    max-width: 22ch;
+  }
+
+  .post-dek {
+    margin: 28px 0 0;
+    font-size: 21px;
+    line-height: 1.5;
+    color: var(--color-text-2);
+    max-width: 56ch;
+    font-weight: 300;
+  }
+
+  .author-strip {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--color-hair);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+  .author {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .author .avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: var(--color-bg);
+    display: grid;
+    place-items: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: -0.02em;
+    box-shadow: 0 0 16px var(--accent-glow);
+  }
+  .author .meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .author .name {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--color-text-1);
+    letter-spacing: -0.01em;
+  }
+  .author .role {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    letter-spacing: 0.04em;
+  }
+  .share {
+    display: inline-flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .share a {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    padding: 6px 12px;
+    border: 1px solid var(--color-hair-strong);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition:
+      background 180ms,
+      color 180ms,
+      border-color 180ms;
+    letter-spacing: 0.06em;
+  }
+  .share a:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  .post-layout {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 64px 32px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 64px;
+    align-items: start;
+  }
+
+  .prose {
+    max-width: 720px;
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--color-text-2);
+  }
+  .prose :global(> * + *) {
+    margin-top: 1.2em;
+  }
+  .prose :global(p) {
+    margin: 0;
+  }
+  .prose :global(p strong),
+  .prose :global(p b) {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+  .prose :global(p em) {
+    color: var(--color-text-1);
+    font-style: italic;
+  }
+  .prose :global(h2) {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 34px;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--color-text-1);
+    margin: 56px 0 8px;
+    scroll-margin-top: 96px;
+  }
+  .prose :global(h3) {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--color-text-1);
+    margin: 36px 0 0;
+    scroll-margin-top: 96px;
+  }
+  .prose :global(a) {
+    color: var(--color-text-1);
+    border-bottom: 1px solid var(--color-accent);
+    transition: color 180ms;
+  }
+  .prose :global(a:hover) {
+    color: var(--color-accent);
+  }
+
+  .prose :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background: var(--color-surface-2);
+    color: var(--color-accent);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--color-hair);
+  }
+
+  .prose :global(pre) {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin: 32px 0;
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    padding: 20px 24px;
+    overflow-x: auto;
+    color: var(--color-text-1);
+  }
+  .prose :global(pre code) {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  .prose :global(ol),
+  .prose :global(ul) {
+    padding-left: 0;
+    margin: 24px 0;
+    list-style: none;
+  }
+  .prose :global(ol) {
+    counter-reset: ol-counter;
+  }
+  .prose :global(ol > li) {
+    counter-increment: ol-counter;
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 8px;
+    margin: 12px 0;
+    padding-left: 0;
+  }
+  .prose :global(ol > li::before) {
+    content: counter(ol-counter, decimal-leading-zero) ".";
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--color-accent);
+    font-weight: 500;
+    padding-top: 4px;
+    letter-spacing: 0.04em;
+  }
+  .prose :global(ul > li) {
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    gap: 10px;
+    margin: 8px 0;
+  }
+  .prose :global(ul > li::before) {
+    content: "→";
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    padding-top: 2px;
+  }
+  .prose :global(li > p:first-child) {
+    margin: 0;
+  }
+  .prose :global(li b) {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+
+  .prose :global(blockquote) {
+    margin: 56px 0;
+    padding: 32px 0 32px 40px;
+    border-left: 3px solid var(--color-accent);
+    position: relative;
+  }
+  .prose :global(blockquote p) {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 26px;
+    line-height: 1.3;
+    letter-spacing: -0.025em;
+    color: var(--color-text-1);
+    margin: 0;
+    max-width: 22ch;
+  }
+
+  .prose :global(> p:first-of-type::first-letter) {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 64px;
+    line-height: 0.95;
+    color: var(--color-accent);
+    float: left;
+    margin: 4px 12px -4px 0;
+    text-shadow: 0 0 24px var(--accent-glow);
+  }
+
+  /* TOC */
+  .toc {
+    position: sticky;
+    top: 96px;
+    align-self: start;
+  }
+  .toc .h {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--color-hair);
+    margin-bottom: 16px;
+  }
+  .toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .toc a {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 13.5px;
+    color: var(--color-text-3);
+    line-height: 1.4;
+    display: block;
+    padding: 4px 0;
+    border-left: 1px solid var(--color-hair);
+    padding-left: 14px;
+    transition:
+      color 180ms,
+      border-color 180ms;
+  }
+  .toc a:hover {
+    color: var(--color-text-1);
+    border-left-color: var(--color-text-3);
+  }
+  .toc a.active {
+    color: var(--color-accent);
+    border-left-color: var(--color-accent);
+  }
+  .toc .progress {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-hair);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    letter-spacing: 0.04em;
+  }
+  .toc .progress .bar {
+    width: 100%;
+    height: 3px;
+    background: var(--color-surface-2);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .toc .progress .bar i {
+    display: block;
+    height: 100%;
+    background: var(--color-accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+    width: 0%;
+    transition: width 100ms linear;
+  }
+
+  /* POST FOOTER */
+  .post-foot {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 64px 32px 0;
+  }
+  .post-foot .tags-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--color-hair);
+  }
+  .post-foot .tags-row .l {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-hair-strong);
+    background: var(--color-surface-2);
+    color: var(--color-text-2);
+    letter-spacing: 0.04em;
+  }
+
+  .feedback {
+    padding: 28px 0;
+    border-bottom: 1px solid var(--color-hair);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .feedback .q {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 18px;
+    letter-spacing: -0.015em;
+    color: var(--color-text-1);
+  }
+  .feedback .btns {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .fbtn {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-hair-strong);
+    color: var(--color-text-2);
+    padding: 8px 16px;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition:
+      background 180ms,
+      color 180ms,
+      border-color 180ms;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .fbtn:hover {
+    color: var(--color-text-1);
+    border-color: var(--color-text-3);
+  }
+  .fbtn.on {
+    background: var(--color-accent);
+    color: var(--color-bg);
+    border-color: var(--color-accent);
+  }
+
+  .related {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--color-hair);
+  }
+  .related .h {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .related .h b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+  .related .rel-sep {
+    display: inline-block;
+    width: 14px;
+    height: 1px;
+    background: var(--color-hair-strong);
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .related-card {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+    transition:
+      background 180ms,
+      transform 180ms;
+  }
+  .related-card:hover {
+    background: var(--color-surface-2);
+    transform: translateY(-2px);
+  }
+  .related-card .tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-accent);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .related-card .t {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+    color: var(--color-text-1);
+  }
+  .related-card .m {
+    margin-top: auto;
+    padding-top: 12px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.04em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .related-card .m b {
+    color: var(--color-text-2);
+    font-weight: 500;
+  }
+
+  .sub-inline {
+    margin-top: 48px;
+    padding: 32px 36px;
+    background: linear-gradient(180deg, var(--color-surface-1), var(--color-bg));
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-lg);
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 24px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .sub-inline::before {
+    content: "";
+    position: absolute;
+    top: -80px;
+    right: -50px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+    opacity: 0.18;
+    pointer-events: none;
+  }
+  .sub-inline > * {
+    position: relative;
+    z-index: 2;
+  }
+  .sub-inline h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin: 0;
+    color: var(--color-text-1);
+  }
+  .sub-inline h3 .ac {
+    color: var(--color-accent);
+  }
+  .sub-inline p {
+    margin: 8px 0 0;
+    font-size: 14px;
+    color: var(--color-text-2);
+    line-height: 1.55;
+    max-width: 38ch;
+  }
+  .sub-inline form {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .sub-inline input {
+    flex: 1;
+    min-width: 180px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-hair-strong);
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--color-text-1);
+    outline: none;
+  }
+  .sub-inline input:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .sub-inline button {
+    background: var(--color-accent);
+    color: var(--color-bg);
+    border: 0;
+    padding: 12px 18px;
+    border-radius: var(--radius-md);
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 13.5px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sub-inline button:hover {
+    background: var(--color-accent-strong);
+  }
+  .sub-inline button .ar {
+    font-family: var(--font-mono);
+  }
+
+  @media (max-width: 1024px) {
+    .post-layout {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .toc {
+      position: relative;
+      top: 0;
+      order: -1;
+      margin-bottom: 32px;
+    }
+    .related-grid {
+      grid-template-columns: 1fr;
+    }
+    .sub-inline {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 720px) {
+    .post-layout {
+      padding: 32px 20px;
+    }
+    .post-foot {
+      padding: 32px 20px 0;
+    }
+    .prose {
+      font-size: 16px;
+    }
+    .prose :global(h2) {
+      font-size: 26px;
+    }
+  }
+</style>

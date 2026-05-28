@@ -1,0 +1,1014 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+interface UsesItem {
+  name: string;
+  star?: boolean;
+  tag: string;
+  whyEn: string;
+  whyEs: string;
+  since: string;
+}
+
+interface UsesSection {
+  num: string;
+  titleEn: string;
+  titleEs: string;
+  metaEn: string;
+  metaEs: string;
+  items: UsesItem[];
+}
+
+const sections: UsesSection[] = [
+  {
+    num: "/ 01",
+    titleEn: "Hardware",
+    titleEs: "Hardware",
+    metaEn: "desk · everywhere",
+    metaEs: "desk · everywhere",
+    items: [
+      {
+        name: 'MacBook Pro M5 · 14"',
+        star: true,
+        tag: "primary",
+        whyEn:
+          "32 GB RAM, 1 TB. <b>One year, zero fan noise even on full TS builds.</b> The thing it does best is stay out of my way.",
+        whyEs:
+          "32 GB RAM, 1 TB. <b>Un año, cero ruido de fan incluso en builds TS completos.</b> Lo que mejor hace es quitarse del medio.",
+        since: "Apr 2026",
+      },
+      {
+        name: 'Studio Display · 27"',
+        tag: "desk",
+        whyEn:
+          "5K, P3 colour, one cable. <b>I stopped second-guessing my own typography</b> once the screen could actually render Space Grotesk properly.",
+        whyEs:
+          "5K, P3, un cable. <b>Dejé de dudar de mi tipografía</b> cuando la pantalla pudo renderizar Space Grotesk en serio.",
+        since: "Oct 2025",
+      },
+      {
+        name: "Keychron Q1 Pro · ISO-ES",
+        tag: "keys",
+        whyEn:
+          'Hot-swappable, gateron browns. <b>The "ñ" key matters when you write Spanish daily.</b> Loud enough to feel real, quiet enough for video calls.',
+        whyEs:
+          'Hot-swappable, gateron browns. <b>El "ñ" importa cuando escribes en español a diario.</b> Lo suficiente para sentirse real, no para joder en calls.',
+        since: "Jan 2026",
+      },
+      {
+        name: "Logitech MX Master 3S",
+        tag: "mouse",
+        whyEn:
+          "Silent click matters in shared spaces. <b>Horizontal scroll for wide Postgres logs.</b> Battery for ~3 months.",
+        whyEs:
+          "Click silencioso importa en espacios compartidos. <b>Scroll horizontal para logs anchos de Postgres.</b> Batería ~3 meses.",
+        since: "Sep 2025",
+      },
+      {
+        name: "Sony WH-1000XM5",
+        tag: "audio",
+        whyEn:
+          "Best ANC I've used. <b>Active 6–8 hours/day.</b> Replaced cheaper pairs that lasted half as long.",
+        whyEs:
+          "El mejor ANC que probé. <b>Activos 6–8 horas/día.</b> Reemplazó pares más baratos que duraron la mitad.",
+        since: "Mar 2026",
+      },
+      {
+        name: "iPhone 17 Pro",
+        tag: "phone",
+        whyEn:
+          "Tested every WhatsApp integration on this device. <b>If it breaks here, the client sees it.</b>",
+        whyEs:
+          "Cada integración de WhatsApp se prueba acá. <b>Si rompe acá, el cliente lo ve.</b>",
+        since: "Sep 2025",
+      },
+    ],
+  },
+  {
+    num: "/ 02",
+    titleEn: "Dev",
+    titleEs: "Dev",
+    metaEn: "editor · runtime · stack",
+    metaEs: "editor · runtime · stack",
+    items: [
+      {
+        name: "Cursor",
+        star: true,
+        tag: "editor",
+        whyEn:
+          "Where most of my code lives. <b>Best agent integration of any editor I've tested.</b> The chat-with-codebase feature is the one I'd quit Cursor for if a competitor matched it.",
+        whyEs:
+          "Donde vive la mayor parte de mi código. <b>Mejor integración de agente de cualquier editor probado.</b> El chat-with-codebase es lo que haría que me cambiara si alguien lo iguala.",
+        since: "Aug 2025",
+      },
+      {
+        name: "Zed",
+        tag: "editor 2",
+        whyEn:
+          "<b>When I want to think without an agent shouting suggestions.</b> Cold draft, structural reviews, long files. Quiet by default.",
+        whyEs:
+          "<b>Cuando quiero pensar sin un agente gritándome sugerencias.</b> Drafts en frío, reviews estructurales, archivos largos. Silencioso por default.",
+        since: "Nov 2025",
+      },
+      {
+        name: "Ghostty",
+        tag: "terminal",
+        whyEn:
+          "<b>Fastest terminal I've used on macOS.</b> Native Apple Silicon, GPU-accelerated, minimal config. Switched from iTerm and never looked back.",
+        whyEs:
+          "<b>El terminal más rápido que he usado en macOS.</b> Apple Silicon nativo, GPU-acelerado, mínima config. Cambié desde iTerm y no miré atrás.",
+        since: "Jan 2026",
+      },
+      {
+        name: "pnpm",
+        tag: "pkg-mgr",
+        whyEn:
+          "<b>Faster, stricter than npm.</b> Strict peer deps catch problems before they ship. Disk-efficient with content-addressed store.",
+        whyEs:
+          "<b>Más rápido y estricto que npm.</b> Peer deps estrictos pillan bugs antes de shipear. Eficiente en disco con store content-addressed.",
+        since: "Sep 2025",
+      },
+      {
+        name: "Bun",
+        tag: "runtime",
+        whyEn:
+          "<b>For scripts, tests, edge-function prototypes.</b> Not yet for production servers — but the speed gap is real.",
+        whyEs:
+          "<b>Para scripts, tests, prototipos edge.</b> Aún no en producción — pero la brecha de velocidad es real.",
+        since: "Feb 2026",
+      },
+      {
+        name: "TypeScript 5.6",
+        tag: "language",
+        whyEn:
+          '<b>The only language I\'d defend in a fight.</b> Schema in the type system, runtime where it has to be. Not "JS with types" — a different way of thinking.',
+        whyEs:
+          '<b>El único lenguaje que defendería en una pelea.</b> Schema en el sistema de tipos, runtime donde tenga que estar. No es "JS con tipos" — es otra forma de pensar.',
+        since: "Jul 2025",
+      },
+      {
+        name: "Astro 5",
+        tag: "framework",
+        whyEn:
+          "<b>For everything content-heavy: this site, marketing pages, docs.</b> Islands architecture, MDX, zero JS by default. Replaced Next.js for static.",
+        whyEs:
+          "<b>Para todo lo content-heavy: este sitio, marketing, docs.</b> Islands, MDX, cero JS por default. Reemplazó Next.js para estático.",
+        since: "Oct 2025",
+      },
+      {
+        name: "Next.js 16",
+        tag: "framework",
+        whyEn:
+          "<b>For CRMs and dashboards.</b> Server components, streaming, the routing I'd want regardless of brand. Fights with cache invalidation are still a thing.",
+        whyEs:
+          "<b>Para CRMs y dashboards.</b> Server components, streaming, el routing que querría sin importar la marca. Las peleas con cache invalidation siguen ahí.",
+        since: "Jul 2025",
+      },
+    ],
+  },
+  {
+    num: "/ 03",
+    titleEn: "Data",
+    titleEs: "Data",
+    metaEn: "db · auth · cache",
+    metaEs: "db · auth · cache",
+    items: [
+      {
+        name: "Postgres 17",
+        star: true,
+        tag: "db",
+        whyEn:
+          "<b>The boring choice that keeps winning.</b> Full-text search, JSON columns, RLS, extensions. I won't ship a CRM on anything else.",
+        whyEs:
+          "<b>La opción aburrida que sigue ganando.</b> FTS, JSON, RLS, extensiones. No shipearia un CRM en otra cosa.",
+        since: "Aug 2025",
+      },
+      {
+        name: "Supabase",
+        tag: "platform",
+        whyEn:
+          "<b>Postgres + auth + edge functions + storage in one place.</b> Their dashboard is the SQL client I actually use day-to-day.",
+        whyEs:
+          "<b>Postgres + auth + edge functions + storage en un lugar.</b> Su dashboard es el cliente SQL que uso a diario.",
+        since: "Aug 2025",
+      },
+      {
+        name: "Drizzle ORM",
+        tag: "orm",
+        whyEn:
+          "<b>Typed, no magic, generates real SQL.</b> Prisma's runtime weight wasn't worth the marginal DX. Drizzle stays out of the way.",
+        whyEs:
+          "<b>Typed, sin magia, genera SQL real.</b> El peso de runtime de Prisma no valía el DX marginal. Drizzle se quita del medio.",
+        since: "Oct 2025",
+      },
+      {
+        name: "Upstash Redis",
+        tag: "cache",
+        whyEn:
+          "<b>HTTP-accessible Redis. Pay-per-request.</b> Rate limits and the feasibility cache live here.",
+        whyEs:
+          "<b>Redis por HTTP. Pay-per-request.</b> Rate limits y el cache de factibilidad viven acá.",
+        since: "Nov 2025",
+      },
+      {
+        name: "TablePlus",
+        tag: "client",
+        whyEn:
+          "<b>When the Supabase studio isn't enough.</b> Multi-tab, multi-connection, fast. The one paid GUI client I'd buy again.",
+        whyEs:
+          "<b>Cuando el studio de Supabase no alcanza.</b> Multi-tab, multi-connection, rápido. El único GUI client pagado que volvería a comprar.",
+        since: "Sep 2025",
+      },
+    ],
+  },
+  {
+    num: "/ 04",
+    titleEn: "AI",
+    titleEs: "AI",
+    metaEn: "orchestrated under discipline",
+    metaEs: "orquestada con disciplina",
+    items: [
+      {
+        name: "Claude Code",
+        star: true,
+        tag: "agent",
+        whyEn:
+          '<b>For long-context refactors and architectural reads.</b> The one that "gets" a codebase fastest after a single tree paste.',
+        whyEs:
+          '<b>Para refactors de contexto largo y lecturas arquitectónicas.</b> El que mejor "entiende" un codebase tras un solo paste del tree.',
+        since: "Sep 2025",
+      },
+      {
+        name: "Cursor Agents",
+        tag: "in-editor",
+        whyEn:
+          "<b>Scoped IDE tasks with the file open in front of me.</b> Lower context-switch tax than tab-switching to a separate chat.",
+        whyEs:
+          "<b>Tareas IDE acotadas con el archivo abierto enfrente.</b> Menos impuesto de context-switch que tabular a otro chat.",
+        since: "Aug 2025",
+      },
+      {
+        name: "GPT-4o-mini",
+        tag: "api · classification",
+        whyEn:
+          "<b>Production classifier in Lead Scoring.</b> 94% agreement with humans at 1/15th the cost of 4o. Best dollar-per-decision in the lineup.",
+        whyEs:
+          "<b>Clasificador en producción en Lead Scoring.</b> 94% de coincidencia con humanos a 1/15 del costo del 4o. Mejor dólar-por-decisión.",
+        since: "Jan 2026",
+      },
+      {
+        name: "Whisper · large-v3",
+        tag: "api · audio",
+        whyEn:
+          "<b>Transcribes Chilean voice notes accurately.</b> The thing that made the WhatsApp inbox AI viable. Self-hosted on a beefy box now.",
+        whyEs:
+          "<b>Transcribe notas de voz chilenas con precisión.</b> Lo que hizo viable el WhatsApp inbox AI. Self-hosted en una caja grande ahora.",
+        since: "Nov 2025",
+      },
+      {
+        name: "Inspect AI",
+        tag: "eval",
+        whyEn:
+          "<b>Killed my own eval harness to use this.</b> Frameworks-for-evals matter when you're tuning prompts weekly.",
+        whyEs:
+          "<b>Maté mi propio eval harness para usar este.</b> Frameworks para evals importan cuando tuneas prompts semanal.",
+        since: "Apr 2026",
+      },
+    ],
+  },
+  {
+    num: "/ 05",
+    titleEn: "Hosting",
+    titleEs: "Hosting",
+    metaEn: "edge · cdn · dns",
+    metaEs: "edge · cdn · dns",
+    items: [
+      {
+        name: "Vercel",
+        tag: "app hosting",
+        whyEn:
+          "<b>Where Next.js apps land.</b> Preview deploys per PR are non-negotiable for client work. Pricing gets sharp at scale — watch the egress.",
+        whyEs:
+          "<b>Donde aterrizan las apps Next.js.</b> Preview deploys por PR son no negociables en client work. El pricing se pone agudo a escala — cuidado con el egress.",
+        since: "Jul 2025",
+      },
+      {
+        name: "Cloudflare",
+        tag: "edge · dns · r2",
+        whyEn:
+          "<b>DNS, WAF, R2 (egress-free S3), Workers for tiny APIs.</b> The dependency I trust most because they keep shipping.",
+        whyEs:
+          "<b>DNS, WAF, R2 (S3 sin egress), Workers para APIs chicos.</b> La dependencia que más confío porque siguen shipeando.",
+        since: "Jul 2025",
+      },
+      {
+        name: "Supabase",
+        tag: "db hosting",
+        whyEn:
+          "<b>Postgres I never have to operate.</b> Backups, replication, point-in-time. Migrations stay in my repo.",
+        whyEs:
+          "<b>Postgres que nunca tengo que operar.</b> Backups, replicación, point-in-time. Las migraciones quedan en mi repo.",
+        since: "Aug 2025",
+      },
+      {
+        name: "Resend",
+        tag: "email",
+        whyEn:
+          "<b>Transactional email built by people who know React.</b> Email API + React Email components → no more HTML-table hell.",
+        whyEs:
+          "<b>Email transaccional hecho por gente que sabe React.</b> Email API + React Email → no más infierno de HTML tables.",
+        since: "Oct 2025",
+      },
+    ],
+  },
+  {
+    num: "/ 06",
+    titleEn: "Daily",
+    titleEs: "Daily",
+    metaEn: "workflow · think · ship",
+    metaEs: "workflow · pensar · shipear",
+    items: [
+      {
+        name: "Linear",
+        star: true,
+        tag: "issues",
+        whyEn:
+          "<b>Issues + cycles + roadmap, fast, with keyboard everywhere.</b> The single tool I'd quit my favorite editor for.",
+        whyEs:
+          "<b>Issues + ciclos + roadmap, rápido, con teclado en todos lados.</b> La única herramienta por la que dejaría mi editor favorito.",
+        since: "Sep 2025",
+      },
+      {
+        name: "Raycast",
+        tag: "launcher",
+        whyEn:
+          "<b>Launcher · clipboard history · window manager · snippets.</b> Tap-tap-tap. Cmd-Space is now muscle memory I can't undo.",
+        whyEs:
+          "<b>Launcher · clipboard history · window manager · snippets.</b> Tap-tap-tap. Cmd-Space ya es memoria muscular irreversible.",
+        since: "Sep 2025",
+      },
+      {
+        name: "Excalidraw",
+        tag: "canvas",
+        whyEn:
+          "<b>For thinking on a canvas before opening a file.</b> Every architecture diagram in my case studies started here.",
+        whyEs:
+          "<b>Para pensar en un canvas antes de abrir un archivo.</b> Cada diagrama de arquitectura en mis case studies empezó acá.",
+        since: "Aug 2025",
+      },
+      {
+        name: "Notion",
+        tag: "writing",
+        whyEn:
+          "<b>Drafts, notes, retros, post outlines.</b> Slow but ubiquitous — clients have it, my brain stays in sync with theirs.",
+        whyEs:
+          "<b>Drafts, notas, retros, outlines.</b> Lento pero ubicuo — los clientes lo tienen, mi cabeza queda sync con la de ellos.",
+        since: "Pre-2025",
+      },
+      {
+        name: "1Password",
+        tag: "vault",
+        whyEn:
+          "<b>Non-negotiable.</b> Shared vaults with client teams, SSH agent, dev variables. Stop arguing about which password manager — pick this one and move on.",
+        whyEs:
+          "<b>No negociable.</b> Vaults compartidos con clientes, SSH agent, dev vars. Dejen de discutir sobre password managers — elijan este y muevan.",
+        since: "Pre-2025",
+      },
+      {
+        name: "Arc / Zen",
+        tag: "browser",
+        whyEn:
+          "<b>Spaces per project keep client tabs out of personal ones.</b> Switching browsers permanently in 2026 if Arc keeps drifting.",
+        whyEs:
+          "<b>Spaces por proyecto separan tabs de clientes de las personales.</b> Cambiando permanentemente en 2026 si Arc sigue derivando.",
+        since: "Oct 2025",
+      },
+      {
+        name: "Things 3",
+        tag: "todos",
+        whyEn:
+          "<b>For personal todos that don't belong in Linear.</b> Long-running, no-deadline stuff. The one quiet app that survived every productivity-app phase.",
+        whyEs:
+          "<b>Para todos personales que no van en Linear.</b> Cosas de largo plazo sin deadline. La app silenciosa que sobrevivió a cada fase de productividad.",
+        since: "Pre-2025",
+      },
+    ],
+  },
+  {
+    num: "/ 07",
+    titleEn: "Design",
+    titleEs: "Design",
+    metaEn: "sparingly",
+    metaEs: "con moderación",
+    items: [
+      {
+        name: "Figma",
+        tag: "design",
+        whyEn:
+          "<b>Where designers hand off to me.</b> I'm not a designer. I read Figma so I can build what they shipped — not so I can guess what they meant.",
+        whyEs:
+          "<b>Donde diseñadores me pasan el handoff.</b> No soy diseñador. Leo Figma para construir lo que shipearon — no para adivinar qué quisieron decir.",
+        since: "Pre-2025",
+      },
+      {
+        name: "Claude (artifacts)",
+        tag: "prototyping",
+        whyEn:
+          "<b>For prototyping flows fast.</b> This portfolio's first mock was a Claude artifact. Then I rebuilt it as Astro for production.",
+        whyEs:
+          "<b>Para prototipar flows rápido.</b> El primer mock de este portafolio fue un Claude artifact. Después lo re-construí en Astro para producción.",
+        since: "Feb 2026",
+      },
+      {
+        name: "SF Symbols / Lucide",
+        tag: "icons",
+        whyEn:
+          "<b>Both. Lucide for web (tree-shakeable, stroke-based).</b> SF Symbols when targeting Apple platforms specifically. Never both in one product.",
+        whyEs:
+          "<b>Ambos. Lucide para web (tree-shakeable, stroke-based).</b> SF Symbols cuando es Apple-only. Nunca ambos en un producto.",
+        since: "Jul 2025",
+      },
+    ],
+  },
+];
+
+interface ChangeEntry {
+  date: string;
+  sign: "+" | "−";
+  itemEn: string;
+  itemEs: string;
+  noteEn: string;
+  noteEs: string;
+}
+
+const changelog: ChangeEntry[] = [
+  {
+    date: "May 27, 2026",
+    sign: "+",
+    itemEn: "Inspect AI",
+    itemEs: "Inspect AI",
+    noteEn:
+      "replaced my home-grown eval harness. Killed 3 weeks of side-project work, no regrets.",
+    noteEs:
+      "reemplazó mi eval harness propio. Mató 3 semanas de side-project, sin lamentos.",
+  },
+  {
+    date: "Apr 11, 2026",
+    sign: "+",
+    itemEn: "MacBook Pro M5",
+    itemEs: "MacBook Pro M5",
+    noteEn:
+      "upgraded from the M2 Air I'd used since day one. The Air shipped me to tech-lead. Time to retire it.",
+    noteEs:
+      "upgrade desde el M2 Air que usé desde el día uno. El Air me llevó a tech-lead. Hora de retirarlo.",
+  },
+  {
+    date: "Mar 03, 2026",
+    sign: "−",
+    itemEn: "iTerm2",
+    itemEs: "iTerm2",
+    noteEn:
+      "cut. Ghostty is faster and cleaner. Five years of muscle memory was the only thing holding me back.",
+    noteEs:
+      "fuera. Ghostty es más rápido y limpio. Cinco años de memoria muscular me frenaban.",
+  },
+  {
+    date: "Feb 17, 2026",
+    sign: "−",
+    itemEn: "Prisma",
+    itemEs: "Prisma",
+    noteEn:
+      "cut from new projects. Drizzle's typed-SQL approach won. Existing Prisma codebases stay on it for now.",
+    noteEs:
+      "fuera de proyectos nuevos. El typed-SQL de Drizzle ganó. Los codebases existentes con Prisma quedan ahí por ahora.",
+  },
+  {
+    date: "Jan 22, 2026",
+    sign: "+",
+    itemEn: "Bun",
+    itemEs: "Bun",
+    noteEn: "added for scripts & tests. Not for prod servers yet.",
+    noteEs: "agregado para scripts y tests. Aún no en servers de prod.",
+  },
+  {
+    date: "Dec 08, 2025",
+    sign: "−",
+    itemEn: "VS Code",
+    itemEs: "VS Code",
+    noteEn:
+      "cut. Cursor + Zed covers everything VS Code did for me, with better agents and less weight.",
+    noteEs:
+      "fuera. Cursor + Zed cubre todo lo que VS Code hacía, con mejores agentes y menos peso.",
+  },
+];
+---
+
+<BaseLayout
+  title="/uses — What I run on · elkis.dev"
+  description="Hardware, software, services. Every item earns its place. Updated monthly — no affiliates, no kickbacks."
+>
+  <!-- ==== HEADER ==== -->
+  <div class="pg-head">
+    <div class="uses-container pg-head-inner">
+      <div class="eyebrow">
+        <span class="ebar"></span>
+        <span data-en>/ uses</span><span data-es>/ uses</span>
+        <span class="sep"></span>
+        <span data-en>A Sivers-style /uses page</span>
+        <span data-es>Una /uses page estilo Sivers</span>
+        <span class="sep"></span>
+        <b>v2.4</b>
+      </div>
+      <h1 class="pg-title">
+        <span data-en>What I run on<span class="ac">.</span></span>
+        <span data-es>Lo que uso<span class="ac">.</span></span>
+      </h1>
+      <p class="pg-lede">
+        <span data-en
+          ><b>Hardware, software, services.</b> Every item earns its place. If
+          something gets cut, it shows up in the changelog at the bottom. I update
+          this monthly — no affiliate links, no kickbacks.</span
+        >
+        <span data-es
+          ><b>Hardware, software, servicios.</b> Cada item se gana su lugar. Si
+          algo lo corto, aparece en el changelog al final. Actualizo esto mensualmente
+          — sin links afiliados, sin kickbacks.</span
+        >
+      </p>
+
+      <div class="ts-strip">
+        <div class="pill">
+          <span data-en>Last updated </span><span data-es>Actualizado </span>
+          <b>May 27, 2026</b>
+        </div>
+        <span><span data-en>Cadence · monthly</span><span data-es>Cadencia · mensual</span></span>
+        <span><span data-en>No affiliates · no sponsors</span><span data-es>Sin afiliados · sin sponsors</span></span>
+        <span><span data-en>38 items across 6 categories</span><span data-es>38 items en 6 categorías</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="uses-container">
+    {sections.map((sec) => (
+      <section class="scope">
+        <div class="sec-head">
+          <div class="sec-num">{sec.num}</div>
+          <h2 class="sec-title">
+            <span data-en>{sec.titleEn}</span>
+            <span data-es>{sec.titleEs}</span>
+            <span class="meta" data-en>{sec.metaEn}</span>
+            <span class="meta" data-es>{sec.metaEs}</span>
+          </h2>
+          <div class="sec-count">{sec.items.length} items</div>
+        </div>
+        <div class="listing">
+          <div class="h">NAME</div>
+          <div class="h tag-h">TAG</div>
+          <div class="h">WHY</div>
+          <div class="h since-h">SINCE</div>
+
+          {sec.items.map((it) => (
+            <div class="row">
+              <div class="name">
+                {it.name}
+                {it.star && <span class="star">★</span>}
+              </div>
+              <div class="tag">{it.tag}</div>
+              <div class="why">
+                <span data-en set:html={it.whyEn} />
+                <span data-es set:html={it.whyEs} />
+              </div>
+              <div class="since">{it.since}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+    ))}
+
+    <!-- ==== CHANGELOG ==== -->
+    <div class="changelog">
+      <div class="eyebrow">
+        <span class="ebar"></span>
+        <span data-en>/ Changelog</span><span data-es>/ Changelog</span>
+        <span class="sep"></span>
+        <b>v2.4 → v2.0</b>
+      </div>
+      <h3>
+        <span data-en>What changed recently<span class="ac">.</span></span>
+        <span data-es>Qué cambió recientemente<span class="ac">.</span></span>
+      </h3>
+      <p class="desc">
+        <span data-en>Honesty about what got cut and why. If a tool isn't here anymore, it didn't ghost — it got fired with a note.</span>
+        <span data-es>Honestidad sobre lo que corté y por qué. Si una herramienta ya no está acá, no se fue sin avisar — fue despedida con nota.</span>
+      </p>
+      <ul class="change-list">
+        {changelog.map((c) => (
+          <li>
+            <span class="date">{c.date}</span>
+            <span class="what" data-en>
+              <b>{c.sign}</b>{" "}
+              <span class={c.sign === "+" ? "ac" : "neg"}>{c.itemEn}</span> · <span set:html={c.noteEn} />
+            </span>
+            <span class="what" data-es>
+              <b>{c.sign}</b>{" "}
+              <span class={c.sign === "+" ? "ac" : "neg"}>{c.itemEs}</span> · <span set:html={c.noteEs} />
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- closing note -->
+    <div class="note">
+      <span data-en
+        ><b>One rule:</b> if a tool I use isn't on this list, either it's so embedded I
+        forgot to mention it (file me an issue), or it's so peripheral it shouldn't
+        count as a "stack." Send corrections to
+        <a href="mailto:hello@elkis.dev" class="note-link">hello@elkis.dev</a> — I
+        read all of them.</span
+      >
+      <span data-es
+        ><b>Una regla:</b> si uso una herramienta y no aparece acá, o está tan embebida
+        que se me olvidó (mándame un issue), o es tan periférica que no cuenta como
+        "stack". Correcciones a
+        <a href="mailto:hello@elkis.dev" class="note-link">hello@elkis.dev</a> — las
+        leo todas.</span
+      >
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .uses-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .eyebrow .ebar {
+    display: inline-block;
+    width: 3px;
+    height: 11px;
+    background: var(--color-accent);
+    animation: blink 1.2s steps(2, start) infinite;
+  }
+  .eyebrow .sep {
+    width: 16px;
+    height: 1px;
+    background: var(--color-hair-strong);
+  }
+  .eyebrow b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+
+  /* HEADER */
+  .pg-head {
+    padding: 160px 0 48px;
+    position: relative;
+  }
+  .pg-head::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, #1c1c1f 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.35;
+    mask-image: linear-gradient(180deg, transparent, #000 30%, transparent 100%);
+    pointer-events: none;
+  }
+  .pg-head-inner {
+    position: relative;
+    z-index: 2;
+  }
+  .pg-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(48px, 7vw, 88px);
+    line-height: 1;
+    letter-spacing: -0.045em;
+    margin: 28px 0 0;
+    color: var(--color-text-1);
+    max-width: 14ch;
+  }
+  .pg-title .ac {
+    color: var(--color-accent);
+    text-shadow: 0 0 32px var(--accent-glow);
+  }
+  .pg-lede {
+    margin: 24px 0 0;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--color-text-2);
+    max-width: 60ch;
+  }
+  .pg-lede b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+  .ts-strip {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--color-hair);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.04em;
+  }
+  .ts-strip b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+  .ts-strip .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-hair-strong);
+    border-radius: var(--radius-full);
+    padding: 6px 14px;
+  }
+  .ts-strip .pill::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  /* SECTION */
+  section.scope {
+    padding: 56px 0;
+    border-top: 1px solid var(--color-hair);
+  }
+  section.scope:first-of-type {
+    border-top: none;
+  }
+  .sec-head {
+    display: grid;
+    grid-template-columns: 56px 1fr auto;
+    gap: 24px;
+    align-items: baseline;
+    margin-bottom: 28px;
+  }
+  .sec-num {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--color-accent);
+    letter-spacing: 0.06em;
+    padding-top: 6px;
+  }
+  .sec-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(28px, 3.6vw, 40px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin: 0;
+    color: var(--color-text-1);
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .sec-title .meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+  .sec-count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    letter-spacing: 0.08em;
+  }
+
+  /* LISTING */
+  .listing {
+    display: grid;
+    grid-template-columns: 200px 80px 1fr 100px;
+    gap: 4px 24px;
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    line-height: 1.6;
+  }
+  .listing .h {
+    color: var(--color-text-3);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--color-hair-strong);
+  }
+  .row {
+    display: contents;
+  }
+  .row .name {
+    color: var(--color-text-1);
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-hair);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .row .name .star {
+    color: var(--color-accent);
+    font-size: 12px;
+  }
+  .row .tag {
+    color: var(--color-text-3);
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-hair);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+  }
+  .row .why {
+    color: var(--color-text-2);
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-hair);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .row .why :global(b) {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+  .row .why :global(.ac) {
+    color: var(--color-accent);
+  }
+  .row .since {
+    color: var(--color-text-3);
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-hair);
+    text-align: right;
+    font-size: 11.5px;
+  }
+
+  /* CHANGELOG */
+  .changelog {
+    margin-top: 56px;
+    padding: 32px 36px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-lg);
+    position: relative;
+    overflow: hidden;
+  }
+  .changelog::before {
+    content: "";
+    position: absolute;
+    top: -100px;
+    right: -50px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+    opacity: 0.15;
+    pointer-events: none;
+  }
+  .changelog > * {
+    position: relative;
+    z-index: 2;
+  }
+  .changelog h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    margin: 16px 0 8px;
+  }
+  .changelog h3 .ac {
+    color: var(--color-accent);
+  }
+  .changelog .desc {
+    font-size: 14px;
+    color: var(--color-text-2);
+    line-height: 1.55;
+    margin: 0 0 20px;
+  }
+  .change-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .change-list li {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 16px;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--color-hair);
+  }
+  .change-list li:last-child {
+    border-bottom: none;
+  }
+  .change-list .date {
+    color: var(--color-text-3);
+  }
+  .change-list .what {
+    color: var(--color-text-2);
+    line-height: 1.6;
+  }
+  .change-list .what b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+  .change-list .what .ac {
+    color: var(--color-accent);
+  }
+  .change-list .what .neg {
+    color: #ff6b5c;
+  }
+
+  /* NOTE */
+  .note {
+    margin-top: 32px;
+    padding: 20px 24px;
+    border-left: 2px solid var(--color-accent);
+    background: var(--accent-soft);
+    border-radius: 4px;
+    font-size: 14px;
+    color: var(--color-text-2);
+    line-height: 1.6;
+    max-width: 72ch;
+  }
+  .note b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+  .note-link {
+    color: var(--color-accent);
+    border-bottom: 1px solid var(--color-accent);
+  }
+
+  /* responsive */
+  @media (max-width: 900px) {
+    .listing {
+      grid-template-columns: 160px 1fr;
+      gap: 4px 16px;
+    }
+    .listing .h.tag-h,
+    .listing .h.since-h {
+      display: none;
+    }
+    .row .tag,
+    .row .since {
+      display: none;
+    }
+  }
+  @media (max-width: 720px) {
+    .uses-container {
+      padding: 0 20px;
+    }
+    .pg-head {
+      padding-top: 120px;
+    }
+    .sec-head {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .sec-num {
+      padding-top: 0;
+    }
+    .listing {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    .row .name {
+      padding-bottom: 2px;
+      border-bottom: none;
+    }
+    .row .why {
+      padding-top: 4px;
+    }
+    .changelog {
+      padding: 24px 20px;
+    }
+  }
+</style>

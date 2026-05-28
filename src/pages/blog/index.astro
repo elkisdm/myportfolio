@@ -1,40 +1,1183 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getCollection } from "astro:content";
+import { getCollection, type CollectionEntry } from "astro:content";
 
-const posts = (await getCollection("blog"))
-  .filter((p) => !p.data.draft && p.data.lang === "en")
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+type BlogPost = CollectionEntry<"blog">;
+
+const allPosts: BlogPost[] = (
+  await getCollection("blog", ({ data }) => !data.draft)
+).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const featured: BlogPost | undefined =
+  allPosts.find((p) => p.data.featured) ?? allPosts[0];
+
+const restPosts: BlogPost[] = featured
+  ? allPosts.filter((p) => p.id !== featured.id)
+  : [];
+
+const MONTHS_EN = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
+function formatShortDate(d: Date): { month: string; day: string; year: string } {
+  return {
+    month: MONTHS_EN[d.getMonth()] ?? "",
+    day: String(d.getDate()).padStart(2, "0"),
+    year: String(d.getFullYear()),
+  };
+}
+
+function formatFeaturedDate(d: Date): string {
+  const m = MONTHS_EN[d.getMonth()] ?? "";
+  return `${m} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
+function featuredNumber(d: Date): string {
+  return String(d.getMonth() + 1).padStart(2, "0");
+}
+
+function featuredMonthMeta(d: Date): string {
+  return `/ ${(MONTHS_EN[d.getMonth()] ?? "").toUpperCase()} ${d.getFullYear()}`;
+}
+
+function readMinutes(post: BlogPost): number {
+  const body = post.body ?? "";
+  const words = body.split(/\s+/).filter(Boolean).length;
+  return Math.max(2, Math.round(words / 220));
+}
+
+function categoryOf(post: BlogPost): "technical" | "reflection" | "ai" {
+  const tags = post.data.tags.map((t) => t.toLowerCase());
+  if (tags.some((t) => t.includes("ai") || t.includes("orchestration"))) {
+    return "ai";
+  }
+  if (
+    tags.some(
+      (t) =>
+        t.includes("reflection") ||
+        t.includes("lesson") ||
+        t.includes("habit") ||
+        t.includes("decision"),
+    )
+  ) {
+    return "reflection";
+  }
+  return "technical";
+}
+
+interface CountsByFilter {
+  all: number;
+  technical: number;
+  reflection: number;
+  ai: number;
+  years: Map<string, number>;
+}
+
+const counts: CountsByFilter = allPosts.reduce<CountsByFilter>(
+  (acc, post) => {
+    acc.all += 1;
+    const cat = categoryOf(post);
+    acc[cat] += 1;
+    const year = String(post.data.date.getFullYear());
+    acc.years.set(year, (acc.years.get(year) ?? 0) + 1);
+    return acc;
+  },
+  { all: 0, technical: 0, reflection: 0, ai: 0, years: new Map() },
+);
+
+const sortedYears: { year: string; count: number }[] = Array.from(
+  counts.years.entries(),
+)
+  .sort((a, b) => Number(b[0]) - Number(a[0]))
+  .map(([year, count]) => ({ year, count }));
+
+const firstDate = allPosts[allPosts.length - 1]?.data.date;
+const lastDate = allPosts[0]?.data.date;
+const headerRange =
+  firstDate && lastDate
+    ? `${MONTHS_EN[firstDate.getMonth()]} ${firstDate.getFullYear()} — ${MONTHS_EN[lastDate.getMonth()]} ${lastDate.getFullYear()}`
+    : "";
 ---
 
-<BaseLayout title="Blog" description="Writing about building products, AI orchestration, and the craft of engineering.">
-  <section class="mx-auto max-w-5xl px-6 pb-24 pt-32">
-    <h1 class="mb-4 font-heading text-4xl font-bold md:text-5xl">Blog</h1>
-    <p class="mb-12 text-lg text-text-secondary">
-      Building products, orchestrating AI, learning in public.
-    </p>
+<BaseLayout
+  title="Writing — Elkis Daza Mota"
+  description="Lessons from building. Not tutorials — specific learnings from production work."
+>
+  <div class="blog-page" data-filter="all">
+    {
+      allPosts.length === 0 ? (
+        <section class="container empty-wrap">
+          <div class="empty-head">
+            <div class="eyebrow">
+              <span class="ebar" />
+              <span data-en>/ Writing</span>
+              <span data-es>/ Writing</span>
+              <span class="sep" />
+              <b>
+                0 <span data-en>posts</span>
+                <span data-es>posts</span>
+              </b>
+            </div>
+            <h1 class="pg-title">
+              <span data-en>
+                Drafts in flight<span class="ac">.</span>
+              </span>
+              <span data-es>
+                Borradores en vuelo<span class="ac">.</span>
+              </span>
+            </h1>
+            <p class="pg-lede">
+              <span data-en>
+                <b>No posts shipped yet.</b> Not because there's nothing to say
+                — because I'd rather show the thing working than write about
+                it. See <a href="/now">/now</a> for what I'm currently writing.
+              </span>
+              <span data-es>
+                <b>Aún no he publicado posts.</b> No porque no tenga nada que
+                decir — porque prefiero mostrar la cosa funcionando antes que
+                escribir sobre ella. Mira <a href="/now">/now</a> para ver qué
+                estoy escribiendo ahora.
+              </span>
+            </p>
+          </div>
+        </section>
+      ) : (
+        <>
+          <div class="pg-head">
+            <div class="container pg-head-inner">
+              <div class="eyebrow">
+                <span class="ebar" />
+                <span data-en>/ Writing</span>
+                <span data-es>/ Writing</span>
+                <span class="sep" />
+                <b>
+                  {counts.all} <span data-en>posts</span>
+                  <span data-es>posts</span>
+                </b>
+                {headerRange && (
+                  <>
+                    <span class="sep" />
+                    <span>{headerRange}</span>
+                  </>
+                )}
+              </div>
 
-    {posts.length === 0 ? (
-      <div class="rounded-xl border border-border bg-surface p-8 text-center">
-        <p class="font-mono text-sm text-text-muted">First post coming soon.</p>
-      </div>
-    ) : (
-      <div class="grid gap-4">
-        {posts.map((post) => (
-          <a
-            href={`/blog/${post.id}`}
-            class="group rounded-xl border border-border bg-surface p-6 transition-all hover:border-accent/30 hover:bg-surface-hover"
-          >
-            <span class="mb-2 block font-mono text-xs text-text-muted">
-              {post.data.date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
-            </span>
-            <h2 class="mb-2 font-heading text-lg font-semibold group-hover:text-accent">
-              {post.data.title}
-            </h2>
-            <p class="text-sm text-text-secondary">{post.data.description}</p>
-          </a>
-        ))}
-      </div>
-    )}
-  </section>
+              <h1 class="pg-title">
+                <span data-en>
+                  Lessons from building<span class="ac">.</span>
+                </span>
+                <span data-es>
+                  Lecciones de construir<span class="ac">.</span>
+                </span>
+              </h1>
+
+              <p class="pg-lede">
+                <span data-en>
+                  <b>Not tutorials.</b> Specific learnings from production work
+                  — what shipped, what burned hours, what discipline holds it
+                  together when AI agents write half the code.
+                </span>
+                <span data-es>
+                  <b>No son tutoriales.</b> Aprendizajes específicos del trabajo
+                  en producción — qué se publicó, qué quemó horas, qué
+                  disciplina lo sostiene cuando agentes de IA escriben la mitad
+                  del código.
+                </span>
+              </p>
+
+              <div class="search-bar">
+                <div class="search-input">
+                  <span class="icon">/</span>
+                  <input
+                    type="text"
+                    id="search"
+                    placeholder="Search posts · title, tag, content"
+                  />
+                  <span class="kbd">⌘ K</span>
+                </div>
+                <div class="feed-meta">
+                  <span data-en>
+                    Updated weekly · <b>RSS</b> · <b>Email</b>
+                  </span>
+                  <span data-es>
+                    Actualizado semanal · <b>RSS</b> · <b>Email</b>
+                  </span>
+                </div>
+              </div>
+
+              <div class="filters" id="filters">
+                <span class="lbl" data-en>FILTER</span>
+                <span class="lbl" data-es>FILTRO</span>
+                <button class="chip on" data-f="all" type="button">
+                  <span data-en>All</span>
+                  <span data-es>Todo</span>
+                  <span class="ct">{counts.all}</span>
+                </button>
+                {counts.technical > 0 && (
+                  <button class="chip" data-f="technical" type="button">
+                    Technical<span class="ct">{counts.technical}</span>
+                  </button>
+                )}
+                {counts.reflection > 0 && (
+                  <button class="chip" data-f="reflection" type="button">
+                    <span data-en>Reflection</span>
+                    <span data-es>Reflexión</span>
+                    <span class="ct">{counts.reflection}</span>
+                  </button>
+                )}
+                {counts.ai > 0 && (
+                  <button class="chip" data-f="ai" type="button">
+                    AI<span class="ct">{counts.ai}</span>
+                  </button>
+                )}
+                {sortedYears.map((y) => (
+                  <button class="chip" data-f={y.year} type="button">
+                    {y.year}
+                    <span class="ct">{y.count}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div class="container">
+            {featured && (
+              <a
+                class="featured"
+                href={`/blog/${featured.id}`}
+                data-cat={categoryOf(featured)}
+                data-year={String(featured.data.date.getFullYear())}
+              >
+                <div class="v">
+                  <div class="v-num">
+                    {featuredNumber(featured.data.date)}
+                    <span class="ac">.</span>
+                  </div>
+                  <div class="v-meta">
+                    {featuredMonthMeta(featured.data.date)}
+                  </div>
+                </div>
+                <div class="body">
+                  <div class="tag-line">
+                    {featured.data.tags.slice(0, 2).join(" · ")}
+                  </div>
+                  <h2 class="title">{featured.data.title}</h2>
+                  <p class="ex">{featured.data.description}</p>
+                  <div class="foot">
+                    <div class="meta">
+                      <span>{formatFeaturedDate(featured.data.date)}</span>
+                      <span class="dot" />
+                      <b>{readMinutes(featured)} min</b>
+                      <span class="dot" />
+                      <span>{featured.data.lang.toUpperCase()}</span>
+                    </div>
+                    <div class="read">
+                      <span data-en>Read post</span>
+                      <span data-es>Leer post</span>
+                      <span class="ar">→</span>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            )}
+
+            {restPosts.length > 0 && (
+              <>
+                <div class="all-head">
+                  <div class="h">
+                    <span data-en>/ All posts</span>
+                    <span data-es>/ Todos los posts</span>
+                    <span class="head-sep" />
+                    <b>
+                      {counts.all} <span data-en>total</span>
+                      <span data-es>total</span>
+                    </b>
+                  </div>
+                  <div class="meta">
+                    <span data-en>Sorted by date · newest first</span>
+                    <span data-es>Ordenado por fecha · más nuevo primero</span>
+                  </div>
+                </div>
+
+                <div class="post-list">
+                  {restPosts.map((post) => {
+                    const d = formatShortDate(post.data.date);
+                    const cat = categoryOf(post);
+                    return (
+                      <a
+                        class="post-row"
+                        data-cat={cat}
+                        data-year={d.year}
+                        href={`/blog/${post.id}`}
+                      >
+                        <div class="pr-date">
+                          <b>
+                            {d.month} {d.day}
+                          </b>
+                          <span>{d.year}</span>
+                        </div>
+                        <div class="pr-main">
+                          <div class="pr-tag">
+                            {post.data.tags.slice(0, 2).join(" · ")}
+                          </div>
+                          <h3 class="pr-title">{post.data.title}</h3>
+                          <p class="pr-ex">{post.data.description}</p>
+                          {post.data.tags.length > 0 && (
+                            <div class="pr-tags">
+                              {post.data.tags.slice(0, 4).map((t) => (
+                                <span class="badge">{t}</span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <div class="pr-meta">
+                          <b>{readMinutes(post)} min</b>
+                          <span>{post.data.lang.toUpperCase()}</span>
+                        </div>
+                        <div class="pr-arrow">→</div>
+                      </a>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
+            <div class="subscribe">
+              <div>
+                <div class="eyebrow">
+                  <span class="ebar" />
+                  <span data-en>/ Email</span>
+                  <span data-es>/ Email</span>
+                </div>
+                <h2>
+                  <span data-en>
+                    One post.<br />One email. <span class="ac">Weekly.</span>
+                  </span>
+                  <span data-es>
+                    Un post.<br />Un email. <span class="ac">Semanal.</span>
+                  </span>
+                </h2>
+                <p>
+                  <span data-en>
+                    No threads. No "stay tuned." Just the post when it ships.
+                    Unsubscribe in one click.
+                  </span>
+                  <span data-es>
+                    Sin threads. Sin "stay tuned." Solo el post cuando se
+                    publica. Te desuscribes en un click.
+                  </span>
+                </p>
+              </div>
+              <div>
+                <form id="subscribeForm">
+                  <input
+                    type="email"
+                    placeholder="you@email.com"
+                    required
+                    name="email"
+                  />
+                  <button type="submit">
+                    <span data-en>Subscribe</span>
+                    <span data-es>Suscribirme</span>
+                    <span class="ar">→</span>
+                  </button>
+                </form>
+                <div class="small">
+                  <span data-en>No spam. RSS available at /rss.xml</span>
+                  <span data-es>Sin spam. RSS disponible en /rss.xml</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )
+    }
+  </div>
 </BaseLayout>
+
+<script>
+  function setupBlogIndex(): void {
+    const filterBar = document.getElementById("filters");
+    const root = document.querySelector<HTMLElement>(".blog-page");
+    if (filterBar && root) {
+      filterBar.querySelectorAll<HTMLButtonElement>(".chip").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          filterBar
+            .querySelectorAll<HTMLButtonElement>(".chip")
+            .forEach((x) => x.classList.toggle("on", x === btn));
+          const f = btn.dataset.f ?? "all";
+          root.setAttribute("data-filter", f);
+        });
+      });
+    }
+
+    const search = document.getElementById("search") as HTMLInputElement | null;
+    if (search) {
+      search.addEventListener("input", () => {
+        const q = search.value.toLowerCase().trim();
+        document
+          .querySelectorAll<HTMLElement>(".post-row, .featured")
+          .forEach((row) => {
+            const txt = (row.textContent ?? "").toLowerCase();
+            row.style.display = !q || txt.includes(q) ? "" : "none";
+          });
+      });
+    }
+
+    const form = document.getElementById(
+      "subscribeForm",
+    ) as HTMLFormElement | null;
+    form?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      window.alert("Prototype — wire this up in production.");
+    });
+  }
+
+  setupBlogIndex();
+  document.addEventListener("astro:page-load", setupBlogIndex);
+</script>
+
+<style>
+  .blog-page {
+    --r-md: var(--radius-md);
+    --r-lg: var(--radius-lg);
+    --r-full: var(--radius-full);
+  }
+
+  .pg-head {
+    padding: 160px 0 32px;
+    position: relative;
+  }
+  .pg-head::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, #1c1c1f 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.4;
+    mask-image: linear-gradient(180deg, transparent, #000 30%, transparent 100%);
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      transparent,
+      #000 30%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+  .pg-head-inner {
+    position: relative;
+    z-index: 2;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .eyebrow .ebar {
+    display: inline-block;
+    width: 3px;
+    height: 11px;
+    background: var(--color-accent);
+    animation: blink 1.2s steps(2, start) infinite;
+  }
+  .eyebrow .sep {
+    width: 16px;
+    height: 1px;
+    background: var(--color-hair-strong);
+  }
+  .eyebrow b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+
+  .pg-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(44px, 6vw, 80px);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    margin: 28px 0 0;
+    color: var(--color-text-1);
+    max-width: 14ch;
+  }
+  .pg-title .ac {
+    color: var(--color-accent);
+  }
+  .pg-lede {
+    margin: 24px 0 0;
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--color-text-2);
+    max-width: 60ch;
+  }
+  .pg-lede b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+  .pg-lede a {
+    color: var(--color-text-1);
+    border-bottom: 1px solid var(--color-hair-strong);
+    padding-bottom: 1px;
+  }
+  .pg-lede a:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  .search-bar {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: center;
+  }
+  .search-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-hair-strong);
+    border-radius: var(--r-md);
+    padding: 12px 16px;
+    transition:
+      border-color 180ms,
+      background 180ms;
+  }
+  .search-input:focus-within {
+    border-color: var(--color-accent);
+    background: var(--color-surface-2);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .search-input .icon {
+    color: var(--color-text-3);
+    font-family: var(--font-mono);
+    font-size: 14px;
+  }
+  .search-input input {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    outline: none;
+    color: var(--color-text-1);
+    font-family: var(--font-body);
+    font-size: 14.5px;
+  }
+  .search-input input::placeholder {
+    color: var(--color-text-3);
+  }
+  .search-input .kbd {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--color-text-3);
+    padding: 2px 6px;
+    border: 1px solid var(--color-hair-strong);
+    border-radius: 3px;
+  }
+  .feed-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    letter-spacing: 0.06em;
+    text-align: right;
+  }
+  .feed-meta b {
+    color: var(--color-accent);
+    font-weight: 500;
+  }
+
+  .filters {
+    margin-top: 24px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filters .lbl {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-right: 4px;
+  }
+  .chip {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--color-text-2);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-hair-strong);
+    border-radius: var(--r-full);
+    padding: 7px 14px;
+    cursor: pointer;
+    transition:
+      background 150ms,
+      color 150ms,
+      border-color 150ms;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .chip:hover {
+    color: var(--color-text-1);
+    border-color: var(--color-text-3);
+  }
+  .chip.on {
+    background: var(--color-accent);
+    color: var(--color-bg);
+    border-color: var(--color-accent);
+  }
+  .chip .ct {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--color-text-3);
+    padding: 1px 6px;
+    background: var(--color-bg);
+    border-radius: var(--r-full);
+  }
+  .chip.on .ct {
+    background: rgba(10, 10, 11, 0.2);
+    color: var(--color-bg);
+  }
+
+  .featured {
+    margin-top: 64px;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-hair);
+    border-left: 3px solid var(--color-accent);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    cursor: pointer;
+    transition:
+      background 200ms,
+      transform 200ms;
+    position: relative;
+  }
+  .featured:hover {
+    background: var(--color-surface-2);
+    transform: translateY(-2px);
+  }
+  .featured::before {
+    content: "FEATURED";
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    padding: 4px 10px;
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+    border-radius: var(--r-full);
+    z-index: 2;
+  }
+  .featured .v {
+    background: linear-gradient(
+      135deg,
+      var(--color-surface-3) 0%,
+      var(--color-surface-1) 100%
+    );
+    border-right: 1px solid var(--color-hair);
+    display: grid;
+    place-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .featured .v::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(
+      circle,
+      var(--color-hair) 1px,
+      transparent 1px
+    );
+    background-size: 18px 18px;
+    opacity: 0.6;
+  }
+  .featured .v::after {
+    content: "";
+    position: absolute;
+    top: -40px;
+    left: -40px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+    opacity: 0.2;
+    pointer-events: none;
+  }
+  .featured .v-num {
+    position: relative;
+    z-index: 2;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 88px;
+    letter-spacing: -0.05em;
+    line-height: 0.9;
+    color: var(--color-text-1);
+    text-align: center;
+  }
+  .featured .v-num .ac {
+    color: var(--color-accent);
+    text-shadow: 0 0 24px var(--accent-glow);
+  }
+  .featured .v-meta {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.18em;
+    z-index: 2;
+  }
+  .featured .body {
+    padding: 36px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .featured .tag-line {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-accent);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .featured .title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    margin: 0;
+    color: var(--color-text-1);
+    max-width: 22ch;
+  }
+  .featured .ex {
+    font-size: 16px;
+    color: var(--color-text-2);
+    line-height: 1.6;
+    margin: 0;
+    max-width: 60ch;
+  }
+  .featured .foot {
+    margin-top: auto;
+    padding-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .featured .meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.04em;
+  }
+  .featured .meta .dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--color-text-4);
+  }
+  .featured .meta b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+  .featured .read {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--color-text-2);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .featured:hover .read {
+    color: var(--color-accent);
+  }
+  .featured .read .ar {
+    transition: transform 180ms;
+  }
+  .featured:hover .read .ar {
+    transform: translateX(4px);
+  }
+
+  .all-head {
+    margin-top: 64px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--color-hair);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .all-head .h {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text-3);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .all-head .h b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+  .all-head .head-sep {
+    display: inline-block;
+    width: 14px;
+    height: 1px;
+    background: var(--color-hair-strong);
+  }
+  .all-head .meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    letter-spacing: 0.06em;
+  }
+
+  .post-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .post-row {
+    display: grid;
+    grid-template-columns: 100px 1.4fr 1fr 90px 24px;
+    gap: 28px;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--color-hair);
+    align-items: start;
+    cursor: pointer;
+    transition:
+      background 180ms,
+      padding 180ms;
+    position: relative;
+  }
+  .post-row::before {
+    content: "";
+    position: absolute;
+    left: -28px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 60%;
+    background: var(--color-accent);
+    transition: width 220ms cubic-bezier(0.34, 1.2, 0.64, 1);
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+  .post-row:hover {
+    padding-left: 22px;
+    background: linear-gradient(90deg, var(--color-surface-1), transparent 80%);
+  }
+  .post-row:hover::before {
+    width: 3px;
+  }
+  .post-row:hover .pr-title {
+    color: var(--color-accent-strong);
+  }
+  .post-row:hover .pr-arrow {
+    color: var(--color-accent);
+    transform: translateX(4px);
+  }
+
+  .pr-date {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.04em;
+    padding-top: 6px;
+    line-height: 1.5;
+  }
+  .pr-date b {
+    color: var(--color-text-1);
+    font-weight: 500;
+    display: block;
+    font-size: 13px;
+  }
+  .pr-main {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .pr-tag {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--color-accent);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .pr-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--color-text-1);
+    margin: 0;
+    transition: color 180ms;
+    max-width: 32ch;
+  }
+  .pr-ex {
+    font-size: 14px;
+    color: var(--color-text-2);
+    line-height: 1.55;
+    margin: 0;
+    max-width: 56ch;
+  }
+  .pr-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 8px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: var(--r-full);
+    border: 1px solid var(--color-hair-strong);
+    background: var(--color-surface-2);
+    color: var(--color-text-2);
+    letter-spacing: 0.04em;
+  }
+  .pr-meta {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    letter-spacing: 0.04em;
+    padding-top: 4px;
+    line-height: 1.7;
+  }
+  .pr-meta b {
+    color: var(--color-text-2);
+    display: block;
+    font-weight: 500;
+  }
+  .pr-arrow {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    color: var(--color-text-3);
+    transition:
+      color 180ms,
+      transform 180ms;
+    padding-top: 4px;
+  }
+
+  .blog-page[data-filter="technical"] .post-row:not([data-cat="technical"]),
+  .blog-page[data-filter="technical"] .featured:not([data-cat="technical"]) {
+    display: none;
+  }
+  .blog-page[data-filter="reflection"] .post-row:not([data-cat="reflection"]),
+  .blog-page[data-filter="reflection"] .featured:not([data-cat="reflection"]) {
+    display: none;
+  }
+  .blog-page[data-filter="ai"] .post-row:not([data-cat="ai"]),
+  .blog-page[data-filter="ai"] .featured:not([data-cat="ai"]) {
+    display: none;
+  }
+  .blog-page[data-filter="2026"] .post-row:not([data-year="2026"]),
+  .blog-page[data-filter="2026"] .featured:not([data-year="2026"]) {
+    display: none;
+  }
+  .blog-page[data-filter="2025"] .post-row:not([data-year="2025"]),
+  .blog-page[data-filter="2025"] .featured:not([data-year="2025"]) {
+    display: none;
+  }
+  .blog-page[data-filter="2024"] .post-row:not([data-year="2024"]),
+  .blog-page[data-filter="2024"] .featured:not([data-year="2024"]) {
+    display: none;
+  }
+
+  .empty-wrap {
+    padding: 160px 0 120px;
+  }
+  .empty-head {
+    max-width: 760px;
+  }
+
+  .subscribe {
+    margin-top: 96px;
+    padding: 56px;
+    background: linear-gradient(180deg, var(--color-surface-1), var(--color-bg));
+    border: 1px solid var(--color-hair);
+    border-radius: var(--r-lg);
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 48px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .subscribe::before {
+    content: "";
+    position: absolute;
+    top: -100px;
+    right: -50px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+    opacity: 0.18;
+    pointer-events: none;
+  }
+  .subscribe > * {
+    position: relative;
+    z-index: 2;
+  }
+  .subscribe h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin: 16px 0 0;
+    color: var(--color-text-1);
+    max-width: 18ch;
+  }
+  .subscribe h2 .ac {
+    color: var(--color-accent);
+  }
+  .subscribe p {
+    margin: 16px 0 0;
+    font-size: 15px;
+    color: var(--color-text-2);
+    line-height: 1.55;
+    max-width: 44ch;
+  }
+  .subscribe form {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .subscribe input {
+    flex: 1;
+    min-width: 200px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-hair-strong);
+    border-radius: var(--r-md);
+    padding: 14px 18px;
+    font-family: var(--font-body);
+    font-size: 14.5px;
+    color: var(--color-text-1);
+    outline: none;
+    transition:
+      border-color 180ms,
+      box-shadow 180ms;
+  }
+  .subscribe input:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .subscribe input::placeholder {
+    color: var(--color-text-3);
+  }
+  .subscribe button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 14.5px;
+    padding: 14px 22px;
+    border-radius: var(--r-md);
+    background: var(--color-accent);
+    color: var(--color-bg);
+    border: 1px solid var(--color-accent);
+    cursor: pointer;
+    transition:
+      background 180ms,
+      box-shadow 180ms;
+  }
+  .subscribe button:hover {
+    background: var(--color-accent-strong);
+    box-shadow: 0 0 24px var(--accent-glow);
+  }
+  .subscribe button .ar {
+    font-family: var(--font-mono);
+    transition: transform 180ms;
+  }
+  .subscribe button:hover .ar {
+    transform: translateX(3px);
+  }
+  .subscribe .small {
+    margin-top: 12px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 1024px) {
+    .featured {
+      grid-template-columns: 1fr;
+    }
+    .featured .v {
+      min-height: 160px;
+    }
+    .featured .v-num {
+      font-size: 64px;
+    }
+    .post-row {
+      grid-template-columns: 80px 1fr 24px;
+      gap: 16px;
+    }
+    .post-row .pr-meta {
+      display: none;
+    }
+    .subscribe {
+      grid-template-columns: 1fr;
+      padding: 40px 32px;
+      gap: 24px;
+    }
+    .search-bar {
+      grid-template-columns: 1fr;
+    }
+    .feed-meta {
+      text-align: left;
+    }
+  }
+  @media (max-width: 720px) {
+    .pg-head {
+      padding-top: 120px;
+    }
+    .featured .body {
+      padding: 28px 24px;
+    }
+    .featured .title {
+      font-size: 24px;
+    }
+  }
+</style>

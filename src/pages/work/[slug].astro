@@ -1,0 +1,675 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  getCollection,
+  render,
+  type CollectionEntry,
+} from "astro:content";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+interface Props {
+  project: CollectionEntry<"projects">;
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+
+const allProjects = (await getCollection("projects")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const currentIndex = allProjects.findIndex((p) => p.id === project.id);
+const prevProject =
+  currentIndex > 0 ? allProjects[currentIndex - 1] : undefined;
+const nextProject =
+  currentIndex !== -1 && currentIndex < allProjects.length - 1
+    ? allProjects[currentIndex + 1]
+    : undefined;
+
+const dateLabelEn = project.data.date.toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "short",
+});
+const dateLabelEs = project.data.date.toLocaleDateString("es-CL", {
+  year: "numeric",
+  month: "short",
+});
+const year = project.data.date.getFullYear();
+
+const isProduction = project.data.tags.includes("Production");
+---
+
+<BaseLayout title={`${project.data.title} — Case study · elkis.dev`} description={project.data.description}>
+  <div class="container crumb-bar">
+    <a class="crumb" href="/work">
+      <span class="arr">←</span>
+      <span data-en>Back to work</span>
+      <span data-es>Volver a trabajo</span>
+    </a>
+  </div>
+
+  <section class="cs-hero">
+    <div class="container">
+      <div class="cs-hero-grid">
+        <div>
+          <div class="eyebrow">
+            <span class="ebar"></span>
+            <span data-en>Case study</span>
+            <span data-es>Case study</span>
+            {project.data.company && (
+              <>
+                <span class="sep"></span>
+                <b>{project.data.company}</b>
+              </>
+            )}
+            <span class="sep"></span>
+            <span>{year}</span>
+          </div>
+          <h1 class="cs-title">
+            {project.data.title}<span class="ac">.</span>
+          </h1>
+          <p class="cs-subtitle">{project.data.description}</p>
+          <div class="cs-tags">
+            {isProduction && <span class="badge solid">In production</span>}
+            {project.data.stack.map((tech: string) => (
+              <span class="badge">{tech}</span>
+            ))}
+          </div>
+        </div>
+
+        <div class="cs-meta">
+          {project.data.metrics?.timeline && (
+            <div class="row">
+              <div class="l" data-en>Timeline</div>
+              <div class="l" data-es>Timeline</div>
+              <div class="v">{project.data.metrics.timeline}</div>
+            </div>
+          )}
+          <div class="row">
+            <div class="l" data-en>Role</div>
+            <div class="l" data-es>Rol</div>
+            <div class="v">{project.data.role}</div>
+          </div>
+          {project.data.metrics?.users && (
+            <div class="row">
+              <div class="l" data-en>Team / Scale</div>
+              <div class="l" data-es>Equipo / Escala</div>
+              <div class="v">{project.data.metrics.users}</div>
+            </div>
+          )}
+          {project.data.metrics?.impact && (
+            <div class="row">
+              <div class="l" data-en>Impact</div>
+              <div class="l" data-es>Impacto</div>
+              <div class="v">
+                <b>{project.data.metrics.impact}</b>
+              </div>
+            </div>
+          )}
+          <div class="row">
+            <div class="l" data-en>Shipped</div>
+            <div class="l" data-es>Lanzado</div>
+            <div class="v">
+              <span data-en>{dateLabelEn}</span>
+              <span data-es>{dateLabelEs}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scope">
+    <div class="container">
+      <article class="cs-content">
+        <Content />
+      </article>
+    </div>
+  </section>
+
+  <section class="scope" style="padding-bottom: 0;">
+    <div class="container">
+      <div class="cta-close">
+        <div class="eyebrow">
+          <span class="ebar"></span>
+          <span data-en>/ Working on something similar?</span>
+          <span data-es>/ Trabajando en algo parecido?</span>
+        </div>
+        <h2>
+          <span data-en>
+            Let's talk about <span class="ac">your build.</span>
+          </span>
+          <span data-es>
+            Hablemos de <span class="ac">tu build.</span>
+          </span>
+        </h2>
+        <p>
+          <span data-en>
+            If you're building something in this space, I'd like to hear about it. I come back
+            within 24 hours with a take — not a calendar link.
+          </span>
+          <span data-es>
+            Si estás construyendo algo así, me gustaría escucharlo. Vuelvo en 24 horas con una
+            opinión — no un link a calendario.
+          </span>
+        </p>
+        <div class="ctas">
+          <a class="btn btn-primary" href="mailto:hello@elkis.dev">
+            <span data-en>Send a brief</span>
+            <span data-es>Mándame un brief</span>
+            <span class="arrow">→</span>
+          </a>
+          <a class="btn btn-secondary" href="/work">
+            <span data-en>All projects</span>
+            <span data-es>Todos los proyectos</span>
+            <span class="arrow">↗</span>
+          </a>
+        </div>
+      </div>
+
+      {(prevProject || nextProject) && (
+        <div class="case-nav">
+          {prevProject ? (
+            <a class="prev" href={`/work/${prevProject.id}`}>
+              <div class="l">
+                <span>←</span>
+                <span data-en>PREVIOUS</span>
+                <span data-es>ANTERIOR</span>
+              </div>
+              <div class="t">{prevProject.data.title}</div>
+            </a>
+          ) : (
+            <a class="prev" href="/work">
+              <div class="l">
+                <span>←</span>
+                <span data-en>ALL WORK</span>
+                <span data-es>TODO EL TRABAJO</span>
+              </div>
+              <div class="t" data-en>— archive —</div>
+              <div class="t" data-es>— archivo —</div>
+            </a>
+          )}
+          {nextProject ? (
+            <a class="next" href={`/work/${nextProject.id}`}>
+              <div class="l">
+                <span data-en>NEXT</span>
+                <span data-es>SIGUIENTE</span>
+                <span class="ar">→</span>
+              </div>
+              <div class="t">{nextProject.data.title}</div>
+            </a>
+          ) : (
+            <a class="next" href="/work">
+              <div class="l">
+                <span data-en>ALL WORK</span>
+                <span data-es>TODO EL TRABAJO</span>
+                <span class="ar">→</span>
+              </div>
+              <div class="t" data-en>— archive —</div>
+              <div class="t" data-es>— archivo —</div>
+            </a>
+          )}
+        </div>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .crumb-bar {
+    padding: 96px 0 0;
+  }
+  .crumb {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: color 180ms;
+    padding: 4px 0;
+  }
+  .crumb:hover {
+    color: var(--color-accent);
+  }
+  .crumb .arr {
+    transition: transform 180ms;
+  }
+  .crumb:hover .arr {
+    transform: translateX(-3px);
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .eyebrow .ebar {
+    display: inline-block;
+    width: 3px;
+    height: 11px;
+    background: var(--color-accent);
+    animation: blink 1.2s steps(2, start) infinite;
+  }
+  .eyebrow .sep {
+    width: 16px;
+    height: 1px;
+    background: var(--color-hair-strong);
+  }
+  .eyebrow b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-hair-strong);
+    background: var(--color-surface-2);
+    color: var(--color-text-2);
+    letter-spacing: 0.04em;
+  }
+  .badge.solid {
+    background: var(--accent-soft);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 14.5px;
+    padding: 14px 22px;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--color-text-1);
+    cursor: pointer;
+    transition:
+      background 180ms,
+      border-color 180ms,
+      color 180ms,
+      box-shadow 180ms;
+  }
+  .btn .arrow {
+    font-family: var(--font-mono);
+    transition: transform 180ms;
+  }
+  .btn:hover .arrow {
+    transform: translateX(3px);
+  }
+  .btn-primary {
+    background: var(--color-accent);
+    color: #0a0a0b;
+    border-color: var(--color-accent);
+  }
+  .btn-primary:hover {
+    background: var(--color-accent-strong);
+    box-shadow: 0 0 32px var(--accent-glow);
+  }
+  .btn-secondary {
+    background: var(--color-surface-2);
+    color: var(--color-text-1);
+    border-color: var(--color-hair-strong);
+  }
+  .btn-secondary:hover {
+    background: var(--color-surface-3);
+    border-color: var(--color-text-3);
+  }
+
+  .cs-hero {
+    padding: 56px 0 80px;
+    position: relative;
+  }
+  .cs-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, #1c1c1f 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.4;
+    mask-image: linear-gradient(180deg, transparent, #000 30%, transparent 100%);
+    pointer-events: none;
+  }
+  .cs-hero-grid {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 80px;
+    align-items: end;
+  }
+  .cs-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(48px, 6.5vw, 88px);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
+    margin: 28px 0 0;
+    color: var(--color-text-1);
+    max-width: 14ch;
+  }
+  .cs-title .ac {
+    color: var(--color-accent);
+    text-shadow: 0 0 32px var(--accent-glow);
+  }
+  .cs-subtitle {
+    margin: 32px 0 0;
+    font-size: 19px;
+    color: var(--color-text-2);
+    line-height: 1.5;
+    max-width: 52ch;
+  }
+  .cs-tags {
+    margin-top: 28px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .cs-meta {
+    border-left: 1px solid var(--color-hair);
+    padding-left: 32px;
+    display: grid;
+    gap: 20px;
+  }
+  .cs-meta .row {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 16px;
+    align-items: baseline;
+  }
+  .cs-meta .row .l {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .cs-meta .row .v {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--color-text-1);
+    letter-spacing: -0.005em;
+  }
+  .cs-meta .row .v b {
+    color: var(--color-accent);
+    font-weight: 500;
+  }
+
+  section.scope {
+    padding: 120px 0 32px;
+    position: relative;
+  }
+
+  /* === MDX content === */
+  .cs-content {
+    max-width: 760px;
+    margin: 0 auto;
+    color: var(--color-text-2);
+    font-size: 17px;
+    line-height: 1.7;
+  }
+  .cs-content :global(h2) {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(28px, 3.5vw, 40px);
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+    color: var(--color-text-1);
+    margin: 72px 0 24px;
+  }
+  .cs-content :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .cs-content :global(h3) {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--color-text-1);
+    margin: 48px 0 16px;
+  }
+  .cs-content :global(p) {
+    margin: 0 0 20px;
+  }
+  .cs-content :global(p b),
+  .cs-content :global(strong) {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+  .cs-content :global(a) {
+    color: var(--color-accent);
+    border-bottom: 1px solid var(--color-hair-strong);
+    transition:
+      color 150ms,
+      border-color 150ms;
+  }
+  .cs-content :global(a:hover) {
+    color: var(--color-accent-strong);
+    border-bottom-color: var(--color-accent);
+  }
+  .cs-content :global(ul),
+  .cs-content :global(ol) {
+    margin: 0 0 24px;
+    padding-left: 24px;
+  }
+  .cs-content :global(li) {
+    margin: 0 0 10px;
+  }
+  .cs-content :global(li::marker) {
+    color: var(--color-accent);
+  }
+  .cs-content :global(blockquote) {
+    margin: 32px 0;
+    padding: 20px 28px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-hair);
+    border-left: 3px solid var(--color-accent);
+    border-radius: var(--radius-md);
+    color: var(--color-text-1);
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 1.5;
+  }
+  .cs-content :global(blockquote p) {
+    margin: 0;
+  }
+  .cs-content :global(code) {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-hair);
+    border-radius: 4px;
+    padding: 1px 6px;
+    color: var(--color-accent);
+  }
+  .cs-content :global(pre) {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-md);
+    padding: 20px 24px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--color-text-1);
+    margin: 0 0 24px;
+  }
+  .cs-content :global(pre code) {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: inherit;
+  }
+  .cs-content :global(hr) {
+    border: 0;
+    border-top: 1px solid var(--color-hair);
+    margin: 56px 0;
+  }
+
+  .cta-close {
+    margin-top: 40px;
+    padding: 80px 64px;
+    background: linear-gradient(180deg, var(--color-surface-1), var(--color-bg));
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-lg);
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-close::before {
+    content: "";
+    position: absolute;
+    top: -100px;
+    right: -50px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(
+      circle,
+      var(--accent-glow) 0%,
+      transparent 60%
+    );
+    opacity: 0.2;
+    pointer-events: none;
+  }
+  .cta-close h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(36px, 5vw, 56px);
+    line-height: 1;
+    letter-spacing: -0.035em;
+    margin: 16px 0 0;
+    max-width: 18ch;
+    position: relative;
+  }
+  .cta-close h2 .ac {
+    color: var(--color-accent);
+  }
+  .cta-close p {
+    margin: 24px 0 0;
+    font-size: 17px;
+    color: var(--color-text-2);
+    line-height: 1.55;
+    max-width: 56ch;
+    position: relative;
+  }
+  .cta-close .ctas {
+    margin-top: 36px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  .case-nav {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--color-hair);
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .case-nav a {
+    background: var(--color-surface-1);
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 180ms;
+  }
+  .case-nav a:hover {
+    background: var(--color-surface-2);
+  }
+  .case-nav a .l {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .case-nav a.next .l {
+    justify-content: flex-end;
+  }
+  .case-nav a.next {
+    text-align: right;
+  }
+  .case-nav a .t {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    color: var(--color-text-1);
+    line-height: 1.2;
+  }
+  .case-nav a:hover .t {
+    color: var(--color-accent);
+  }
+  .case-nav a .ar {
+    color: var(--color-text-3);
+    font-family: var(--font-mono);
+  }
+  .case-nav a:hover .ar {
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 1024px) {
+    .cs-hero-grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+    .cs-meta {
+      border-left: none;
+      border-top: 1px solid var(--color-hair);
+      padding: 24px 0 0;
+    }
+  }
+  @media (max-width: 720px) {
+    .crumb-bar {
+      padding-top: 80px;
+    }
+    section.scope {
+      padding: 80px 0 16px;
+    }
+    .cta-close {
+      padding: 40px 28px;
+    }
+    .case-nav {
+      grid-template-columns: 1fr;
+    }
+    .case-nav a.next {
+      text-align: left;
+    }
+    .case-nav a.next .l {
+      justify-content: flex-start;
+    }
+  }
+</style>

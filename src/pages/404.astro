@@ -1,0 +1,405 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="404 — command not found · elkis.dev"
+  description="The page you were looking for doesn't exist. Try one of the existing paths."
+>
+  <section class="nf-page">
+    <div class="nf-bg" aria-hidden="true"></div>
+
+    <main class="nf-main">
+      <div class="terminal">
+        <div class="term-head">
+          <div class="lh">
+            <span class="dots"><span></span><span></span><span></span></span>
+            <span>~/elkis.dev — bash · 404</span>
+          </div>
+          <div class="rh">137 × 42</div>
+        </div>
+
+        <div class="term-body">
+          <div class="term-line">
+            <span class="p">elkis@dev</span>
+            <span class="dim">$</span>
+            <span class="cmd">cd</span>
+            <span class="out" id="badPath">/path/you/were/looking/for</span>
+          </div>
+          <div class="term-line">
+            <span class="err">zsh: no such file or directory:</span>
+            <span class="out" id="badPath2">/path/you/were/looking/for</span>
+          </div>
+
+          <div class="term-line spacer"></div>
+
+          <div class="four-oh-four">4<span class="ac">0</span>4<span class="ac">.</span></div>
+
+          <div class="status-row">
+            <div>
+              <span data-en
+                ><b>This route doesn't exist</b> — or it never did. The link that brought
+                you here was either a typo, a stale bookmark, or a draft I yanked.
+                Try one of the existing paths below.</span
+              >
+              <span data-es
+                ><b>Esta ruta no existe</b> — o nunca existió. El link que te trajo
+                acá fue un typo, un bookmark viejo, o un draft que bajé. Prueba
+                con alguna de las rutas existentes abajo.</span
+              >
+            </div>
+          </div>
+
+          <div class="term-line spacer"></div>
+
+          <div class="term-line">
+            <span class="p">elkis@dev</span>
+            <span class="dim">$</span>
+            <span class="cmd">ls -la</span>
+            <span class="out">~/</span>
+          </div>
+
+          <div class="ls-listing">
+            <div class="ls-head">PERM</div>
+            <div class="ls-head">SIZE</div>
+            <div class="ls-head">NAME</div>
+            <div class="ls-head">TYPE</div>
+
+            <div class="ls-row">
+              <div class="perm">drwxr-xr-x</div>
+              <div class="size">—</div>
+              <div class="name"><a href="/">/home<span class="ar">→</span></a></div>
+              <div class="desc">dir · landing</div>
+            </div>
+            <div class="ls-row">
+              <div class="perm">drwxr-xr-x</div>
+              <div class="size">14 items</div>
+              <div class="name"><a href="/work">/work<span class="ar">→</span></a></div>
+              <div class="desc">dir · projects + killed</div>
+            </div>
+            <div class="ls-row">
+              <div class="perm">drwxr-xr-x</div>
+              <div class="size">9 items</div>
+              <div class="name"><a href="/blog">/writing<span class="ar">→</span></a></div>
+              <div class="desc">dir · posts + RSS</div>
+            </div>
+            <div class="ls-row">
+              <div class="perm">-rw-r--r--</div>
+              <div class="size">~9 min</div>
+              <div class="name"><a href="/about">/about<span class="ar">→</span></a></div>
+              <div class="desc">file · the long version</div>
+            </div>
+            <div class="ls-row">
+              <div class="perm">-rw-r--r--</div>
+              <div class="size">~2 min</div>
+              <div class="name"><a href="/uses">/uses<span class="ar">→</span></a></div>
+              <div class="desc">file · stack &amp; tools</div>
+            </div>
+            <div class="ls-row">
+              <div class="perm">-rwxr-xr-x</div>
+              <div class="size">~24 hr</div>
+              <div class="name"><a href="mailto:hello@elkis.dev">/contact<span class="ar">→</span></a></div>
+              <div class="desc">exec · 24h response</div>
+            </div>
+          </div>
+
+          <div class="prompt-row">
+            <span class="p">elkis@dev <span class="dim">$</span></span>
+            <span class="typing">cd </span>
+            <span class="cur"></span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <script is:inline>
+    const p = location.pathname.replace(/\/+$/, "") || "/";
+    if (p !== "/" && p !== "/404" && p !== "/404.html") {
+      const a = document.getElementById("badPath");
+      const b = document.getElementById("badPath2");
+      if (a) a.textContent = p;
+      if (b) b.textContent = p;
+    }
+  </script>
+</BaseLayout>
+
+<style>
+  .nf-page {
+    position: relative;
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 32px 64px;
+  }
+  .nf-bg {
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, #1c1c1f 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.4;
+    mask-image: radial-gradient(
+      ellipse 80% 60% at 50% 30%,
+      #000 30%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+  .nf-main {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* terminal */
+  .terminal {
+    width: 100%;
+    max-width: 880px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-lg);
+    box-shadow:
+      0 32px 80px rgba(0, 0, 0, 0.6),
+      0 0 80px var(--accent-glow);
+    overflow: hidden;
+    position: relative;
+  }
+  .terminal::before {
+    content: "";
+    position: absolute;
+    top: -100px;
+    left: -100px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+    opacity: 0.18;
+    pointer-events: none;
+  }
+  .term-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 18px;
+    background: var(--color-surface-2);
+    border-bottom: 1px solid var(--color-hair);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.06em;
+  }
+  .term-head .lh {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .term-head .dots {
+    display: inline-flex;
+    gap: 6px;
+  }
+  .term-head .dots span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-hair-strong);
+  }
+  .term-head .dots span:first-child {
+    background: #ff6b5c66;
+  }
+  .term-body {
+    padding: 32px 36px 40px;
+    font-family: var(--font-mono);
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: var(--color-text-2);
+    position: relative;
+    z-index: 2;
+  }
+  .term-line {
+    display: block;
+  }
+  .term-line .p {
+    color: var(--color-text-3);
+    margin-right: 8px;
+  }
+  .term-line .cmd {
+    color: var(--color-accent);
+  }
+  .term-line .out {
+    color: var(--color-text-1);
+  }
+  .term-line .err {
+    color: var(--color-danger);
+  }
+  .term-line .dim {
+    color: var(--color-text-3);
+  }
+  .term-line .ac {
+    color: var(--color-accent);
+  }
+  .term-line.spacer {
+    height: 14px;
+  }
+
+  /* big 404 */
+  .four-oh-four {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(72px, 14vw, 168px);
+    line-height: 0.95;
+    letter-spacing: -0.06em;
+    color: var(--color-text-4);
+    margin: 16px 0 12px;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.05em;
+  }
+  .four-oh-four .ac {
+    color: var(--color-accent);
+    text-shadow: 0 0 40px var(--accent-glow);
+  }
+
+  /* status row */
+  .status-row {
+    margin-top: 8px;
+    padding: 14px 18px;
+    background: rgba(239, 68, 68, 0.06);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-left: 2px solid var(--color-danger);
+    border-radius: var(--radius-md);
+    color: var(--color-text-2);
+    font-size: 13.5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .status-row::before {
+    content: "!";
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--color-danger);
+    font-weight: 600;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    border: 1px solid var(--color-danger);
+    flex-shrink: 0;
+  }
+  .status-row b {
+    color: var(--color-text-1);
+    font-weight: 500;
+  }
+
+  /* ls listing */
+  .ls-listing {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: 70px 100px 1fr 90px;
+    gap: 12px 20px;
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+  }
+  .ls-listing .ls-head {
+    color: var(--color-text-3);
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--color-hair-strong);
+  }
+  .ls-row {
+    display: contents;
+  }
+  .ls-row .perm {
+    color: var(--color-text-3);
+  }
+  .ls-row .size {
+    color: var(--color-text-3);
+  }
+  .ls-row .name a {
+    color: var(--color-text-1);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 180ms;
+    border-bottom: 1px solid transparent;
+  }
+  .ls-row .name a:hover {
+    color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
+  }
+  .ls-row .name a .ar {
+    color: var(--color-text-3);
+  }
+  .ls-row .name a:hover .ar {
+    color: var(--color-accent);
+  }
+  .ls-row .desc {
+    color: var(--color-text-3);
+    font-size: 12px;
+  }
+
+  /* prompt cursor */
+  .prompt-row {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--color-hair-strong);
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 14.5px;
+  }
+  .prompt-row .p {
+    color: var(--color-accent);
+    margin-right: 10px;
+  }
+  .prompt-row .p .dim {
+    color: var(--color-text-3);
+  }
+  .prompt-row .typing {
+    color: var(--color-text-1);
+  }
+  .prompt-row .cur {
+    display: inline-block;
+    width: 8px;
+    height: 18px;
+    background: var(--color-accent);
+    margin-left: 4px;
+    transform: translateY(3px);
+    animation: blink 1s steps(2, start) infinite;
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+
+  @media (max-width: 720px) {
+    .nf-page {
+      padding: 96px 16px 48px;
+    }
+    .terminal {
+      border-radius: 8px;
+    }
+    .term-body {
+      padding: 20px 18px 28px;
+      font-size: 13px;
+    }
+    .four-oh-four {
+      font-size: 72px;
+    }
+    .ls-listing {
+      grid-template-columns: 60px 1fr 70px;
+      gap: 8px 12px;
+      font-size: 12px;
+    }
+    .ls-listing .ls-head:nth-child(3) {
+      display: none;
+    }
+    .ls-row .desc {
+      display: none;
+    }
+  }
+</style>
