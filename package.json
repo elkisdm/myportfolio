@@ -1,0 +1,28 @@
+{
+  "name": "myportfolio",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "astro": "^6.3.8"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.0.1",
+    "@devground/devground": "^1.0.1",
+    "eslint": "^10.4.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.5",
+    "prettier": "^3.8.3",
+    "typescript": "^6.0.3"
+  },
+  "prettier": "@devground/prettier-config"
+}
