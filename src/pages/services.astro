@@ -1,0 +1,754 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+// Proof links pull real metrics from the case studies so the services page
+// never drifts from what the work actually shows.
+const projects = await getCollection("projects");
+const bySlug = (slug: string) => projects.find((p) => p.id === slug);
+const leadScoring = bySlug("lead-scoring-engine");
+const inbox = bySlug("whatsapp-inbox-ai");
+const adminPlatform = bySlug("internal-admin-platform");
+
+// FAQ content drives both the visible section and the FAQPage JSON-LD —
+// single source so schema can't drift from the page.
+const faqs = [
+  {
+    qEn: "What does an engagement look like?",
+    qEs: "¿Cómo es trabajar contigo?",
+    aEn: "You send a brief. Within 24 hours you get my take on the problem — not a calendar link. If there's a fit, I architect first, then ship in daily increments you can see, with documentation as part of the deliverable.",
+    aEs: "Me mandas un brief. En 24 horas tienes mi opinión sobre el problema — no un link a calendario. Si hay encaje, primero defino la arquitectura y después entrego en incrementos diarios que puedes ver, con documentación como parte del entregable.",
+  },
+  {
+    qEn: "How much does a custom CRM or internal platform cost?",
+    qEs: "¿Cuánto cuesta un CRM o plataforma interna a medida?",
+    aEn: "It depends on scope, so I quote per project after the brief. What I can promise: a fixed proposal with explicit scope before any code, and a working slice in production within the first weeks — not a big reveal at the end.",
+    aEs: "Depende del alcance, así que cotizo por proyecto después del brief. Lo que sí prometo: una propuesta fija con alcance explícito antes de escribir código, y una primera versión funcionando en producción en las primeras semanas — no una gran revelación al final.",
+  },
+  {
+    qEn: "Can you automate a WhatsApp sales inbox with AI?",
+    qEs: "¿Puedes automatizar un inbox de ventas en WhatsApp con IA?",
+    aEn: "Yes — it's the system I run in production today: voice notes, photos and free text classified, scored and tiered so agents work the hottest leads first. See the Lead Scoring Engine and WhatsApp Inbox AI case studies for the real numbers.",
+    aEs: "Sí — es el sistema que corro en producción hoy: notas de voz, fotos y texto libre clasificados, puntuados y priorizados para que los agentes trabajen primero los leads calientes. Mira los case studies de Lead Scoring Engine y WhatsApp Inbox AI para los números reales.",
+  },
+  {
+    qEn: "Do you work with existing teams and codebases?",
+    qEs: "¿Trabajas con equipos y código existentes?",
+    aEn: "Yes. At Capital Inteligente I review code, own architecture decisions and onboard developers. I can join an existing codebase, document it, and leave it better than I found it.",
+    aEs: "Sí. En Capital Inteligente reviso código, soy responsable de decisiones de arquitectura y hago onboarding de desarrolladores. Puedo entrar a un código existente, documentarlo y dejarlo mejor de lo que estaba.",
+  },
+  {
+    qEn: "What stack do you build with?",
+    qEs: "¿Con qué stack construyes?",
+    aEn: "Boring on purpose: TypeScript, Next.js or Astro, Supabase/Postgres, Vercel, WhatsApp Business API, and LLMs (GPT, Claude) where they earn their cost. Reliability over novelty.",
+    aEs: "Aburrido a propósito: TypeScript, Next.js o Astro, Supabase/Postgres, Vercel, WhatsApp Business API y LLMs (GPT, Claude) donde justifican su costo. Confiabilidad antes que novedad.",
+  },
+  {
+    qEn: "Are you available for full-time roles?",
+    qEs: "¿Estás disponible para roles full-time?",
+    aEn: "I'm open to remote roles (US/EU) from Q3 2026, and taking select project work now. Either way, start with a brief.",
+    aEs: "Estoy abierto a roles remotos (US/EU) desde Q3 2026, y tomo proyectos seleccionados ahora. En ambos casos, parte con un brief.",
+  },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.qEn,
+    acceptedAnswer: { "@type": "Answer", text: f.aEn },
+  })),
+};
+
+const serviceSchema = {
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  name: "Elkis Daza — Product Engineering Services",
+  url: new URL("/services", Astro.site).href,
+  description:
+    "Custom internal platforms, AI-powered WhatsApp lead automation, and end-to-end product builds. Architecture first, shipped daily.",
+  areaServed: ["Chile", "United States", "Europe"],
+  founder: { "@type": "Person", name: "Elkis Daza Mota", url: Astro.site?.href },
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: Astro.site?.href },
+    { "@type": "ListItem", position: 2, name: "Services", item: new URL("/services", Astro.site).href },
+  ],
+};
+---
+
+<BaseLayout
+  title="Services — Custom platforms, AI lead automation & end-to-end builds · elkis.dev"
+  description="I build custom CRMs, internal platforms and AI-powered WhatsApp lead automation — architecture first, shipped end-to-end. Send a brief, get a take in 24 hours."
+>
+  <script type="application/ld+json" set:html={JSON.stringify(serviceSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+
+  <!-- ============ HERO: H1 with value prop + CTA above the fold ============ -->
+  <section class="sv-hero">
+    <div class="container">
+      <div class="eyebrow">
+        <span class="ebar"></span>
+        <span data-en>/ Services</span><span data-es>/ Servicios</span>
+        <span class="sep"></span>
+        <span data-en>Project work · Q3 2026 remote roles</span>
+        <span data-es>Proyectos · roles remotos Q3 2026</span>
+      </div>
+      <h1 class="sv-title">
+        <span data-en>
+          Platforms and AI automation,<br />built <span class="ac">end-to-end.</span>
+        </span>
+        <span data-es>
+          Plataformas y automatización con IA,<br />construidas <span class="ac">de punta a punta.</span>
+        </span>
+      </h1>
+      <p class="sv-lede">
+        <span data-en>
+          I spot the business problem, architect the system, and ship it to
+          production — custom CRMs, WhatsApp lead automation, internal tools.
+          Everything below links to a real build with real numbers.
+        </span>
+        <span data-es>
+          Detecto el problema de negocio, diseño la arquitectura y lo llevo a
+          producción — CRMs a medida, automatización de leads en WhatsApp,
+          herramientas internas. Todo lo de abajo enlaza a un build real con
+          números reales.
+        </span>
+      </p>
+      <div class="sv-ctas">
+        <a class="btn btn-primary" href="mailto:hello@elkis.dev?subject=Project%20brief%20—%20elkis.dev">
+          <span data-en>Send a brief</span><span data-es>Mándame un brief</span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="btn btn-secondary" href="/work">
+          <span data-en>See the case studies</span><span data-es>Ver los case studies</span>
+          <span class="arrow">↗</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SERVICES: benefits with proof links ============ -->
+  <section class="sv-scope">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">
+          <span class="ebar"></span>
+          <span data-en>/ What I build</span><span data-es>/ Qué construyo</span>
+        </div>
+        <h2 class="section-title">
+          <span data-en>Three things. Each one shipped before.</span>
+          <span data-es>Tres cosas. Cada una ya entregada antes.</span>
+        </h2>
+      </div>
+
+      <div class="sv-grid">
+        <article class="sv-card">
+          <span class="num">01</span>
+          <h3>
+            <span data-en>AI lead operations on WhatsApp</span>
+            <span data-es>Operación de leads con IA en WhatsApp</span>
+          </h3>
+          <p>
+            <span data-en>
+              Inbound chaos → tiered queue. WhatsApp Business API, voice-note and
+              image processing, lead scoring, auto-triage — so agents work HOT
+              leads in under 30 seconds instead of reading 800 messages.
+            </span>
+            <span data-es>
+              Del caos inbound → a una cola priorizada. WhatsApp Business API,
+              procesamiento de notas de voz e imágenes, lead scoring, triage
+              automático — para que los agentes trabajen leads HOT en menos de 30
+              segundos en vez de leer 800 mensajes.
+            </span>
+          </p>
+          <ul>
+            <li data-en>Lead scoring & routing</li><li data-es>Scoring y ruteo de leads</li>
+            <li data-en>LLM classification pipelines</li><li data-es>Pipelines de clasificación con LLM</li>
+            <li data-en>WhatsApp Business API integration</li><li data-es>Integración WhatsApp Business API</li>
+          </ul>
+          {leadScoring && (
+            <a class="proof" href={`/work/${leadScoring.id}`}>
+              <span class="metric">{leadScoring.data.metrics?.impact}</span>
+              <span class="see">
+                <span data-en>Case study</span><span data-es>Case study</span> →
+              </span>
+            </a>
+          )}
+        </article>
+
+        <article class="sv-card">
+          <span class="num">02</span>
+          <h3>
+            <span data-en>Internal platforms & custom CRMs</span>
+            <span data-es>Plataformas internas y CRMs a medida</span>
+          </h3>
+          <p>
+            <span data-en>
+              Replace the Sheets + Notion + Trello + screenshots stack with one
+              system: dashboards, roles, auditability. Built on boring,
+              reliable tech your team can actually maintain.
+            </span>
+            <span data-es>
+              Reemplaza el stack de Sheets + Notion + Trello + pantallazos con un
+              solo sistema: dashboards, roles, auditabilidad. Construido sobre
+              tecnología aburrida y confiable que tu equipo puede mantener.
+            </span>
+          </p>
+          <ul>
+            <li data-en>Admin dashboards & reporting</li><li data-es>Dashboards de administración y reportes</li>
+            <li data-en>Auth, roles & row-level security</li><li data-es>Auth, roles y seguridad a nivel de fila</li>
+            <li data-en>Migrations off spreadsheets</li><li data-es>Migraciones desde planillas</li>
+          </ul>
+          {adminPlatform && (
+            <a class="proof" href={`/work/${adminPlatform.id}`}>
+              <span class="metric">{adminPlatform.data.metrics?.impact}</span>
+              <span class="see">
+                <span data-en>Case study</span><span data-es>Case study</span> →
+              </span>
+            </a>
+          )}
+        </article>
+
+        <article class="sv-card">
+          <span class="num">03</span>
+          <h3>
+            <span data-en>End-to-end product builds</span>
+            <span data-es>Builds de producto end-to-end</span>
+          </h3>
+          <p>
+            <span data-en>
+              From brief to production: architecture decisions first, then daily
+              shipped increments under engineering discipline — AI-orchestrated,
+              human-led. You see progress every day, not a demo at the end.
+            </span>
+            <span data-es>
+              Del brief a producción: primero las decisiones de arquitectura,
+              después incrementos diarios bajo disciplina de ingeniería —
+              orquestado con IA, dirigido por un humano. Ves avance todos los
+              días, no un demo al final.
+            </span>
+          </p>
+          <ul>
+            <li data-en>Architecture & technical specs</li><li data-es>Arquitectura y specs técnicas</li>
+            <li data-en>MVP scoping that survives contact</li><li data-es>Alcance de MVP que sobrevive a la realidad</li>
+            <li data-en>Documentation as a deliverable</li><li data-es>Documentación como entregable</li>
+          </ul>
+          {inbox && (
+            <a class="proof" href={`/work/${inbox.id}`}>
+              <span class="metric">{inbox.data.metrics?.impact}</span>
+              <span class="see">
+                <span data-en>Case study</span><span data-es>Case study</span> →
+              </span>
+            </a>
+          )}
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SOCIAL PROOF: one REAL quote, no invented stars ============ -->
+  <section class="sv-scope sv-proof">
+    <div class="container">
+      <blockquote class="sv-quote">
+        <p class="q">"Clarito, clarito… está ordenadito, así que buena pega equipo."</p>
+        <footer>
+          — Daniel González Caru ·
+          <span data-en>Salesforce consultant, after reviewing Atlas Engine's documentation</span>
+          <span data-es>consultor Salesforce, tras revisar la documentación de Atlas Engine</span>
+        </footer>
+      </blockquote>
+      <div class="sv-proof-strip">
+        <div class="item">
+          <div class="v">1,200<span class="ac">/wk</span></div>
+          <div class="l" data-en>leads processed in production</div>
+          <div class="l" data-es>leads procesados en producción</div>
+        </div>
+        <div class="item">
+          <div class="v">3<span class="ac">×</span></div>
+          <div class="l" data-en>agent throughput after scoring</div>
+          <div class="l" data-es>throughput de agentes tras el scoring</div>
+        </div>
+        <div class="item">
+          <div class="v">24<span class="ac">h</span></div>
+          <div class="l" data-en>to get a take on your brief</div>
+          <div class="l" data-es>para recibir una opinión de tu brief</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ: long-tail questions + FAQPage schema ============ -->
+  <section class="sv-scope">
+    <div class="container">
+      <div class="section-head">
+        <div class="eyebrow">
+          <span class="ebar"></span>
+          <span data-en>/ FAQ</span><span data-es>/ Preguntas frecuentes</span>
+        </div>
+        <h2 class="section-title">
+          <span data-en>What people ask before the brief.</span>
+          <span data-es>Lo que preguntan antes del brief.</span>
+        </h2>
+      </div>
+
+      <div class="sv-faq">
+        {faqs.map((f) => (
+          <details>
+            <summary>
+              <span data-en>{f.qEn}</span><span data-es>{f.qEs}</span>
+              <span class="chev">+</span>
+            </summary>
+            <p>
+              <span data-en>{f.aEn}</span><span data-es>{f.aEs}</span>
+            </p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FINAL CTA ============ -->
+  <section class="sv-scope" style="padding-bottom: 40px;">
+    <div class="container">
+      <div class="sv-close">
+        <div class="eyebrow">
+          <span class="ebar"></span>
+          <span data-en>/ Next step</span><span data-es>/ Siguiente paso</span>
+        </div>
+        <h2>
+          <span data-en>Tell me what you're <span class="ac">building.</span></span>
+          <span data-es>Cuéntame qué estás <span class="ac">construyendo.</span></span>
+        </h2>
+        <p>
+          <span data-en>
+            One paragraph is enough. I read every message and come back within 24
+            hours with a take — not a calendar link.
+          </span>
+          <span data-es>
+            Un párrafo basta. Leo cada mensaje y vuelvo en 24 horas con una
+            opinión — no un link a calendario.
+          </span>
+        </p>
+        <div class="ctas">
+          <a class="btn btn-primary" href="mailto:hello@elkis.dev?subject=Project%20brief%20—%20elkis.dev">
+            <span data-en>Send a brief</span><span data-es>Mándame un brief</span>
+            <span class="arrow">→</span>
+          </a>
+          <a class="btn btn-secondary" href="/about">
+            <span data-en>Who you'd work with</span><span data-es>Con quién trabajarías</span>
+            <span class="arrow">↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-text-3);
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .eyebrow .ebar {
+    display: inline-block;
+    width: 3px;
+    height: 11px;
+    background: var(--color-accent);
+    animation: blink 1.2s steps(2, start) infinite;
+  }
+  .eyebrow .sep {
+    width: 16px;
+    height: 1px;
+    background: var(--color-hair-strong);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 14.5px;
+    padding: 14px 22px;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background 180ms, border-color 180ms, box-shadow 180ms;
+  }
+  .btn .arrow {
+    font-family: var(--font-mono);
+    transition: transform 180ms;
+  }
+  .btn:hover .arrow {
+    transform: translateX(3px);
+  }
+  .btn-primary {
+    background: var(--color-accent);
+    color: #0a0a0b;
+    border-color: var(--color-accent);
+  }
+  .btn-primary:hover {
+    background: var(--color-accent-strong);
+    box-shadow: 0 0 32px var(--accent-glow);
+  }
+  .btn-secondary {
+    background: var(--color-surface-2);
+    color: var(--color-text-1);
+    border-color: var(--color-hair-strong);
+  }
+  .btn-secondary:hover {
+    background: var(--color-surface-3);
+    border-color: var(--color-text-3);
+  }
+
+  .section-head {
+    margin-bottom: 48px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(32px, 4.5vw, 52px);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    margin: 20px 0 0;
+    color: var(--color-text-1);
+    max-width: 24ch;
+  }
+
+  /* ===== Hero ===== */
+  .sv-hero {
+    padding: 168px 0 96px;
+    position: relative;
+  }
+  .sv-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, #1c1c1f 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.4;
+    mask-image: linear-gradient(180deg, transparent, #000 30%, transparent 100%);
+    pointer-events: none;
+  }
+  .sv-hero .container {
+    position: relative;
+    z-index: 2;
+  }
+  .sv-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(44px, 6vw, 84px);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    margin: 28px 0 0;
+    color: var(--color-text-1);
+  }
+  .sv-title .ac {
+    color: var(--color-accent);
+    text-shadow: 0 0 32px var(--accent-glow);
+  }
+  .sv-lede {
+    margin: 32px 0 0;
+    font-size: 18.5px;
+    color: var(--color-text-2);
+    line-height: 1.55;
+    max-width: 58ch;
+  }
+  .sv-ctas {
+    margin-top: 40px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .sv-scope {
+    padding: 96px 0 32px;
+  }
+
+  /* ===== Service cards ===== */
+  .sv-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--color-hair);
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .sv-card {
+    background: var(--color-surface-1);
+    padding: 36px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: background 180ms;
+  }
+  .sv-card:hover {
+    background: var(--color-surface-2);
+  }
+  .sv-card .num {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-accent);
+    letter-spacing: 0.1em;
+  }
+  .sv-card h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--color-text-1);
+    margin: 0;
+  }
+  .sv-card p {
+    margin: 0;
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--color-text-2);
+  }
+  .sv-card ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 8px;
+  }
+  .sv-card li {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text-2);
+    letter-spacing: 0.02em;
+    padding-left: 16px;
+    position: relative;
+  }
+  .sv-card li::before {
+    content: "·";
+    position: absolute;
+    left: 2px;
+    color: var(--color-accent);
+  }
+  .sv-card .proof {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--color-hair);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .sv-card .proof .metric {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 13.5px;
+    color: var(--color-accent);
+    letter-spacing: -0.01em;
+  }
+  .sv-card .proof .see {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+    transition: color 150ms;
+  }
+  .sv-card .proof:hover .see {
+    color: var(--color-accent);
+  }
+
+  /* ===== Proof / quote ===== */
+  .sv-proof {
+    padding-top: 64px;
+  }
+  .sv-quote {
+    margin: 0;
+    padding: 40px 48px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-hair);
+    border-left: 3px solid var(--color-accent);
+    border-radius: var(--radius-lg);
+  }
+  .sv-quote .q {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(20px, 2.6vw, 28px);
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    color: var(--color-text-1);
+  }
+  .sv-quote footer {
+    margin-top: 16px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--color-text-3);
+    letter-spacing: 0.04em;
+  }
+  .sv-proof-strip {
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--color-hair);
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .sv-proof-strip .item {
+    background: var(--color-surface-1);
+    padding: 28px 32px;
+  }
+  .sv-proof-strip .v {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 36px;
+    letter-spacing: -0.03em;
+    color: var(--color-text-1);
+  }
+  .sv-proof-strip .v .ac {
+    color: var(--color-accent);
+  }
+  .sv-proof-strip .l {
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    letter-spacing: 0.06em;
+  }
+
+  /* ===== FAQ ===== */
+  .sv-faq {
+    display: grid;
+    gap: 1px;
+    background: var(--color-hair);
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .sv-faq details {
+    background: var(--color-surface-1);
+  }
+  .sv-faq summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 22px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 16.5px;
+    letter-spacing: -0.01em;
+    color: var(--color-text-1);
+    transition: background 150ms;
+  }
+  .sv-faq summary::-webkit-details-marker {
+    display: none;
+  }
+  .sv-faq summary:hover {
+    background: var(--color-surface-2);
+  }
+  .sv-faq .chev {
+    font-family: var(--font-mono);
+    color: var(--color-text-3);
+    transition: transform 200ms, color 200ms;
+  }
+  .sv-faq details[open] .chev {
+    transform: rotate(45deg);
+    color: var(--color-accent);
+  }
+  .sv-faq details p {
+    margin: 0;
+    padding: 0 28px 24px;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--color-text-2);
+    max-width: 72ch;
+  }
+
+  /* ===== Final CTA ===== */
+  .sv-close {
+    padding: 80px 64px;
+    background: linear-gradient(180deg, var(--color-surface-1), var(--color-bg));
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-lg);
+    position: relative;
+    overflow: hidden;
+  }
+  .sv-close::before {
+    content: "";
+    position: absolute;
+    top: -100px;
+    right: -50px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 60%);
+    opacity: 0.2;
+    pointer-events: none;
+  }
+  .sv-close h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(36px, 5vw, 56px);
+    line-height: 1;
+    letter-spacing: -0.035em;
+    margin: 16px 0 0;
+    color: var(--color-text-1);
+    max-width: 18ch;
+    position: relative;
+  }
+  .sv-close h2 .ac {
+    color: var(--color-accent);
+  }
+  .sv-close p {
+    margin: 24px 0 0;
+    font-size: 17px;
+    color: var(--color-text-2);
+    line-height: 1.55;
+    max-width: 56ch;
+    position: relative;
+  }
+  .sv-close .ctas {
+    margin-top: 36px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  @media (max-width: 1024px) {
+    .sv-grid,
+    .sv-proof-strip {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 720px) {
+    .sv-hero {
+      padding: 140px 0 64px;
+    }
+    .sv-scope {
+      padding: 64px 0 16px;
+    }
+    .sv-quote {
+      padding: 28px 24px;
+    }
+    .sv-close {
+      padding: 48px 28px;
+    }
+  }
+</style>

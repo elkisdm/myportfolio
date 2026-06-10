@@ -7,6 +7,7 @@ const isEs = pathname === "/es" || pathname.startsWith("/es/");
 const active = {
   home: pathname === "/" || pathname === "/es",
   work: startsWith("/work"),
+  services: startsWith("/services"),
   blog: startsWith("/blog"),
   about: startsWith("/about"),
 };
@@ -23,6 +24,8 @@ const active = {
       <a class={`nav-link${active.home ? " active" : ""}`} href="/" data-es>Inicio</a>
       <a class={`nav-link${active.work ? " active" : ""}`} href="/work" data-en>Work</a>
       <a class={`nav-link${active.work ? " active" : ""}`} href="/work" data-es>Trabajo</a>
+      <a class={`nav-link${active.services ? " active" : ""}`} href="/services" data-en>Services</a>
+      <a class={`nav-link${active.services ? " active" : ""}`} href="/services" data-es>Servicios</a>
       <a class={`nav-link${active.blog ? " active" : ""}`} href="/blog" data-en>Blog</a>
       <a class={`nav-link${active.blog ? " active" : ""}`} href="/blog" data-es>Blog</a>
       <a class={`nav-link${active.about ? " active" : ""}`} href="/about" data-en>About</a>
@@ -56,6 +59,8 @@ const active = {
       <a class="drawer-link" href="/" data-es>Inicio</a>
       <a class="drawer-link" href="/work" data-en>Work</a>
       <a class="drawer-link" href="/work" data-es>Trabajo</a>
+      <a class="drawer-link" href="/services" data-en>Services</a>
+      <a class="drawer-link" href="/services" data-es>Servicios</a>
       <a class="drawer-link" href="/blog" data-en>Blog</a>
       <a class="drawer-link" href="/blog" data-es>Blog</a>
       <a class="drawer-link" href="/about" data-en>About</a>
