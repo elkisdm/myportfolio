@@ -15,8 +15,8 @@
       <span data-es>Cuéntame qué<br />estás <span class="ac">construyendo.</span></span>
     </h2>
     <p class="cta-sub">
-      <span data-en>I read every message myself, there's no filter in between. If I can help you'll hear back within 24 hours with an actual opinion, and if it's not my thing I'll just say so.</span>
-      <span data-es>Leo todos los mensajes yo, no hay filtro de por medio. Si puedo ayudarte te respondo en 24 horas con una opinión concreta, y si no es lo mío, también te lo digo y listo.</span>
+      <span data-en>I'm not going to say "book a call" — that one's worn out. Send me a paragraph about what you're building and within 24 hours you get what I'd do with it. If it's not my thing, I'll say that too. You decide what to do with the answer.</span>
+      <span data-es>No te voy a decir "agenda una llamada", porque eso ya está quemado. Mándame un párrafo de lo que estás construyendo y en 24 horas tienes lo que yo haría con eso. Si no es lo mío, también te lo digo. Tú decides qué hacer con la respuesta.</span>
     </p>
 
     <form class="cta-form" id="ctaForm">
@@ -56,6 +56,11 @@
       <span data-en>Based in Santiago · Working <b>remote</b> US / EU</span>
       <span data-es>En Santiago · Trabajando <b>remoto</b> US / EU</span>
     </div>
+
+    <p class="cta-pd">
+      <span data-en>P.S. If you only came to look around, that's fine too. The code is on <a href="https://github.com/elkisdm">GitHub</a>.</span>
+      <span data-es>P.D. Si solo viniste a mirar, también está bien. El código está en <a href="https://github.com/elkisdm">GitHub</a>.</span>
+    </p>
   </div>
 </section>
 
@@ -227,5 +232,22 @@
   }
   .cta-alt b {
     color: var(--color-text-1);
+  }
+  .cta-pd {
+    margin: 28px 0 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text-3);
+    letter-spacing: 0.03em;
+  }
+  .cta-pd a {
+    color: var(--color-text-2);
+    border-bottom: 1px solid var(--color-hair-strong);
+    padding-bottom: 1px;
+    transition: color 180ms, border-color 180ms;
+  }
+  .cta-pd a:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
   }
 </style>
