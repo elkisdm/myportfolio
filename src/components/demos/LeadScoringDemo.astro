@@ -1,0 +1,463 @@
+---
+// Interactive simulation of the Lead Scoring Engine pipeline, embedded in
+// its case study. Runs the same decision ORDER as production
+// (feasibility → intent → tier) with static rules — clearly labeled as a
+// simulation, no API calls. Logic lives in src/scripts/lead-demo-scoring.ts
+// (unit-tested) so this component only does presentation + animation.
+---
+
+<div class="lsd" id="leadScoringDemo">
+  <div class="lsd-head">
+    <div class="lsd-eyebrow">
+      <span class="dot"></span>
+      <span data-en>Interactive demo — simulated rules, real pipeline order</span>
+      <span data-es>Demo interactiva — reglas simuladas, orden real del pipeline</span>
+    </div>
+    <p class="lsd-lede">
+      <span data-en>
+        Type a WhatsApp message as if you were a lead (or pick one), and watch
+        the pipeline triage it the way production does.
+      </span>
+      <span data-es>
+        Escribe un mensaje de WhatsApp como si fueras un lead (o elige uno), y
+        mira cómo el pipeline lo clasifica igual que en producción.
+      </span>
+    </p>
+  </div>
+
+  <div class="lsd-presets" id="lsdPresets">
+    <button type="button" data-msg="Necesito instalar fibra urgente en Las Condes, dpto 803">
+      <span data-en>Urgent · Las Condes</span><span data-es>Urgente · Las Condes</span>
+    </button>
+    <button type="button" data-msg="Hola, cuánto cuesta el plan? Vivo en Ñuñoa">
+      <span data-en>Price question · Ñuñoa</span><span data-es>Pregunta precio · Ñuñoa</span>
+    </button>
+    <button type="button" data-msg="Quiero contratar urgente en Melipilla">
+      <span data-en>Urgent · no coverage</span><span data-es>Urgente · sin cobertura</span>
+    </button>
+    <button type="button" data-msg="hola, info porfa">
+      <span data-en>Vague · no address</span><span data-es>Vago · sin dirección</span>
+    </button>
+  </div>
+
+  <form class="lsd-form" id="lsdForm">
+    <input
+      id="lsdInput"
+      type="text"
+      placeholder="Necesito fibra en Providencia…"
+      autocomplete="off"
+    />
+    <button class="lsd-run" type="submit">
+      <span data-en>Score it</span><span data-es>Clasifícalo</span>
+      <span class="arrow">→</span>
+    </button>
+  </form>
+
+  <ol class="lsd-steps" id="lsdSteps">
+    <li class="step" data-step="feasibility">
+      <span class="n">01</span>
+      <div class="body">
+        <div class="t">
+          <span data-en>Feasibility check</span>
+          <span data-es>Check de factibilidad</span>
+        </div>
+        <div class="d" id="lsdFeasOut"></div>
+      </div>
+      <span class="ms" id="lsdFeasMs"></span>
+    </li>
+    <li class="step" data-step="intent">
+      <span class="n">02</span>
+      <div class="body">
+        <div class="t">
+          <span data-en>Intent classification</span>
+          <span data-es>Clasificación de intención</span>
+        </div>
+        <div class="d" id="lsdIntentOut"></div>
+      </div>
+      <span class="ms" id="lsdIntentMs"></span>
+    </li>
+    <li class="step" data-step="tier">
+      <span class="n">03</span>
+      <div class="body">
+        <div class="t">
+          <span data-en>Tier assignment</span>
+          <span data-es>Asignación de tier</span>
+        </div>
+        <div class="d" id="lsdTierOut"></div>
+      </div>
+      <span class="tier-badge" id="lsdTierBadge"></span>
+    </li>
+  </ol>
+
+  <p class="lsd-foot">
+    <span data-en>
+      Simulation: coverage map and intent rules are static stand-ins for the
+      production cache + GPT-4o-mini classifier. The decision order is the real one.
+    </span>
+    <span data-es>
+      Simulación: el mapa de cobertura y las reglas de intención reemplazan al
+      cache de producción + clasificador GPT-4o-mini. El orden de decisión es el real.
+    </span>
+  </p>
+</div>
+
+<script>
+  import { scoreLead } from "../../scripts/lead-demo-scoring";
+
+  type LangText = { en: string; es: string };
+  const bi = (t: LangText) =>
+    `<span data-en>${t.en}</span><span data-es>${t.es}</span>`;
+
+  function initLeadScoringDemo() {
+    const root = document.getElementById("leadScoringDemo");
+    if (!root || root.dataset.bound === "true") return;
+    root.dataset.bound = "true";
+
+    const form = root.querySelector<HTMLFormElement>("#lsdForm")!;
+    const input = root.querySelector<HTMLInputElement>("#lsdInput")!;
+    const presets = root.querySelectorAll<HTMLButtonElement>("#lsdPresets button");
+    const steps = root.querySelectorAll<HTMLLIElement>(".step");
+    const feasOut = root.querySelector("#lsdFeasOut")!;
+    const feasMs = root.querySelector("#lsdFeasMs")!;
+    const intentOut = root.querySelector("#lsdIntentOut")!;
+    const intentMs = root.querySelector("#lsdIntentMs")!;
+    const tierOut = root.querySelector("#lsdTierOut")!;
+    const tierBadge = root.querySelector<HTMLElement>("#lsdTierBadge")!;
+    let runId = 0;
+
+    const reset = () => {
+      steps.forEach((s) => s.classList.remove("on", "done", "skip"));
+      feasOut.innerHTML = "";
+      intentOut.innerHTML = "";
+      tierOut.innerHTML = "";
+      feasMs.textContent = "";
+      intentMs.textContent = "";
+      tierBadge.textContent = "";
+      tierBadge.className = "tier-badge";
+    };
+
+    const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+    async function run(message: string) {
+      const id = ++runId;
+      reset();
+      const result = scoreLead(message);
+      const [feas, intent, tier] = [steps[0], steps[1], steps[2]];
+
+      // Step 1 — feasibility
+      feas.classList.add("on");
+      await wait(result.cached ? 350 : 1000);
+      if (id !== runId) return;
+      feas.classList.replace("on", "done");
+      if (result.needsAddress) {
+        feasOut.innerHTML = bi({
+          en: "No address in message — bot auto-asks for it. Coverage unknown.",
+          es: "Sin dirección en el mensaje — el bot la pide solo. Cobertura desconocida.",
+        });
+        feasMs.textContent = "—";
+      } else {
+        feasOut.innerHTML = result.feasible
+          ? bi({
+              en: `Coverage at <b>${result.comuna}</b> · ${result.cached ? "building-level cache HIT" : "cache miss → portal lookup"}`,
+              es: `Cobertura en <b>${result.comuna}</b> · ${result.cached ? "cache HIT a nivel edificio" : "cache miss → consulta a portal"}`,
+            })
+          : bi({
+              en: `No fibra coverage at <b>${result.comuna}</b>. Nothing else matters.`,
+              es: `Sin cobertura de fibra en <b>${result.comuna}</b>. Nada más importa.`,
+            });
+        feasMs.textContent = result.cached ? "~30ms" : "~3s";
+      }
+
+      // Step 2 — intent (skipped entirely on unfeasible leads)
+      if (result.intent === "skipped") {
+        intent.classList.add("skip");
+        intentOut.innerHTML = bi({
+          en: "Skipped — unfeasible leads never reach the classifier (saves ~38% of GPT calls).",
+          es: "Omitido — los leads infactibles nunca llegan al clasificador (ahorra ~38% de llamadas GPT).",
+        });
+        intentMs.textContent = "$0";
+      } else {
+        intent.classList.add("on");
+        await wait(700);
+        if (id !== runId) return;
+        intent.classList.replace("on", "done");
+        const labels: Record<string, LangText> = {
+          high: { en: "HIGH — urgency / contract signals", es: "ALTA — señales de urgencia / contratación" },
+          medium: { en: "MEDIUM — price shopping", es: "MEDIA — cotizando precio" },
+          low: { en: "LOW — vague inquiry", es: "BAJA — consulta vaga" },
+        };
+        intentOut.innerHTML = bi(labels[result.intent]);
+        intentMs.textContent = "~400ms";
+      }
+
+      // Step 3 — tier
+      tier.classList.add("on");
+      await wait(400);
+      if (id !== runId) return;
+      tier.classList.replace("on", "done");
+      tierBadge.textContent = result.tier;
+      tierBadge.classList.add(`t-${result.tier.toLowerCase()}`);
+      const verdicts: Record<string, LangText> = {
+        HOT: {
+          en: "Top of the queue. An agent sees this in under 30 seconds.",
+          es: "Primero en la cola. Un agente lo ve en menos de 30 segundos.",
+        },
+        WARM: {
+          en: result.needsAddress
+            ? "Queued — caps at WARM until the address confirms coverage."
+            : "Queued behind HOT leads with full context attached.",
+          es: result.needsAddress
+            ? "En cola — tope WARM hasta que la dirección confirme cobertura."
+            : "En cola detrás de los HOT, con todo el contexto adjunto.",
+        },
+        COLD: {
+          en: "Low priority. Agents stop wasting their first hour here.",
+          es: "Prioridad baja. Los agentes dejan de quemar su primera hora acá.",
+        },
+        UNFEASIBLE: {
+          en: "Auto-answered politely. Zero agent minutes spent.",
+          es: "Respondido cortésmente en automático. Cero minutos de agente.",
+        },
+      };
+      tierOut.innerHTML = bi(verdicts[result.tier]);
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const msg = input.value.trim();
+      if (msg) run(msg);
+    });
+    presets.forEach((btn) =>
+      btn.addEventListener("click", () => {
+        input.value = btn.dataset.msg ?? "";
+        run(input.value);
+      }),
+    );
+  }
+
+  initLeadScoringDemo();
+  document.addEventListener("astro:page-load", initLeadScoringDemo);
+</script>
+
+<style>
+  .lsd {
+    margin: 48px 0;
+    padding: 32px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-lg);
+  }
+  .lsd-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+  .lsd-eyebrow .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  .lsd-lede {
+    margin: 12px 0 0;
+    font-size: 15px;
+    color: var(--color-text-2);
+    line-height: 1.55;
+    max-width: 56ch;
+  }
+
+  .lsd-presets {
+    margin-top: 20px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .lsd-presets button {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--color-text-2);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-hair-strong);
+    border-radius: var(--radius-full);
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: border-color 150ms, color 150ms;
+  }
+  .lsd-presets button:hover {
+    border-color: var(--color-accent);
+    color: var(--color-text-1);
+  }
+
+  .lsd-form {
+    margin-top: 14px;
+    display: flex;
+    gap: 10px;
+  }
+  .lsd-form input {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    color: var(--color-text-1);
+    background: var(--color-bg);
+    border: 1px solid var(--color-hair-strong);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 150ms;
+  }
+  .lsd-form input:focus {
+    border-color: var(--color-accent);
+  }
+  .lsd-run {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 13.5px;
+    padding: 12px 18px;
+    border-radius: var(--radius-md);
+    background: var(--color-accent);
+    color: #0a0a0b;
+    border: 1px solid var(--color-accent);
+    cursor: pointer;
+    transition: background 150ms, box-shadow 150ms;
+  }
+  .lsd-run:hover {
+    background: var(--color-accent-strong);
+    box-shadow: 0 0 24px var(--accent-glow);
+  }
+  .lsd-run .arrow {
+    font-family: var(--font-mono);
+  }
+
+  .lsd-steps {
+    margin: 28px 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 1px;
+    background: var(--color-hair);
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+  .step {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--color-surface-2);
+    opacity: 0.45;
+    transition: opacity 250ms, background 250ms;
+  }
+  .step.on,
+  .step.done {
+    opacity: 1;
+  }
+  .step.on {
+    background: var(--color-surface-3);
+  }
+  .step.skip {
+    opacity: 0.8;
+  }
+  .step.skip .t {
+    text-decoration: line-through;
+    color: var(--color-text-3);
+  }
+  .step .n {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+  }
+  .step.on .n,
+  .step.done .n {
+    color: var(--color-accent);
+  }
+  .step .body {
+    flex: 1;
+    min-width: 0;
+  }
+  .step .t {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 14.5px;
+    color: var(--color-text-1);
+  }
+  .step .d {
+    margin-top: 4px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--color-text-2);
+  }
+  .step .d :global(b) {
+    color: var(--color-text-1);
+    font-weight: 500;
+    text-transform: capitalize;
+  }
+  .step .ms {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    white-space: nowrap;
+  }
+
+  .tier-badge {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  /* Status colors are intentional (not theme tokens): tier semantics. */
+  .tier-badge.t-hot {
+    color: #ff8a76;
+    border-color: rgba(255, 138, 118, 0.4);
+    background: rgba(255, 138, 118, 0.1);
+  }
+  .tier-badge.t-warm {
+    color: #f5c065;
+    border-color: rgba(245, 192, 101, 0.4);
+    background: rgba(245, 192, 101, 0.1);
+  }
+  .tier-badge.t-cold {
+    color: #7da7f3;
+    border-color: rgba(125, 167, 243, 0.4);
+    background: rgba(125, 167, 243, 0.1);
+  }
+  .tier-badge.t-unfeasible {
+    color: var(--color-text-3);
+    border-color: var(--color-hair-strong);
+    background: var(--color-surface-3);
+  }
+
+  .lsd-foot {
+    margin: 20px 0 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--color-text-3);
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 720px) {
+    .lsd {
+      padding: 22px 18px;
+    }
+    .lsd-form {
+      flex-direction: column;
+    }
+  }
+</style>
