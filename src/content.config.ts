@@ -28,6 +28,29 @@ const projects = defineCollection({
         alt: z.string(),
       })
       .optional(),
+    // Real demonstrations rendered on the case study page. All optional —
+    // drop assets in public/demos/ and reference them here.
+    demo: z
+      .object({
+        live: z.string().url().optional(),
+        video: z
+          .object({
+            src: z.string(),
+            poster: z.string().optional(),
+            caption: z.string().optional(),
+          })
+          .optional(),
+        gallery: z
+          .array(
+            z.object({
+              src: z.string(),
+              alt: z.string(),
+              caption: z.string().optional(),
+            })
+          )
+          .optional(),
+      })
+      .optional(),
   }),
 });
 

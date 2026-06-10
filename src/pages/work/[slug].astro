@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProjectDemo from "../../components/ProjectDemo.astro";
 import {
   getCollection,
   render,
@@ -127,6 +128,7 @@ const isProduction = project.data.tags.includes("Production");
 
   <section class="scope">
     <div class="container">
+      {project.data.demo && <ProjectDemo demo={project.data.demo} />}
       <article class="cs-content">
         <Content />
       </article>

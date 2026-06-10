@@ -1,0 +1,157 @@
+---
+// Renders the "real demonstration" block on a case study page from the
+// project's `demo` frontmatter: live link, video walkthrough, screenshot
+// gallery. Renders nothing when the project has no demo assets.
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  demo: NonNullable<CollectionEntry<"projects">["data"]["demo"]>;
+}
+
+const { demo } = Astro.props;
+const hasContent = demo.live || demo.video || (demo.gallery?.length ?? 0) > 0;
+---
+
+{hasContent && (
+  <div class="pd">
+    <div class="pd-head">
+      <div class="pd-eyebrow">
+        <span class="dot"></span>
+        <span data-en>See it running</span>
+        <span data-es>Míralo funcionando</span>
+      </div>
+      {demo.live && (
+        <a class="pd-live" href={demo.live} target="_blank" rel="noopener noreferrer">
+          <span data-en>Open live</span><span data-es>Abrir en vivo</span>
+          <span class="arrow">↗</span>
+        </a>
+      )}
+    </div>
+
+    {demo.video && (
+      <figure class="pd-video">
+        <video
+          src={demo.video.src}
+          poster={demo.video.poster}
+          controls
+          preload="metadata"
+          playsinline
+        ></video>
+        {demo.video.caption && <figcaption>{demo.video.caption}</figcaption>}
+      </figure>
+    )}
+
+    {demo.gallery && demo.gallery.length > 0 && (
+      <div class="pd-gallery">
+        {demo.gallery.map((shot) => (
+          <figure>
+            <img src={shot.src} alt={shot.alt} loading="lazy" />
+            {shot.caption && <figcaption>{shot.caption}</figcaption>}
+          </figure>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
+<style>
+  .pd {
+    max-width: 960px;
+    margin: 0 auto 72px;
+    padding: 28px;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-hair);
+    border-radius: var(--radius-lg);
+  }
+  .pd-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .pd-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+  .pd-eyebrow .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  .pd-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 13.5px;
+    padding: 10px 16px;
+    border-radius: var(--radius-md);
+    background: var(--color-accent);
+    color: #0a0a0b;
+    transition: background 150ms, box-shadow 150ms;
+  }
+  .pd-live:hover {
+    background: var(--color-accent-strong);
+    box-shadow: 0 0 24px var(--accent-glow);
+  }
+  .pd-live .arrow {
+    font-family: var(--font-mono);
+  }
+
+  .pd-video {
+    margin: 24px 0 0;
+  }
+  .pd-video video {
+    width: 100%;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-hair-strong);
+    background: var(--color-bg);
+  }
+
+  .pd-gallery {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .pd-gallery figure,
+  .pd-video {
+    margin: 24px 0 0;
+  }
+  .pd-gallery figure {
+    margin: 0;
+  }
+  .pd-gallery img {
+    width: 100%;
+    display: block;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-hair-strong);
+  }
+  figcaption {
+    margin-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-3);
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 720px) {
+    .pd {
+      padding: 18px;
+    }
+    .pd-gallery {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
