@@ -100,6 +100,29 @@ agencia siempre; el copy cede autoridad en vez de imponerla.
 4. **¿Es simétrica-perfecta?** Las estructuras espejo tipo "X. Not Y." repetidas tres veces huelen a IA. Romper una de cada dos.
 5. **¿El CTA presiona?** Si presiona, suavizar. La confianza viene de no parecer que intenta vender.
 
+### La regla de textura (aprendida en la iteración 2)
+
+El primer intento de esta revisión falló. Cambió las palabras y conservó la textura:
+cada línea seguía siendo un punchline comprimido ("The fix wasn't hiring a fifth.
+It was a schema."). **La uniformidad de golpe-tras-golpe es el olor a IA número uno**,
+independiente del vocabulario.
+
+La textura real de Elkis (verificada en transcripciones, `perfil-comunicacional-oral.md`):
+
+1. **Cadenas, no staccato.** Razona encadenando con "entonces", "porque", "pero",
+   "o sea": "...porque yo voy a tener claro lo que se va reservando por el lado de
+   directo, pero no así por el lado de ellos."
+2. **Desinfla, no remata.** Su cierre natural le QUITA drama a la cosa: "En el fondo
+   es marcar una unidad y ponerla como reservada. Cambiarla de estado, eso es todo."
+   El remate ingenioso es de copywriter; el "eso es todo" es de Elkis.
+3. **Presupuesto de golpes: UNO por sección.** El resto de las frases tienen permiso
+   de ser normales. Una frase normal seguida de otra normal es lo que hace humana
+   la que sí pega.
+4. **"Básicamente"** es su simplificador natural. "Es sencillo" desactiva resistencia.
+5. **Em-dash racionado.** Comas y puntos, como escribe la gente.
+6. **El ES se escribe primero** como si lo estuviera diciendo en una reunión; el EN
+   traduce esa energía, no al revés.
+
 ### Marcadores de "olor a IA" que esta revisión elimina
 
 - Paralelismo perfecto en serie ("Fast. Clean. Reliable.")
