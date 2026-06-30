@@ -34,8 +34,8 @@ importers:
         specifier: ^21.0.1
         version: 21.0.1(@types/node@25.9.1)(conventional-commits-parser@6.4.0)(typescript@6.0.3)
       '@devground/devground':
-        specifier: ^1.0.1
-        version: 1.0.1(@commitlint/cli@21.0.1(@types/node@25.9.1)(conventional-commits-parser@6.4.0)(typescript@6.0.3))(eslint@10.4.0(jiti@2.6.1))(husky@9.1.7)(lint-staged@17.0.5)(prettier@3.8.3)(typescript@6.0.3)
+        specifier: ^1.0.4
+        version: 1.0.4(@commitlint/cli@21.0.1(@types/node@25.9.1)(conventional-commits-parser@6.4.0)(typescript@6.0.3))(eslint@10.4.0(jiti@2.6.1))(husky@9.1.7)(lint-staged@17.0.5)(prettier@3.8.3)(typescript@6.0.3)
       eslint:
         specifier: ^10.4.0
         version: 10.4.0(jiti@2.6.1)
@@ -196,8 +196,8 @@ packages:
       conventional-commits-parser:
         optional: true
 
-  '@devground/agents-md@1.0.1':
-    resolution: {integrity: sha512-xgXX6Gb6INUIgQBs3u0TmtWhHVwrLuTKL1nZsHnOdwrMbQHud8DRjDhAe5wmFCcifexURFaQ26hbmPNjyeF1Kg==}
+  '@devground/agents-md@1.2.0':
+    resolution: {integrity: sha512-yJ78WtMaoV7wgLiE98u92HKxLtMpnEGN3TNuucEe3hZ0kXm7AiznKYMxTgdvnv069h2KtUdMaNZirGglvsOTkw==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -207,8 +207,8 @@ packages:
     peerDependencies:
       '@commitlint/cli': '>=19.0.0'
 
-  '@devground/devground@1.0.1':
-    resolution: {integrity: sha512-uqAM+nfuzkl4fcxdBpO59n1XM7oEwK10vPyIqfkQ61QB+W8yRWkZC1Y3F9P5dSlT0sLRwgSQG+rN4yB3h9oUig==}
+  '@devground/devground@1.0.4':
+    resolution: {integrity: sha512-b/yGTQDh29sLT6/IqfH+Qq+IfrY3ANgU9o9Lxs9Q8KinIxGxqEBBFB9AEqYRv6BblJEjC7C6sOsrnioMRXk0/w==}
     engines: {node: '>=20'}
     hasBin: true
     peerDependencies:
@@ -225,18 +225,21 @@ packages:
       eslint-config-next:
         optional: true
 
-  '@devground/eslint-config@1.0.1':
-    resolution: {integrity: sha512-ptmNsjSkecwHq59jfh80+8edD6VeHGDP8sXh2eEH5gTPUIHNCM+uQ2EcPLxqpDWwAwOxWMeUkOKRSWrowbnNYw==}
+  '@devground/eslint-config@1.0.2':
+    resolution: {integrity: sha512-dWK90deKH8EjmF7WIfAufxcGo4dQSrdyD8zrQGNe/36Spk0S5qK8g+8t5dlfePsNIDYb9cc/E5+izqPxKM2rlg==}
     engines: {node: '>=20'}
     peerDependencies:
+      '@typescript-eslint/parser': '>=8.0.0'
       eslint: '>=9.0.0'
       eslint-config-next: '>=14.0.0'
     peerDependenciesMeta:
+      '@typescript-eslint/parser':
+        optional: true
       eslint-config-next:
         optional: true
 
-  '@devground/husky-config@1.0.1':
-    resolution: {integrity: sha512-uJMyBCOlZwTsx6wMEKXBNsxBQDUy134Vbm5wu8K3FIJRQA/NLDkYr0p8yra0Yw4boleRfjTsO16TtW2OVdE3jQ==}
+  '@devground/husky-config@1.1.0':
+    resolution: {integrity: sha512-ki7b53hV2BwnslvioNKpz7UJ5k+A6BT9ltdjSFxccdTU+U/tUWolMMdKTUt+hMWl/esEDSjwqgDPHDau/12KRw==}
     engines: {node: '>=20'}
     hasBin: true
     peerDependencies:
@@ -249,12 +252,12 @@ packages:
       eslint: '>=9.0.0'
       prettier: '>=3.0.0'
 
-  '@devground/prettier-config@1.0.1':
-    resolution: {integrity: sha512-7A1MAdDHOMsclrmg3n72v1vnQqtgj1ApmZ086ERUqH5n/C3ykL+6ght+UK2EL4vFDignMGX0AbmyZqgXmGizfg==}
+  '@devground/prettier-config@1.0.2':
+    resolution: {integrity: sha512-XaDPAs1trCCbhlABe/JRaKc+SfxEU/3jaolXvWkleUSCWAMp+7aO471wzN9+kgrEPESlh9kQkAd3fZSjppyYmg==}
     engines: {node: '>=20'}
 
-  '@devground/tsconfig@1.0.1':
-    resolution: {integrity: sha512-4xGFCQdRnhwNlTvNF820zMt507juGHco/yU000pgEYbbrBlP18e8M+1cB+1eMaLxpo35a25yJKWsazTv/fH2qA==}
+  '@devground/tsconfig@2.0.0':
+    resolution: {integrity: sha512-6djeqS05nTdbr1JT6O0Oe4GkF9lFaose0dd+YDk6nL+jWuPlN9QBMl6ufm0h94XUNdxsPVTjV/Oy5E5SmaZsSw==}
     engines: {node: '>=20'}
 
   '@emnapi/runtime@1.10.0':
@@ -2877,21 +2880,21 @@ snapshots:
     optionalDependencies:
       conventional-commits-parser: 6.4.0
 
-  '@devground/agents-md@1.0.1': {}
+  '@devground/agents-md@1.2.0': {}
 
   '@devground/commitlint-config@1.0.1(@commitlint/cli@21.0.1(@types/node@25.9.1)(conventional-commits-parser@6.4.0)(typescript@6.0.3))':
     dependencies:
       '@commitlint/cli': 21.0.1(@types/node@25.9.1)(conventional-commits-parser@6.4.0)(typescript@6.0.3)
 
-  '@devground/devground@1.0.1(@commitlint/cli@21.0.1(@types/node@25.9.1)(conventional-commits-parser@6.4.0)(typescript@6.0.3))(eslint@10.4.0(jiti@2.6.1))(husky@9.1.7)(lint-staged@17.0.5)(prettier@3.8.3)(typescript@6.0.3)':
+  '@devground/devground@1.0.4(@commitlint/cli@21.0.1(@types/node@25.9.1)(conventional-commits-parser@6.4.0)(typescript@6.0.3))(eslint@10.4.0(jiti@2.6.1))(husky@9.1.7)(lint-staged@17.0.5)(prettier@3.8.3)(typescript@6.0.3)':
     dependencies:
-      '@devground/agents-md': 1.0.1
+      '@devground/agents-md': 1.2.0
       '@devground/commitlint-config': 1.0.1(@commitlint/cli@21.0.1(@types/node@25.9.1)(conventional-commits-parser@6.4.0)(typescript@6.0.3))
-      '@devground/eslint-config': 1.0.1(eslint@10.4.0(jiti@2.6.1))
-      '@devground/husky-config': 1.0.1(husky@9.1.7)
+      '@devground/eslint-config': 1.0.2(eslint@10.4.0(jiti@2.6.1))
+      '@devground/husky-config': 1.1.0(husky@9.1.7)
       '@devground/lint-staged-config': 1.0.1(eslint@10.4.0(jiti@2.6.1))(prettier@3.8.3)
-      '@devground/prettier-config': 1.0.1
-      '@devground/tsconfig': 1.0.1
+      '@devground/prettier-config': 1.0.2
+      '@devground/tsconfig': 2.0.0
       eslint: 10.4.0(jiti@2.6.1)
       husky: 9.1.7
       lint-staged: 17.0.5
@@ -2899,12 +2902,14 @@ snapshots:
       typescript: 6.0.3
     optionalDependencies:
       '@commitlint/cli': 21.0.1(@types/node@25.9.1)(conventional-commits-parser@6.4.0)(typescript@6.0.3)
+    transitivePeerDependencies:
+      - '@typescript-eslint/parser'
 
-  '@devground/eslint-config@1.0.1(eslint@10.4.0(jiti@2.6.1))':
+  '@devground/eslint-config@1.0.2(eslint@10.4.0(jiti@2.6.1))':
     dependencies:
       eslint: 10.4.0(jiti@2.6.1)
 
-  '@devground/husky-config@1.0.1(husky@9.1.7)':
+  '@devground/husky-config@1.1.0(husky@9.1.7)':
     dependencies:
       husky: 9.1.7
 
@@ -2913,9 +2918,9 @@ snapshots:
       eslint: 10.4.0(jiti@2.6.1)
       prettier: 3.8.3
 
-  '@devground/prettier-config@1.0.1': {}
+  '@devground/prettier-config@1.0.2': {}
 
-  '@devground/tsconfig@1.0.1': {}
+  '@devground/tsconfig@2.0.0': {}
 
   '@emnapi/runtime@1.10.0':
     dependencies:
